@@ -46,7 +46,7 @@ sort countynames
 gen countyid=_n
 // move the countyid to countynames
 move countyid countynames
-save povertynj20072017
+save povertynj20072017, replace
 clear 
 ** my dc won't change by clear
 
@@ -70,7 +70,7 @@ drop in 1
 sort area_name
 gen countyid=_n // this should be exactly the same name we used for the last file because they should merge//
 move countyid area_name
-save unemplymentratenj20072017
+save unemplymentratenj20072017, replace
 clear
 
 
@@ -115,16 +115,17 @@ save, replace // we want ths file to be saved as pov_unemp_2007_2017--- no new f
 
 // first finding average unemployment in 2017 and 2007
 // average of the above is shown down  
-sum unemployment_rate_2007 unemployment_rate_2017
+sum unemprate2007 unemprate2017 
+edit
 // I want to find the average unemployment by region (north and south) 
 //This divides the whole data in two lines and just shows the mean amount, we can't see counties list and their rate
-collapse (mean) unemployment_rate_2007 (mean) unemployment_rate_2017, by (jersey_region)
+collapse (mean) unemprate2007 (mean) unemprate2017, by (jersey_region)
 
-tab unemployment_rate_2007
-tab unemployment_rate_2017
+tab unemprate2007
+tab unemprate2017 
 
-tab jersey_region unemployment_rate_2007
-tab jersey_region unemployment_rate_2017
+tab jersey_region unemprate2007 
+tab jersey_region unemprate2017 
 
 clear
 
@@ -141,9 +142,9 @@ use pov_unemp_2007_2017
 // then we get the info that we need based on the north and south jersey cause first we divided them by collapse to get the info
 
 preserve
-collapse (mean) unemployment_rate_2007 (mean) unemployment_rate_2017, by (jersey_region)
-tab jersey_region unemployment_rate_2007
-tab jersey_region unemployment_rate_2017
+collapse (mean) unemprate2007 (mean) unemprate2017, by (jersey_region)
+tab jersey_region unemprate2007
+tab jersey_region unemprate2017
 restore
 
 
