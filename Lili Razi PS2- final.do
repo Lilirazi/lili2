@@ -142,7 +142,7 @@ use pov_unemp_2007_2017
 // then we get the info that we need based on the north and south jersey cause first we divided them by collapse to get the info
 
 preserve
-collapse (mean) unemprate2007 (mean) unemprate2017, by (jersey_region)
+collapse (mean) unemprate2007 (mean) unemprate2017, by(jersey_region)
 tab jersey_region unemprate2007
 tab jersey_region unemprate2017
 restore
@@ -179,7 +179,7 @@ sum householdincome // the average income now is  149995.7 we can collapse data 
 clonevar average_income=householdincome // we have cloned household income into new variable average income
 
 preserve
-collapse (mean) householdincome, by (jersey_region)
+collapse (mean) householdincome, by(jersey_region)
 // we have jersey_region from previous saved file
 tab jersey_region householdincome
 restore
