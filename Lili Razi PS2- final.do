@@ -59,7 +59,12 @@ clear
 import excel "https://www.ers.usda.gov/webdocs/DataFiles/48747/Unemployment.xls?v=9115.7?v=9115.7",clear
 edit
 describe
-keep unemployment_rate_2007 unemployment_rate_2017 state area_name
+keep J AX B C
+drop in 1/7
+rename B state 
+rename C area_name 
+rename J unemprate2007
+rename AX unemprate2017
 keep if state=="NJ" //we use " " because this is string variable if this one was numver we don't need " " //
 drop in 1
 sort area_name
@@ -67,7 +72,6 @@ gen countyid=_n // this should be exactly the same name we used for the last fil
 move countyid area_name
 save unemplymentratenj20072017
 clear
-
 
 
 
