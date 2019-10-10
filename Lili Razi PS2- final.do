@@ -113,13 +113,16 @@ save, replace // we want ths file to be saved as pov_unemp_2007_2017--- no new f
 
 **--- collapse
 
+
 // first finding average unemployment in 2017 and 2007
 // average of the above is shown down  
 sum unemprate2007 unemprate2017 
 edit
 // I want to find the average unemployment by region (north and south) 
 //This divides the whole data in two lines and just shows the mean amount, we can't see counties list and their rate
-collapse (mean) unemprate2007 (mean) unemprate2017, by (jersey_region)
+destring unemprate2007, replace
+destring unemprate2017, replace
+collapse (mean) unemprate2007 (mean) unemprate2017, by(jersey_region)
 
 tab unemprate2007
 tab unemprate2017 
@@ -136,7 +139,8 @@ clear
 *--- better way to collapse without losing our original data
 clear
 use pov_unemp_2007_2017
-
+destring unemprate2007, replace
+destring unemprate2017, replace
 // all the below commands  from preserve to restore should run together to work
 // we are creating a virtual space to manipulate data without deleting the original data 
 // then we get the info that we need based on the north and south jersey cause first we divided them by collapse to get the info
