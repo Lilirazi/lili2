@@ -286,6 +286,11 @@ clear
 // retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0701&prodType=table
 //https://drive.google.com/file/d/1dM16kWH2F0p0MeBj0wEsDG0AHvkW0cDk/view?usp=sharing
 import delimited "https://docs.google.com/uc?id=1dM16kWH2F0p0MeBj0wEsDG0AHvkW0cDk&export=download", clear 
+keep v3 v534 v544
+rename v3 countycensus
+rename v534 ownunit2017 
+rename v544 rentunit2017
+drop in 1/2
 
 
 
