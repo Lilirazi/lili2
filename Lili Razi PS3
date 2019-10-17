@@ -320,9 +320,10 @@ save pov_unemp_income_pop_mig_unit20102017, replace
 
 *------reshape-------*
 encode countycensus, gen(ccN)
-reshape long unemprate net_mig and others,i(ccN)j(year)
+reshape long unemprate poverty net_mig householdincome pop_estimate,i(ccN)j(year)
 sort year
 save pov_etc_longreshaped, replace 
+
 
 clear 
 use pov_unemp_income_pop_mig_unit20102017
