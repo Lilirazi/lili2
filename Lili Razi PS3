@@ -273,14 +273,6 @@ edit
 
 
 **------
-
-clear
-*geomobility2010 
-// retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0701&prodType=table
-//https://drive.google.com/file/d/1rWYPNdPgg2ylAOqvjwIz_5MPJhF26Nlb/view?usp=sharing
-import delimited "https://docs.google.com/uc?id=1rWYPNdPgg2ylAOqvjwIz_5MPJhF26Nlb&export=download", clear 
-
-
 clear
 *geo mobility 2017 
 // retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0701&prodType=table
@@ -292,25 +284,25 @@ rename v534 ownunit2017
 rename v544 rentunit2017
 drop in 1/2
 
+gen cn = regexs(1) if regexm(countycensus, "[0-9 a-zA-Z]*,([0-9 a-zA-Z]*),[0-9 a-zA-Z]*")
+move cn ownunit2017
+rename cn countynames
+sort countynames
+save ownrent20072017, replace
 
-
-
-
-
-
-**----merging housing rent
+*-----Merge M:1-----* 
 clear
-// data is retrieved from: https://www.rentdata.org/states/new-jersey/2017
-// data is retrieved from: https://www.rentdata.org/states/new-jersey/2007
-import delimited "https://docs.google.com/uc?id=1kBoAzaOqn_B9cjwweTx_AtAkAVYH2dcn&export=download", varnames(2)
-drop in 23
-drop in 23
-sort county
-drop in 1
-gen countyid=_n
-move countyid county
-save hsrent20072017, replace 
-clear
+use ownrent20072017 
+list 
+use pov_unemp_income_pop_mig20102017
+list 
+
+merge m:1 countynames using pov_unemp_income_pop_mig20102017
+
+
+
+
+
 
 reshape long poverty, i(countyid) j(year)
 reshape wide
