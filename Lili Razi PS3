@@ -173,13 +173,7 @@ tab jersey_region unemprate2017
 restore
 
 
------
-ren v3 bd1
-ren v4 bd2
-ren v5 bd3
-gen id=_n
-reshape long bd, i(id)j(bdrmNum)
-edit
+
 
 
 *----merging income 2007 
