@@ -283,11 +283,17 @@ edit
 
 
 **------
+// I am using a census data to track housinng units owenrship or rental status in 2010 and 2017 
+//the below info is for 2010
 //clear
 *geomobility2010 
 // retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0701&prodType=table
 //https://drive.google.com/file/d/1rWYPNdPgg2ylAOqvjwIz_5MPJhF26Nlb/view?usp=sharing
 //import delimited "https://docs.google.com/uc?id=1rWYPNdPgg2ylAOqvjwIz_5MPJhF26Nlb&export=download", clear 
+
+
+
+***cleaning the data***
 
 
 clear
@@ -309,6 +315,7 @@ replace countynames=trim(countynames)
 save ownrent20072017, replace
 
 *-----Merge M:1-----* 
+// Now iam merging many to 1 with the previous data I have worked so far
 clear
 use ownrent20072017 
 
