@@ -173,6 +173,13 @@ tab jersey_region unemprate2017
 restore
 
 
+-----
+ren v3 bd1
+ren v4 bd2
+ren v5 bd3
+gen id=_n
+reshape long bd, i(id)j(bdrmNum)
+edit
 
 
 *----merging income 2007 
@@ -266,13 +273,23 @@ merge 1:1 countyid using incomenj2017
 drop _merge
 move householdincome2017 estimates_base_2010
 drop county_names
+replace countynames=trim(countynames)
 save pov_unemp_income_pop_mig20102017, replace
 edit
 
 
 
 
+
+
 **------
+//clear
+*geomobility2010 
+// retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0701&prodType=table
+//https://drive.google.com/file/d/1rWYPNdPgg2ylAOqvjwIz_5MPJhF26Nlb/view?usp=sharing
+//import delimited "https://docs.google.com/uc?id=1rWYPNdPgg2ylAOqvjwIz_5MPJhF26Nlb&export=download", clear 
+
+
 clear
 *geo mobility 2017 
 // retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0701&prodType=table
@@ -288,28 +305,31 @@ gen cn = regexs(1) if regexm(countycensus, "[0-9 a-zA-Z]*,([0-9 a-zA-Z]*),[0-9 a
 move cn ownunit2017
 rename cn countynames
 sort countynames
+replace countynames=trim(countynames)
 save ownrent20072017, replace
 
 *-----Merge M:1-----* 
 clear
 use ownrent20072017 
-list 
-use pov_unemp_income_pop_mig20102017
-list 
 
 merge m:1 countynames using pov_unemp_income_pop_mig20102017
+edit 
+drop _merge 
+save pov_unemp_income_pop_mig_unit20102017, replace 
 
 
+//reshape:
+encode countycensus, gen(ccN)
+reshape unemprate net_mig and others,i(ccN)j(year)
 
 
-
-
+******** should work on it 
 reshape long poverty, i(countyid) j(year)
 reshape wide
 
-
+//in both before ,merge
+//replace countynames=trim(countynames)
 /////merge m:1//////
-use pov_unemp_income_pop_mig20102017
-merge m:1 using hsrent20072017
+
 
 
