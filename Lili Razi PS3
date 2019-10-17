@@ -175,6 +175,9 @@ restore
 
 
 
+
+
+
 *----merging income 2007 
  
 clear
@@ -185,8 +188,8 @@ edit
 keep v3 v4
 drop in 1/2
 rename v3 county_names
-rename v4 householdincome
-destring householdincome, replace 
+rename v4 householdincome2007
+destring householdincome2007, replace 
 sort county_names
 gen countyid=_n
 move countyid county_names
@@ -201,16 +204,14 @@ save pov_unemp_income_2007_2017
 clear 
 
 use pov_unemp_income_2007_2017
-sum householdincome // the average income now is  149995.7 we can collapse data based on this
-clonevar average_income=householdincome // we have cloned household income into new variable average income
+sum householdincome2007 // the average income now is  149995.7 we can collapse data based on this
+clonevar average_income=householdincome2007 // we have cloned household income into new variable average income
 
 preserve
-collapse (mean) householdincome, by(jersey_region)
+collapse (mean) householdincome2007, by(jersey_region)
 // we have jersey_region from previous saved file
-tab jersey_region householdincome
+tab jersey_region householdincome2007
 restore
-
-
 
 
 
@@ -235,23 +236,39 @@ clear
 use pov_unemp_income_2007_2017
 merge 1:1 countyid using pop_mig20102017
 drop _merge
+drop area_name state county_names
+move jersey_region poverty2007
 save pov_unemp_income_pop_mig20102017, replace
-
-
-
+edit
 
 
 
 **---- merging income 2017 
 clear
 //data is retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_1YR_S1902&prodType=table
+// so I couldb't import my file I had to use a trick. copy your goofle drive add then from ?id=_____&export  put your stuff
+import delimited "https://docs.google.com/uc?id=1nzu3srHZnTLOhEh625H4nA198ad_PyQO&export=download",clear
 
-import delimited "https://docs.google.com/uc?id=1kjFBQPooZzY1HuIjfQW6vKpW-KQjOp1v&export=download",clear
-
-https://drive.google.com/file/d/1kjFBQPooZzY1HuIjfQW6vKpW-KQjOp1v/view?usp=sharing
 
 edit
+keep v3 v4
+drop in 1/2
+rename v3 county_names
+rename v4 householdincome2017
+destring householdincome2017, replace 
+sort county_names
+gen countyid=_n
+move countyid county_names
+save incomenj2017
+clear
 
+use pov_unemp_income_pop_mig20102017
+merge 1:1 countyid using incomenj2017
+drop _merge
+move householdincome2017 estimates_base_2010
+drop county_names
+save pov_unemp_income_pop_mig20102017, replace
+edit
 
 
 
@@ -260,9 +277,23 @@ edit
 clear
 // data is retrieved from: https://www.rentdata.org/states/new-jersey/2017
 // data is retrieved from: https://www.rentdata.org/states/new-jersey/2007
-import delimited "https://docs.google.com/uc?id=1kBoAzaOqn_B9cjwweTx_AtAkAVYH2dcn&export=download",clear
+import delimited "https://docs.google.com/uc?id=1kBoAzaOqn_B9cjwweTx_AtAkAVYH2dcn&export=download", varnames(2)
+drop in 23
+drop in 23
+sort county
+drop in 1
+gen countyid=_n
+move countyid county
+save hsrent20072017, replace 
+clear
 
-edit
+reshape long poverty, i(countyid) j(year)
+reshape wide
+
+use pov_unemp_income_pop_mig20102017
+merge 
+
+
 
 
 
