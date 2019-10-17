@@ -318,18 +318,15 @@ drop _merge
 save pov_unemp_income_pop_mig_unit20102017, replace 
 
 
-//reshape:
+*------reshape-------*
 encode countycensus, gen(ccN)
-reshape unemprate net_mig and others,i(ccN)j(year)
+reshape long unemprate net_mig and others,i(ccN)j(year)
+sort year
+save pov_etc_longreshaped, replace 
 
-
-******** should work on it 
-reshape long poverty, i(countyid) j(year)
-reshape wide
-
-//in both before ,merge
-//replace countynames=trim(countynames)
-/////merge m:1//////
+clear 
+use pov_unemp_income_pop_mig_unit20102017
+reshape long ownunit, i(countycensus) j(unitcns)
 
 
 
