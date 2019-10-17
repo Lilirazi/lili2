@@ -1,6 +1,6 @@
 * Data Management in Stata
 *Lili Razi, Fall 2019
-*PS3
+*PS2
 
 * notes : 
 clear         
@@ -102,7 +102,7 @@ use povertynj20072017 // I am loading my previous file and merge it by the commo
 merge 1:1 countyid using unemplymentratenj20072017
 // all have matched but because we later on want to merge other vaiables we have to get rid of _merge now so it won't crash later 
 drop _merge
-save pov_unemp_2007_2017 // this is the merged file
+save pov_unemp_2007_2017, replace // this is the merged file
 
 
 
@@ -175,15 +175,14 @@ restore
 
 
 
-
-
-
 *----merging income 2007 
  
 clear
 // download 2007 info file from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_1YR_S1902&prodType=table
 // replace the below address with your computer dc
-import delimited "https://drive.google.com/file/d/1kjFBQPooZzY1HuIjfQW6vKpW-KQjOp1v/view?usp=sharing"
+
+import delimited "https://docs.google.com/uc?id=1kjFBQPooZzY1HuIjfQW6vKpW-KQjOp1v&export=download",clear
+
 edit 
 keep v3 v4
 drop in 1/2
@@ -193,13 +192,13 @@ destring householdincome2007, replace
 sort county_names
 gen countyid=_n
 move countyid county_names
-save incomenj2007
+save incomenj2007, replace
 clear
 
 use pov_unemp_2007_2017
 merge 1:1 countyid using incomenj2007
 drop _merge
-save pov_unemp_income_2007_2017
+save pov_unemp_income_2007_2017, replace 
 
 clear 
 
@@ -229,7 +228,7 @@ drop in 1
 sort area_name
 gen countyid=_n // this should be exactly the same name we used for the last file because they should merge//
 move countyid area_name
-save pop_mig20102017
+save pop_mig20102017, replace 
 
 clear
 
@@ -259,7 +258,7 @@ destring householdincome2017, replace
 sort county_names
 gen countyid=_n
 move countyid county_names
-save incomenj2017
+save incomenj2017, replace 
 clear
 
 use pov_unemp_income_pop_mig20102017
@@ -290,12 +289,9 @@ clear
 reshape long poverty, i(countyid) j(year)
 reshape wide
 
+
+/////merge m:1//////
 use pov_unemp_income_pop_mig20102017
-merge 
-
-
-
-
-
+merge m:1 using hsrent20072017
 
 
