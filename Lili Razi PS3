@@ -272,6 +272,27 @@ edit
 
 
 
+**------
+
+clear
+*geomobility2010 
+// retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0701&prodType=table
+//https://drive.google.com/file/d/1rWYPNdPgg2ylAOqvjwIz_5MPJhF26Nlb/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1rWYPNdPgg2ylAOqvjwIz_5MPJhF26Nlb&export=download", clear 
+
+
+clear
+*geo mobility 2017 
+// retrieved from https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0701&prodType=table
+//https://drive.google.com/file/d/1dM16kWH2F0p0MeBj0wEsDG0AHvkW0cDk/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1dM16kWH2F0p0MeBj0wEsDG0AHvkW0cDk&export=download", clear 
+
+
+
+
+
+
+
 **----merging housing rent
 clear
 // data is retrieved from: https://www.rentdata.org/states/new-jersey/2017
