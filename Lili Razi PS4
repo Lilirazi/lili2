@@ -1,0 +1,314 @@
+// this is census block of camden for GIS class 
+// fall 2019 ---- Data management and GIS 
+
+
+// Lili Razi 
+
+
+//Smart growth means reinvesting in America’s downtowns and Main Streets, the economic engines of big cities and small towns alike. 
+//Smart growth means creating homes for families of all income levels alongside one another. Smart growth means diversifying our 
+//transportation system so Americans have a choice in how they get around. Smart growth means building streets that are safe for people 
+//walking, bicycling or using a wheelchair, as well as driving. Smart growth means reimagining the places we have already built, 
+//and protecting our open green spaces for generations to come.
+//Above all, smart growth is about helping every town and city become a more economically prosperous, socially equitable, and 
+//environmentally sustainable place to live. This approach looks different for every community, but can help neighborhoods of any 
+//kind flourish, make towns and cities competitive in a 21st century economy, and improve lives by improving neighborhoods.
+
+// diversity in the home choices 
+//walkability 
+//green space 
+//land change land use 
+//transportation 
+__________________________________________________________________
+//
+//Research questions include the following:
+//1- Does inaccces to healthy food impact behavior and mental health?
+//2- Does increased green space decrease poverty and mental health ?
+//3- Who is most impacted by pollution (by race, gender, income)?
+//4- Do counties with higher pollution experience worse health outcomes (physical
+//and mental)?
+
+//------------------------------------------------------------------------------
+cd 
+cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source"
+
+
+
+///////////// employment census camden 2017 
+///// retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S2301&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=19qmWJBONfkU35eC81jME5DLQzpda2bel&export=download", varnames(1)
+keep geodisplaylabel hc04_est_vc01 geoid2 hc02_est_vc01 hc03_est_vc01
+rename hc02_est_vc01 laborpart2017
+label variable laborpart2017 "Labor Force Participation Rate-Estimate- Population 16 years and over"
+rename hc03_est_vc01 emplrate2017
+label variable emplrate2017 "Employment or Population Ratio- Estimate- Population 16 years and over"
+rename hc04_est_vc01 unemprate2017
+label variable unemprate2017 "Unemployment rate- Estimate- Population 16 years and over"
+//remove first line for destring
+drop in 1 
+destring laborpart2017, replace
+destring emplrate2017, replace
+destring unemprate2017, replace
+
+//edit
+save empl2017_census_camden, replace  
+clear
+
+
+
+///////////  employment census blck camden 2010 
+/////// retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S2301&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1KbD_ty1JjglYcBnD9RYFuTyHJ1X0N67w&export=download", varnames(1)
+keep geodisplaylabel hc04_est_vc01 geoid2 hc02_est_vc01 hc03_est_vc01
+rename hc02_est_vc01 laborpart2010
+label variable laborpart2010 "Labor Force Participation Rate-Estimate- Population 16 years and over"
+rename hc03_est_vc01 emplrate2010
+label variable emplrate2010 "Employment or Population Ratio- Estimate- Population 16 years and over"
+rename hc04_est_vc01 unemprate2010
+label variable unemprate2010 "Unemployment rate- Estimate- Population 16 years and over"
+drop in 1 
+destring laborpart2010, replace
+destring emplrate2010, replace
+destring unemprate2010, replace
+save empl2010_census_camden, replace  
+
+
+****************** merge employ-unemployment 2010 and 2017******************
+clear
+
+use empl2017_census_camden
+merge 1:1 geoid2 using empl2010_census_camden
+drop _merge
+save empunemp_20172010_camdencensus, replace
+// this row below is for gis so that I can add it to may layers 
+export delimited using empunemp_20172010_camdencensus, replace
+
+
+//------------------------------------------------------------------------------
+//////////poverty camden census 2010
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1702&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1-TcJuxRHthGEri7FJjOpmZ6Z_yJ_OufK&export=download", varnames(1)
+//edit
+keep geodisplaylabel geoid2 hc02_est_vc01
+rename hc02_est_vc01 pbelpov2010
+label variable pbelpov2010 "All families 2010- Percent below poverty level; Estimate; Families"
+drop in 1
+destring pbelpov2010, replace
+save percentbelowpov2010, replace 
+edit 
+
+//hc02_est_vc01 hc02_moe_vc29 hc02_est_vc30 hc02_est_vc32
+//////////poverty camden census 2017
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1702&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1-TcJuxRHthGEri7FJjOpmZ6Z_yJ_OufK&export=download", varnames(1)
+keep geodisplaylabel geoid2 hc02_est_vc01 
+**educational attainment of householder is down here 
+**keep hc02_est_vc27 hc02_est_vc28 hc02_est_vc29 hc02_est_vc29 hc02_est_vc30 hc01_est_vc30 hc01_est_vc29 hc01_est_vc28 hc01_est_vc27
+
+rename hc02_est_vc01 pbelpov2017
+label variable pbelpov2017 "All families 2017- Percent below poverty level; Estimate; Families"
+drop in 1 
+destring pbelpov2017, replace 
+save percentbelowpov2017, replace 
+export delimited using percentbelowpov2017, replace
+
+
+******************merge percent of poverty 2010 and 2017******************
+clear
+use percentbelowpov2010
+merge 1:1 geoid2 using percentbelowpov2017
+drop _merge
+destring pbelpov2010 pbelpov2017, replace 
+save pov_20172010_camdencensus, replace
+// this row below is for gis so that I can add it to may layers 
+export delimited using pov_20172010_camdencensus, replace
+
+
+
+//------------------------------------------------------------------------------
+//////////median income camden census 2010
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1903&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1keGwMtoCY6YCOTjdlx_PqvbWfkmjoOvI&export=download", varnames(1)
+keep geoid2 geodisplaylabel hc01_est_vc02 hc02_est_vc02
+drop in 1 
+rename hc01_est_vc02 households2010
+label variable households2010 "Total; Estimate; Households2010"
+rename hc02_est_vc02 medincome2010
+label variable medincome2010 "Median income (dollars); Estimate; Households2010"
+destring medincome2010 households2010, replace 
+save medianincome_camden_2010, replace 
+
+
+
+//////////median income camden census 2017
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1903&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1HHZL8yTMRHOPqbTdFxYRTQLbkGTJhfBU&export=download", varnames(1)
+//edit
+keep geoid2 geodisplaylabel hc01_est_vc02 hc02_est_vc02
+drop in 1 
+rename hc01_est_vc02 households2017
+label variable households2017 "Total; Estimate; Households2017"
+rename hc02_est_vc02 medincome2017
+label variable medincome2017 "Median income (dollars); Estimate; Households2017"
+destring medincome2017 households2017, replace 
+save medianincome_camden_2017, replace 
+
+
+******************merge household income 2010 and 2017******************
+clear
+use medianincome_camden_2017
+merge 1:1 geoid2 using medianincome_camden_2010
+drop _merge
+save income_20172010_camdencensus, replace
+// this row below is for gis so that I can add it to may layers 
+export delimited using income_20172010_camdencensus, replace
+
+
+
+
+
+//------------------------------------------------------------------------------
+//////////transportation camden census 2010
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08101&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1FueMBMpPotTCjVNwoH3n5llpmqRLGMPm&export=download=download", varnames(1)
+keep geoid2 geodisplaylabel hd01_vd01 hd01_vd10 hd01_vd18 hd01_vd34 hd01_vd42 hd01_vd50
+rename hd01_vd01 totaltrans2010
+label var totaltrans2010 "Estimate; Total" 
+rename hd01_vd10 drvalone2010
+label var drvalone2010 "Estimate; Total: - Car, truck, or van - drove alone"
+rename hd01_vd18 drvcarpool2010 
+label var drvcarpool2010 "Estimate; Total: - Car, truck, or van - carpooled" 
+rename hd01_vd34 totalwalk2010
+label var totalwalk2010 "Estimate; Total: - Walked"
+rename hd01_vd42 pubtrans2010
+label var pubtrans2010 "Estimate; Total: - Taxicab, motorcycle, bicycle, or other means:" 
+rename hd01_vd50 workhome2010
+label var workhome2010 "Estimate; Total: - Worked at home"
+drop in 1
+destring workhome2010 pubtrans2010 totalwalk2010 drvcarpool2010 drvalone2010 totaltrans2010, replace 
+save trans_2010_camden, replace 
+
+
+//////////transportation camden census 2017
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08101&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1FMo4POWwNEh8gf7MCw-H2rMow_w-xL0i&export=download", varnames(1)
+keep geoid2 geodisplaylabel hd01_vd01 hd01_vd10 hd01_vd18 hd01_vd34 hd01_vd42 hd01_vd50
+rename hd01_vd01 totaltrans2017
+label var totaltrans2017 "Estimate; Total" 
+rename hd01_vd10 drvalone2017
+label var drvalone2017 "Estimate; Total: - Car, truck, or van - drove alone"
+rename hd01_vd18 drvcarpool2017 
+label var drvcarpool2017 "Estimate; Total: - Car, truck, or van - carpooled" 
+rename hd01_vd34 totalwalk2017
+label var totalwalk2017 "Estimate; Total: - Walked"
+rename hd01_vd42 pubtrans2017
+label var pubtrans2017 "Estimate; Total: - Taxicab, motorcycle, bicycle, or other means:" 
+rename hd01_vd50 workhome2017
+label var workhome2017 "Estimate; Total: - Worked at home"
+drop in 1
+destring workhome2017 pubtrans2017 totalwalk2017 drvcarpool2017 drvalone2017 totaltrans2017, replace 
+save trans_2017_camden, replace 
+
+
+
+******************merge trans 2010 and 2017******************
+clear
+use trans_2017_camden
+merge 1:1 geoid2 using trans_2010_camden
+drop _merge
+save trans_20172010_camdencensus, replace
+// this row below is for gis so that I can add it to may layers 
+export delimited using trans_20172010_camdencensus, replace
+
+
+
+
+//------------------------------------------------------------------------------
+//////////housing tenure camden census 2010
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_16_5YR_DP04&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1G09ubEC8lNoqzIFDtYZm5pvEbPe4xYjN&export=download=download", varnames(1)
+edit
+keep geoid2 geodisplaylabel hc01_vc03 hc03_vc04 hc03_vc05 hc01_vc07 hc01_vc08
+rename hc01_vc03 totunit2010 
+label var totunit2010 "Estimate; HOUSING OCCUPANCY - Total housing units" 
+rename hc03_vc04 percocc2010
+label var percocc2010 "Percent; HOUSING OCCUPANCY - Occupied housing units"
+rename hc03_vc05 percvac2010 
+label var percvac2010 "Percent; HOUSING OCCUPANCY - Vacant housing units"
+rename hc01_vc07 ownervac2010 
+label var ownervac2010 "Estimate; HOUSING OCCUPANCY - Homeowner vacancy rate"
+***********
+***********this rentvac2010 cannot change to string var and is causing problem
+***********
+rename hc01_vc08 rentvac2010 
+label var rentvac2010 "Estimate; HOUSING OCCUPANCY - Rental vacancy rate" 
+drop in 1 
+destring rentvac2010 ownervac2010 percvac2010 percocc2010 totunit2010, replace
+save housetenure_2010_camden, replace 
+
+
+//////////housing tenure camden census 2017
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_16_5YR_DP04&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1jgBo8T4FCQFOqEPNUHzBwzW8hDTWoMuE&export=download=download", varnames(1)
+edit
+/////check stuff 
+keep geoid2 geodisplaylabel hc01_vc03 hc03_vc04 hc03_vc05 hc01_vc08 hc01_vc09
+rename hc01_vc03 totunit2017 
+label var totunit2017 "Estimate; HOUSING OCCUPANCY - Total housing units" 
+rename hc03_vc04 percocc2017
+label var percocc2017 "Percent; HOUSING OCCUPANCY - Occupied housing units"
+rename hc03_vc05 percvac2017 
+label var percvac2017 "Percent; HOUSING OCCUPANCY - Vacant housing units"
+rename hc01_vc08 ownervac2017 
+label var ownervac2017 "Estimate; HOUSING OCCUPANCY - Homeowner vacancy rate"
+rename hc01_vc09 rentvac2017 
+label var rentvac2017 "Estimate; HOUSING OCCUPANCY - Rental vacancy rate" 
+drop in 1 
+destring rentvac2017 ownervac2017 percvac2017 percocc2017 totunit2017, replace
+save housetenure_2017_camden, replace 
+
+
+******************merge housing owenership and vacancy 2010 and 2017******************
+clear
+use housetenure_2017_camden
+merge 1:1 geoid2 using housetenure_2010_camden
+drop _merge
+***** again rentvac2010 has problem 
+save housetenure_20172010_camdencensus, replace
+// this row below is for gis so that I can add it to may layers 
+export delimited using housetenure_20172010_camdencensus, replace
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+//////////work place camden census 2010
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08016&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1IfppfV9eRC6x1_xeD1EAkHIM0vger3If&export=download", varnames(1)
+edit
+keep geoid2 geodisplaylabel
+
+
+//////////work place camden census 2017
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_10_5YR_B08016&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1RnVKufRz3FBgcZkvWPzHzTK_6nB2T-Jh&export=download", varnames(1)
+
+
+
