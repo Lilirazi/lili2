@@ -25,13 +25,9 @@ __________________________________________________________________
 //1- Is smarth growth plan effective in Camden?
 //2- Is there a noticebale improvement in spatial chaneg after 7 years?
 //3- Has smarth growth helped with housing and economic status?
-//4- Has there been any walkability/complact design happening in these years?
+//4- Has there been any walkability/compact design happening in these years?
 
 //------------------------------------------------------------------------------
-cd 
-cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source"
-
-
 
 ///////////// employment census camden 2017 
 ///// retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S2301&prodType=table
@@ -251,7 +247,8 @@ label var ownervac2010 "Estimate; HOUSING OCCUPANCY - Homeowner vacancy rate"
 rename hc01_vc08 rentvac2010 
 label var rentvac2010 "Estimate; HOUSING OCCUPANCY - Rental vacancy rate" 
 drop in 1 
-destring rentvac2010 ownervac2010 percvac2010 percocc2010 totunit2010, replace
+destring rentvac2010 , ignore("-")replace
+destring ownervac2010 percvac2010 percocc2010 totunit2010, replace
 save housetenure_2010_camden, replace 
 
 
@@ -282,32 +279,65 @@ clear
 use housetenure_2017_camden
 merge 1:1 geoid2 using housetenure_2010_camden
 drop _merge
-***** again rentvac2010 has problem 
 save housetenure_20172010_camdencensus, replace
-// this row below is for gis so that I can add it to may layers 
+// this row below is for gis so that I can add it to my layers 
 export delimited using housetenure_20172010_camdencensus, replace
 
 
+******************merge all the 2010, 2017  info******************
 
+clear
+use housetenure_20172010_camdencensus
+merge 1:1 geoid2 using trans_20172010_camdencensus
+drop _merge 
+save camden_smarthgrowth_census, replace 
+merge 1:1 geoid2 using income_20172010_camdencensus
+drop _merge 
+save camden_smarthgrowth_census, replace 
+merge 1:1 geoid2 using pov_20172010_camdencensus
+drop _merge 
+save camden_smarthgrowth_census, replace 
+merge 1:1 geoid2 using empunemp_20172010_camdencensus
+drop _merge
+save camden_smarthgrowth_census, replace 
+edit 
 
+********************reshape and divide 2010, 2017 info *************************
+clear 
+use camden_smarthgrowth_census
+encode geoid2, gen(ctc)
 
+///these below two rows should be run together 
+reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
+totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
 
+sort year
+save camden_sg_reshcensus, replace
+keep if year==2010
+drop ctc
+save camden_smarthgrowth_2010, replace 
+use camden_sg_reshcensus
+keep if year==2017
+drop ctc
+save camden_smarthgrowth_2017, replace
+
+// this row below is for gis so that I can add it to my layers 
+export delimited using camden_smarthgrowth_2010, replace
+export delimited using camden_smarthgrowth_2017, replace
 
 
 
 //------------------------------------------------------------------------------
 //////////work place camden census 2010
 /////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08016&prodType=table
-clear
-import delimited "https://docs.google.com/uc?id=1IfppfV9eRC6x1_xeD1EAkHIM0vger3If&export=download", varnames(1)
-edit
-keep geoid2 geodisplaylabel
+//clear
+//import delimited "https://docs.google.com/uc?id=1IfppfV9eRC6x1_xeD1EAkHIM0vger3If&export=download", varnames(1)
+//edit
+//keep geoid2 geodisplaylabel
 
 
 //////////work place camden census 2017
 /////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_10_5YR_B08016&prodType=table
-clear
-import delimited "https://docs.google.com/uc?id=1RnVKufRz3FBgcZkvWPzHzTK_6nB2T-Jh&export=download", varnames(1)
-
-
+//clear
+//import delimited "https://docs.google.com/uc?id=1RnVKufRz3FBgcZkvWPzHzTK_6nB2T-Jh&export=download", varnames(1)
 
