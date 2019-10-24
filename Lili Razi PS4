@@ -23,7 +23,7 @@ __________________________________________________________________
 //
 //Research questions include the following:
 //1- Is smarth growth plan effective in Camden?
-//2- Is there a noticebale improvement in spatial chaneg after 7 years?
+//2- Is there a noticebale improvement in spatial change after 7 years?
 //3- Has smarth growth helped with housing and economic status?
 //4- Has there been any walkability/compact design happening in these years?
 
@@ -310,6 +310,15 @@ encode geoid2, gen(ctc)
 ///these below two rows should be run together 
 reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
 totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
+
+reshape wide totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
+totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate, i(ctc) j(year)
+edit
+
+///these below two rows should be run together 
+reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
+totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
+
 
 sort year
 save camden_sg_reshcensus, replace
