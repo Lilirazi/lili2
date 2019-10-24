@@ -1,10 +1,10 @@
-// this is census block of camden for GIS class 
-// fall 2019 ---- Data management and GIS 
+// This is census block of camden for Data Management and GIS class 
+// Fall 2019 ---- Prof. Adam
 
 
 // Lili Razi 
 
-
+//Research interest:
 //Smart growth means reinvesting in America’s downtowns and Main Streets, the economic engines of big cities and small towns alike. 
 //Smart growth means creating homes for families of all income levels alongside one another. Smart growth means diversifying our 
 //transportation system so Americans have a choice in how they get around. Smart growth means building streets that are safe for people 
@@ -13,7 +13,7 @@
 //Above all, smart growth is about helping every town and city become a more economically prosperous, socially equitable, and 
 //environmentally sustainable place to live. This approach looks different for every community, but can help neighborhoods of any 
 //kind flourish, make towns and cities competitive in a 21st century economy, and improve lives by improving neighborhoods.
-
+//Variables:
 //diversity in the home choices 
 //walkability 
 //green space 
