@@ -1,0 +1,10 @@
+clear
+
+import excel "/home/u0/Downloads/2019.10 - Camden County Programs Master List.xlsx", sheet("in") firstrow
+edit
+gen foopan = regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food pantry)[0-9 a-zA-Z]*")
+replace foopan=regexs(1) if regexm(ProgramServices, "(food pantry)[0-9 a-zA-Z]*")
+replace foopan=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food pantry)")
+
+ta ProgramServices 
+ta ProgramServices foopan
