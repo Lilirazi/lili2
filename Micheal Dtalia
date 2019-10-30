@@ -8,3 +8,4 @@ replace foopan=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food pantry)"
 
 ta ProgramServices 
 ta ProgramServices foopan
+stata seperate field on |
