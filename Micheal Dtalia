@@ -1,11 +1,39 @@
-clear
 
-import excel "/home/u0/Downloads/2019.10 - Camden County Programs Master List.xlsx", sheet("in") firstrow
-edit
-gen foopan = regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food pantry)[0-9 a-zA-Z]*")
-replace foopan=regexs(1) if regexm(ProgramServices, "(food pantry)[0-9 a-zA-Z]*")
-replace foopan=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food pantry)")
+
+
+///// This is the social services offered by the office of civic engagement Micheal Dtalial////
+///// This is the beginning f spliting up the data/////
+
+cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source"
+
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", ///
+sheet("in") firstrow clear
+ 
+keep if State =="NJ" | State =="PA"
+
+********** I use my data from the below again and again****** 
+
+gen foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food)[0-9 a-zA-Z]*")
+replace foodct=regexs(1) if regexm(ProgramServices, "(food)[0-9 a-zA-Z]*")
+replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food)")
+
+replace foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(meals)[0-9 a-zA-Z]*")
+replace foodct=regexs(1) if regexm(ProgramServices, "(meals)[0-9 a-zA-Z]*")
+replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(meals)")
+
+replace foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)[0-9 a-zA-Z]*")
+replace foodct=regexs(1) if regexm(ProgramServices, "(nutrition)[0-9 a-zA-Z]*")
+replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)")
 
 ta ProgramServices 
-ta ProgramServices foopan
-stata seperate field on |
+ta ProgramServices foodct
+
+********* I am spliting food******
+drop if mi(foodct)
+
+export excel using "foodct", firstrow(variables)
+//export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\foodct.xls", firstrow(variables)
+
+*********Let's go back to the next label 
