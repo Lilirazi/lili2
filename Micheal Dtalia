@@ -35,8 +35,8 @@ ta ProgramServices foodct
 
 drop if mi(foodct)
 
-//export excel using "foodct", firstrow(variables)
-export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\foodct.xls", firstrow(variables), replace
+export excel using "foodct", firstrow(variables)
+//export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\foodct.xls", firstrow(variables), replace
 
 
 
@@ -66,10 +66,9 @@ ta ProgramServices housingct
 
 drop if mi(housingct)
 
-//export excel using "housingct", firstrow(variables)
-export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
+export excel using "housingct", firstrow(variables)
+//export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
 
 
-/////////////////////////////////////////HOUSING///////////////////////////////////////////////////////////
+/////////////////////////////////////////____///////////////////////////////////////////////////////////
 
-stata seperate field on |
