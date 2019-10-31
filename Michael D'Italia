@@ -30,6 +30,15 @@ replace foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)[0
 replace foodct=regexs(1) if regexm(ProgramServices, "(nutrition)[0-9 a-zA-Z]*")
 replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)")
 
+
+
+foreach code in "[0-9 a-zA-Z]*(nutrition)[0-9 a-zA-Z]*"  "(nutrition)[0-9 a-zA-Z]*" "[0-9 a-zA-Z]*(nutrition)"{
+replace foodct=regexs(1) if regexm(ProgramServices, `code')
+}
+
+
+
+
 ta ProgramServices 
 ta ProgramServices foodct
 
