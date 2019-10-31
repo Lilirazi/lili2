@@ -1,10 +1,15 @@
 
 
 
-///// This is the social services offered by the office of civic engagement Micheal Dtalial////
+
+///// this is the social services services offered by the office of civic engagement Micheal Dtalial////
 ///// This is the beginning f spliting up the data/////
 
 cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source"
+
+
+
+/////////////////////////////////////////FOOD///////////////////////////////////////////////////////////
 
 clear 
 
@@ -12,8 +17,6 @@ import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&ex
 sheet("in") firstrow clear
  
 keep if State =="NJ" | State =="PA"
-
-********** I use my data from the below again and again****** 
 
 gen foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food)[0-9 a-zA-Z]*")
 replace foodct=regexs(1) if regexm(ProgramServices, "(food)[0-9 a-zA-Z]*")
@@ -30,10 +33,43 @@ replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)")
 ta ProgramServices 
 ta ProgramServices foodct
 
-********* I am spliting food******
 drop if mi(foodct)
 
-export excel using "foodct", firstrow(variables)
-//export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\foodct.xls", firstrow(variables)
+//export excel using "foodct", firstrow(variables)
+export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\foodct.xls", firstrow(variables), replace
 
-*********Let's go back to the next label 
+
+
+/////////////////////////////////////////HOUSING///////////////////////////////////////////////////////////
+
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", ///
+sheet("in") firstrow clear
+
+keep if State =="NJ" | State =="PA"
+
+gen housingct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(housing)[0-9 a-zA-Z]*")
+replace housingct=regexs(1) if regexm(ProgramServices, "(housing)[0-9 a-zA-Z]*")
+replace housingct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(housing)")
+
+replace housingct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(maintenance)[0-9 a-zA-Z]*")
+replace housingct=regexs(1) if regexm(ProgramServices, "(maintenance)[0-9 a-zA-Z]*")
+replace housingct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(maintenance)")
+
+replace housingct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(shelter)[0-9 a-zA-Z]*")
+replace housingct=regexs(1) if regexm(ProgramServices, "(shelter)[0-9 a-zA-Z]*")
+replace housingct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(shelter)")
+
+ta ProgramServices 
+ta ProgramServices housingct
+
+drop if mi(housingct)
+
+//export excel using "housingct", firstrow(variables)
+export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
+
+
+/////////////////////////////////////////HOUSING///////////////////////////////////////////////////////////
+
+stata seperate field on |
