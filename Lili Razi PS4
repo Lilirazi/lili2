@@ -1,0 +1,200 @@
+
+
+* Data Management and QGIS Class Data Cleaning Up* 
+* Fall 2019
+* Prof. Adam 
+* St. Lili Razi
+
+cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\census tract 2000-2017 dta"
+
+
+
+***Transportation************************************************************************ 
+
+////////////////////////////////////////////2000-transit to work time/////////////////////////// 
+clear 
+//retrived from: https://www.socialexplorer.com/tables/C2000
+//SE:T195. Means Of Transportation To Work For Workers 16 Years And Over SE:T217B. Travel Time To Work For Workers 16 Years And Over
+// (in 15 min intervals) - Cumulative (More)
+import delimited "https://docs.google.com/uc?id=1DEcJo2TFImWwl5U3COrli5g1BuYzagGh&export=download", varnames(1)
+
+drop v29 
+rename v20 workerso16
+rename workerso16 y20workerso16
+rename workers16yearsandover y20workers16yearsandover
+rename cartruckorvan y20cartruckorvan
+rename publictransportationincludestaxi y20pubtrns
+rename motorcycle y20motorcycle
+rename bicycle y20bicycle
+rename walked y20walked
+rename othermeans y20othermeans 
+rename workedathome y20workhome
+rename didnotworkathome y20notworkhome
+rename lessthan10minutes y20lessthan10minutes
+rename to19minutes y20_11_19min
+rename to29minutes y20_20_29min
+rename to39minutes y20_30_39min
+rename to59minutes y20_40_49min
+rename to89minutes y20_50_89min
+rename ormoreminutes y20_90_mmin
+rename averagecommutetoworkinmin y20_avcommute
+
+drop geo_sumlev geo_geocomp geo_statece geo_state geo_county geo_countysc geo_cousub
+
+save trans2000-camdencn-ct, replace
+
+////////////////////////////////////////////2013-2017 6 year census track//transit to work time/////////////////////////// 
+
+clear 
+//retrived from: https://www.socialexplorer.com/tables/ACS2017_5yr/R12365951
+//SE:T195. Means Of Transportation To Work For Workers 16 Years And Over SE:T217B. Travel Time To Work For Workers 16 Years And Over
+// (in 15 min intervals) - Cumulative (More)
+import delimited "https://docs.google.com/uc?id=1FyqvXolsAz19JgeTaTepD2le8Fq_le3J&export=download", varnames(1)
+drop v75 
+rename v66 workerso16
+rename workerso16 y17workerso16
+rename workers16yearsandover y17workers16yearsandover
+rename cartruckorvan y17cartruckorvan
+rename publictransportationincludestaxi y17pubtrns
+rename motorcycle y17motorcycle
+rename bicycle y17bicycle
+rename walked y17walked
+rename othermeans y17othermeans 
+rename workedathome y17workhome
+rename didnotworkathome y17notworkhome
+rename lessthan10minutes y17lessthan10minutes
+rename to19minutes y17_11_19min
+rename to29minutes y17_20_29min
+rename to39minutes y17_30_39min
+rename to59minutes y17_40_49min
+rename to89minutes y17_50_89min
+rename ormoreminutes y17_90_mmin
+rename averagecommutetoworkinmin y17_avcommute
+// I am dropping two variables that don't exist in year 2000 for better comparison 
+drop carpooled drovealone
+// Now I am fropping other stuff 
+drop geo_stusab geo_sumlev geo_geocomp geo_fileid geo_logrecno geo_us geo_region geo_division ///
+geo_statece geo_state geo_county geo_cousub geo_place geo_placese geo_blkgrp geo_concit geo_aianhh geo_aianhhfp ///
+geo_aihhtli geo_aitsce geo_aits geo_anrc geo_cbsa geo_csa geo_metdiv geo_macc geo_memi geo_necta geo_cnecta ///
+geo_nectadiv geo_ua geo_uacp geo_cdcurr geo_sldu geo_sldl geo_vtd geo_zcta3 geo_zcta5 geo_submcd geo_sdelm ///
+geo_sdsec geo_sduni geo_ur geo_pci geo_taz geo_uga geo_bttr geo_btbg geo_puma5 geo_puma1 geo_qname
+
+save trans2017-camdencn-ct, replace
+
+clear
+use trans2017-camdencn-ct
+///////////////////////////merge 2000 and 2017 transportation///////////////////////////
+merge 1:1 geo_fips using trans2000-camdencn-ct
+ 
+drop geo_qname
+*******************************////////////////////////////////////////
+*******************************////////////////////////////////////////
+*******************************////////////////////////////////////////How Should I treat this mis match???
+save trans2000-2017-camdencn-ct, replace
+
+
+
+
+***Employment************************************************************************ 
+
+////////////////////////////////////////////2000-Employment///////////////////////////
+clear
+//Employment Status by Sex: 2000 Census 2000 Summary File 3 (SF 3) - Sample Data
+//retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_QTP24&prodType=table
+import delimited "https://docs.google.com/uc?id=1V6DGpM-kQvkuioQ53xd8fw-_jQR-ooHu&export=download", varnames(1)
+edit
+
+rename hd01_vd03 y20_civlaborpop
+label variable y20_civlaborpop "Estimate; In labor force: - Civilian labor force"
+rename hd01_vd04 y20emp_civlabor
+label variable y20emp_civlabor "Estimate; In labor force: - Civilian labor force: - Employed"
+rename hd01_vd05 y20unemp_civlabor
+label variable y20unemp_civlabor "Estimate; In labor force: - Civilian labor force: - Unemployed"
+
+keep geoid geoid2 geodisplaylabel y20_civlaborpop y20emp_civlabor y20unemp_civlabor
+
+drop in 1
+
+destring y20_civlaborpop y20emp_civlabor y20unemp_civlabor, replace
+
+// These numbers are hard to produce results and for comparison so I'm generating percantage for employed and 
+// Unemployed civil labor force 
+
+gen y20pct_emp=y20emp_civlabor/y20_civlaborpop
+replace y20pct_emp=round(y20pct_emp, 0.01)
+
+gen y20pct_unemp=y20unemp_civlabor/y20_civlaborpop
+replace y20pct_unemp=round(y20pct_unemp, 0.01)
+
+save emp2000-camdencn-ct, replace
+
+
+////////////////////////////////////////////2017-Employment///////////////////////////
+clear
+// EMPLOYMENT STATUS FOR THE POPULATION 16 YEARS AND OVER Universe: Population 16 years and over  more information
+//2013-2017 American Community Survey 5-Year Estimates
+//retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B23025&prodType=table
+import delimited "https://docs.google.com/uc?id=1uz6OW27qcYPl40ETwXhtGQEmPCYrFd_w&export=download", varnames(1)
+edit
+
+rename hd01_vd03 y17_civlaborpop
+label variable y17_civlaborpop "Estimate; In labor force: - Civilian labor force"
+rename hd01_vd04 y17emp_civlabor
+label variable y17emp_civlabor "Estimate; In labor force: - Civilian labor force: - Employed"
+rename hd01_vd05 y17unemp_civlabor
+label variable y17unemp_civlabor "Estimate; In labor force: - Civilian labor force: - Unemployed"
+
+keep geoid geoid2 geodisplaylabel y17_civlaborpop y17emp_civlabor y17unemp_civlabor
+
+drop in 1
+
+destring y17_civlaborpop y17emp_civlabor y17unemp_civlabor, replace
+
+// These numbers are hard to produce results and for comparison so I'm generating percantage for employed and 
+// Unemployed civil labor force 
+
+gen y17pct_emp=y17emp_civlabor/y17_civlaborpop
+replace y17pct_emp=round(y17pct_emp, 0.01)
+
+gen y17pct_unemp=y17unemp_civlabor/y17_civlaborpop
+replace y17pct_unemp=round(y17pct_unemp, 0.01)
+
+save emp2017-camdencn-ct, replace
+
+
+/////////////////////////// merge employment 2000 and 2017 ///////////////////////////
+
+merge 1:1 geoid2 using emp2000-camdencn-ct
+
+drop _merge
+
+save emp2000-2017-camdencn-ct, replace
+
+
+***income************************************************************************ 
+
+clear 
+//2000- income population 
+//retrived from: https://www.ffiec.gov/census/report.aspx?year=2000&state=34&msa=&county=007&tract=&report=demographic&page=2
+import delimited "https://docs.google.com/uc?id=1lEZSaCpkOwln0GUDAvpuGgBtY0jiomjP&export=download", varnames(1)
+
+edit
+
+//2017- income population 
+//retrived from: https://www.ffiec.gov/census/report.aspx?year=2017&state=34&msa=&county=007&tract=&report=demographic&page=2
+import delimited "https://docs.google.com/uc?id=1zgbVBIKq4EASp-4VJFVurQpa2AN_f6IQ&export=download", varnames(1)
+
+
+
+
+
+
+//2000- housing
+//retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_DP4&prodType=table
+import delimited "https://docs.google.com/uc?id=1v05YcqsEZmL56amvxeqTdJ8Eh2jE6Njp&export=download", varnames(1)
+
+
+
+//2017- housing
+//retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_DP04&prodType=table
+import delimited "https://docs.google.com/uc?id=13f25i2Cwl8VlM1cAfqkS0iCrYCy9R-zq&export=download", varnames(1)
