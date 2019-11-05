@@ -337,16 +337,39 @@ export delimited using camden_smarthgrowth_2017, replace
 
 
 //------------------------------------------------------------------------------
+
 //////////work place camden census 2010
 /////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08016&prodType=table
-//clear
-//import delimited "https://docs.google.com/uc?id=1IfppfV9eRC6x1_xeD1EAkHIM0vger3If&export=download", varnames(1)
-//edit
-//keep geoid2 geodisplaylabel
+clear
+import delimited "https://docs.google.com/uc?id=1IfppfV9eRC6x1_xeD1EAkHIM0vger3If&export=download", varnames(1)
+edit
+keep geoid2 geodisplaylabel hd01_vd02 hd01_vd13
 
+rename hd01_vd02 principal2010
+label variable principal2010 "Estimate; Living in a principal city"
+rename hd01_vd13 notprincipal2010
+label variable notprincipal2010 "Estimate; Living outside any principal city"
+
+drop in 1
+
+destring principal2010 notprincipal2010, replace 
+
+save workplace_2010_camden, replace 
 
 //////////work place camden census 2017
 /////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_10_5YR_B08016&prodType=table
-//clear
-//import delimited "https://docs.google.com/uc?id=1RnVKufRz3FBgcZkvWPzHzTK_6nB2T-Jh&export=download", varnames(1)
+clear
+import delimited "https://docs.google.com/uc?id=1RnVKufRz3FBgcZkvWPzHzTK_6nB2T-Jh&export=download", varnames(1)
 
+keep geoid2 geodisplaylabel hd01_vd02 hd01_vd13
+
+rename hd01_vd02 principal2017
+label variable principal2017 "Estimate; Living in a principal city"
+rename hd01_vd13 notprincipal2017
+label variable notprincipal2017 "Estimate; Living outside any principal city"
+
+drop in 1
+
+destring principal2017 notprincipal2017, replace 
+
+save workplace_2017_camden, replace 
