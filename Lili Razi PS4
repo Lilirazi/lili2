@@ -1,5 +1,5 @@
 
-
+* Stata Version 15
 * Data Management and QGIS Class Data Cleaning Up* 
 * Fall 2019
 * Prof. Adam 
@@ -11,14 +11,17 @@ cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\census tract 2000-2017 
 
 ***Transportation************************************************************************ 
 
-////////////////////////////////////////////2000-transit to work time/////////////////////////// 
+////////////////////////////////////////////2000-transit to work time///////////////////////////
+
+***NOTE: this file has both census tract and geo code for later combination with fif.gov (census tract) and factfinder (geoid)  
 clear 
 //retrived from: https://www.socialexplorer.com/tables/C2000
 //SE:T195. Means Of Transportation To Work For Workers 16 Years And Over SE:T217B. Travel Time To Work For Workers 16 Years And Over
 // (in 15 min intervals) - Cumulative (More)
 import delimited "https://docs.google.com/uc?id=1DEcJo2TFImWwl5U3COrli5g1BuYzagGh&export=download", varnames(1)
 
-drop v29 
+drop v29
+ 
 rename v20 workerso16
 rename workerso16 y20workerso16
 rename workers16yearsandover y20workers16yearsandover
@@ -50,7 +53,9 @@ clear
 //SE:T195. Means Of Transportation To Work For Workers 16 Years And Over SE:T217B. Travel Time To Work For Workers 16 Years And Over
 // (in 15 min intervals) - Cumulative (More)
 import delimited "https://docs.google.com/uc?id=1FyqvXolsAz19JgeTaTepD2le8Fq_le3J&export=download", varnames(1)
+
 drop v75 
+
 rename v66 workerso16
 rename workerso16 y17workerso16
 rename workers16yearsandover y17workers16yearsandover
@@ -70,9 +75,12 @@ rename to59minutes y17_40_49min
 rename to89minutes y17_50_89min
 rename ormoreminutes y17_90_mmin
 rename averagecommutetoworkinmin y17_avcommute
-// I am dropping two variables that don't exist in year 2000 for better comparison 
+
+*** I am dropping two variables that don't exist in year 2000 for better comparison 
+
 drop carpooled drovealone
-// Now I am fropping other stuff 
+
+*** Now I am dropping other stuff 
 drop geo_stusab geo_sumlev geo_geocomp geo_fileid geo_logrecno geo_us geo_region geo_division ///
 geo_statece geo_state geo_county geo_cousub geo_place geo_placese geo_blkgrp geo_concit geo_aianhh geo_aianhhfp ///
 geo_aihhtli geo_aitsce geo_aits geo_anrc geo_cbsa geo_csa geo_metdiv geo_macc geo_memi geo_necta geo_cnecta ///
@@ -83,14 +91,20 @@ save trans2017-camdencn-ct, replace
 
 clear
 use trans2017-camdencn-ct
+
 ///////////////////////////merge 2000 and 2017 transportation///////////////////////////
-merge 1:1 geo_fips using trans2000-camdencn-ct
+
+*** I used geo fips that didn't match! 
+*** However there should be 127 observation not 140! 
+*** Trans2017 has 127 observation but trans2000 has 140... 
+
+merge 1:1 geo_tract using trans2000-camdencn-ct
  
-drop geo_qname
-*******************************////////////////////////////////////////
-*******************************////////////////////////////////////////
-*******************************////////////////////////////////////////How Should I treat this mis match???
+drop _merge 
+
 save trans2000-2017-camdencn-ct, replace
+
+
 
 
 
@@ -130,6 +144,7 @@ save emp2000-camdencn-ct, replace
 
 
 ////////////////////////////////////////////2017-Employment///////////////////////////
+
 clear
 // EMPLOYMENT STATUS FOR THE POPULATION 16 YEARS AND OVER Universe: Population 16 years and over  more information
 //2013-2017 American Community Survey 5-Year Estimates
@@ -161,7 +176,6 @@ replace y17pct_unemp=round(y17pct_unemp, 0.01)
 
 save emp2017-camdencn-ct, replace
 
-
 /////////////////////////// merge employment 2000 and 2017 ///////////////////////////
 
 merge 1:1 geoid2 using emp2000-camdencn-ct
@@ -171,7 +185,14 @@ drop _merge
 save emp2000-2017-camdencn-ct, replace
 
 
-***income************************************************************************ 
+
+
+
+
+
+***income and poverty************************************************************************ 
+
+//////////////////////////////////////////// 2000-Income & Poverty ///////////////////////////
 
 clear 
 //2000- income population 
@@ -180,21 +201,245 @@ import delimited "https://docs.google.com/uc?id=1lEZSaCpkOwln0GUDAvpuGgBtY0jiomj
 
 edit
 
-//2017- income population 
+drop msastatewidenonmsamedianfamilyin v7 tractbnamedianhouseholdincome
+
+rename hudestmsanonmsamedianfamilyincom y20_hudinc
+rename tractbnaincomelevel y20_inclev
+rename tractbnamedianfamilyincome y20pct_inc
+rename esttractbnamedianfamilyincome y20_estinc
+rename ïtractcode censustract
+rename belowpovertyline y20blpovline
+
+destring y20_hudinc, replace
+destring y20_estinc, replace
+
+//destring y20_bnainclev y20_bnainc, replace
+**I try to destring two below variables that I get a error 
+**Stata returns “observation contains nonnumeric characters; no replace”
+**So that's why I whill check what's going on... I used this code below from net 
+** to figure out where is my nonnumeric characters
+
+//generate byte non_numeric = indexnot(y20_hudinc, "0123456789.-")
+//list y20_hudinc if missing(real(y20_hudinc))
+
+** the problem is only the first two digist are there!
+//gen num_y17_tractinc = regexs(2) if regexm(y17_tractinc, "^([^0-9]*)([0-9]+)([^0-9]*)")
+
+***** numeric 
+** this is for comparison//clonevar chk_hudinc= y20_hudinc
+destring y20_hudinc, replace ignore("$" ",")
+
+//clonevar chk_estinc= y20_estinc
+destring y20_estinc, replace ignore("$" ",")
+
+** Okay there are some missing variables  in row 121 and 122 of the file 
+** I am deleting them 
+
+drop in 121/122
+
+
+**now it should work 
+//destring y20_hudinc y20_bnainc, replace
+
+**NOPE! Let's try another code...
+
+//encode y20_hudinc, generate(y20_hudincome) label(2000 HUD Median Family Income)
+
+** Nope! Let's try another one ... 
+
+//destring y20_hudinc, generate(y20_hudinc_destrung) force
+//tab y20_hudinc if y20_hudinc_destrung == .
+
+ ** Don't know what's wrong here!
+ 
+save incompov-2000-camdencn-ct, replace
+
+
+//////////////////////////////////////////// 2017-Income & Poverty ///////////////////////////
+
+clear
 //retrived from: https://www.ffiec.gov/census/report.aspx?year=2017&state=34&msa=&county=007&tract=&report=demographic&page=2
 import delimited "https://docs.google.com/uc?id=1zgbVBIKq4EASp-4VJFVurQpa2AN_f6IQ&export=download", varnames(1)
+edit
+
+drop msamdstatewidenonmsamdmedianfami v7 tractmedianhouseholdincome
+
+rename ffiecestmsamdnonmsamdmedianfamil y17_estinc
+rename tractincomelevel y17_inclev
+rename tractmedianfamilyincome y17pct_inc
+rename esttractmedianfamilyincome y17_tractinc
+rename ïractcode censustract
+rename belowpovertyline y17blpovline
+
+destring y17_estinc, replace ignore("$" ",")
+destring y17_tractinc, replace ignore("$" ",")
+
+drop in 101/102
+
+save incompov-2017-camdencn-ct, replace
+
+
+/////////////////////////// merge employment 2000 and 2017 ///////////////////////////
+
+merge 1:1 censustract using incompov-2000-camdencn-ct
+drop _merge
+save incompov2000-2017-camdencn-ct, replace
 
 
 
 
 
 
+***Housing************************************************************************ 
+
+//////////////////////////////////////////// 2000- Housing ///////////////////////////
+
+clear
 //2000- housing
 //retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_DP4&prodType=table
 import delimited "https://docs.google.com/uc?id=1v05YcqsEZmL56amvxeqTdJ8Eh2jE6Njp&export=download", varnames(1)
 
 
+rename hc01_vc32 y20ocuhouse
+label variable y20ocuhouse "Number; Occupied Housing Units"
 
+
+rename hc01_vc66 y20ownocu_0_50k
+label variable y20ownocu_0_50k "Number; Specified owner-occupied units - VALUE - Less than $50,000"
+rename hc02_vc66 y20_pctownocu_0_50k
+label variable y20_pctownocu_0_50k "Percent; Specified owner-occupied units - VALUE - Less than $50,000"
+rename hc01_vc67 y20ownocu_50k_99k
+label variable y20ownocu_50k_99k "Number; Specified owner-occupied units - VALUE - $50,000 to $99,999"
+rename hc02_vc67 y20_pctownocu_50k_99k
+label variable y20_pctownocu_50k_99k "Percent; Specified owner-occupied units - VALUE - $50,000 to $99,999"
+rename hc01_vc68 y20ownocu_100k_149k
+label variable y20ownocu_100k_149k "Number; Specified owner-occupied units - VALUE - $100,000 to $149,999"
+rename hc02_vc68 y20_pctownocu_100k_149k
+label variable y20_pctownocu_100k_149k "Percent; Specified owner-occupied units - VALUE - $100,000 to $149,999"
+rename hc01_vc69 y20ownocu_150k_199k
+label variable y20ownocu_150k_199k "Number; Specified owner-occupied units - VALUE - $150,000 to $199,999" 
+rename hc02_vc69 y20_pctownocu_150k_199k
+label variable y20_pctownocu_150k_199k "Percent; Specified owner-occupied units - VALUE - $150,000 to $199,999" 
+rename hc01_vc70 y20ownocu_200k_299k
+label variable y20ownocu_200k_299k "Number; Specified owner-occupied units - VALUE - $200,000 to $299,999"
+rename hc02_vc70 y20_pctownocu_200k_299k
+label variable y20_pctownocu_200k_299k "Percent; Specified owner-occupied units - VALUE - $200,000 to $299,999"
+rename hc01_vc71 y20ownocu_300k_499k
+label variable y20ownocu_300k_499k "Number; Specified owner-occupied units - VALUE - $300,000 to $499,999"
+rename hc02_vc71 y20_pctownocu_300k_499k
+label variable y20_pctownocu_300k_499k "Percent; Specified owner-occupied units - VALUE - $300,000 to $499,999"
+rename hc01_vc72 y20ownocu_500k_999k
+label variable y20ownocu_500k_999k "Number; Specified owner-occupied units - VALUE - $500,000 to $999,999"
+rename hc02_vc72 y20_pctownocu_500k_999k
+label variable y20_pctownocu_500k_999k "Percent; Specified owner-occupied units - VALUE - $500,000 to $999,999"
+rename hc01_vc73 y20ownocu_1000k_more
+label variable y20ownocu_1000k_more "Number; Specified owner-occupied units - VALUE - $1,000,000 or more"
+rename hc02_vc73 y20_pctownocu_1000k_more
+label variable y20_pctownocu_1000k_more "Number; Specified owner-occupied units - VALUE - $1,000,000 or more"
+rename hc01_vc74 medianhousevalue
+label variable medianhousevalue "Number; Specified owner-occupied units - VALUE - Median (dollars)"
+
+rename hc01_vc77 y20_morg_less300
+label variable y20_morg_less300 "Number; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - Less than $300"
+rename hc02_vc77 y20_pctmorg_less300
+label variable y20_pctmorg_less300 "Percent; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - Less than $300"
+rename hc01_vc78 y20_morg_300_499
+label variable y20_morg_300_499 "Number; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $300 to $499"
+rename hc01_vc79 y20_morg_500_699
+label variable y20_morg_500_699 "Number; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $500 to $699"
+rename hc02_vc79 y20_pctmorg_500_699
+label variable y20_pctmorg_500_699 "Percent; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $500 to $699"
+rename hc01_vc80 y20_morg_700_999
+label variable y20_morg_700_999 "Number; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $700 to $999"
+rename hc02_vc80 y20_pctmorg_700_999
+label variable y20_pctmorg_700_999 "Percent; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $700 to $999"
+rename hc01_vc81 y20_morg_1000_1499
+label variable y20_morg_1000_1499 "Number; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $1,000 to $1,499"
+rename hc02_vc81 y20_pctmorg_1000_1499
+label variable y20_pctmorg_1000_1499 "Percent; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $1,000 to $1,499"
+rename hc01_vc82 y20_morg_1500_1999
+label variable y20_morg_1500_1999 "Number; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $1,500 to $1,999"
+rename hc02_vc82 y20_pctmorg_1500_1999
+label variable y20_pctmorg_1500_1999 "Percent; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $1,500 to $1,999"
+rename hc01_vc83 y20_morg_2000_more 
+label variable y20_morg_2000_more "Number; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $2,000 or more"
+rename hc02_vc83 y20_pctmorg_2000_more 
+label variable y20_pctmorg_2000_more "Percent; Specified owner-occupied units - MORTGAGE STATUS AND SELECTED MONTHLY OWNER COSTS - With a mortgage - $2,000 or more"
+
+rename hc02_vc88 y20_pnctowncostinc_less_15 
+label variable y20_pnctowncostinc_less_15 "Percent; Specified owner-occupied units - SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - Less than 15 percent"
+rename hc02_vc89 y20_pnctowncostinc_15_19
+label variable y20_pnctowncostinc_15_19 "Percent; Specified owner-occupied units - SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 15 to 19 percent"
+rename hc02_vc90 y20_pnctowncostinc_20_24
+label variable y20_pnctowncostinc_20_24 "Percent; Specified owner-occupied units - SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 20 to 24 percent"
+rename hc02_vc91 y20_pnctowncostinc_25_29
+label variable y20_pnctowncostinc_25_29 "Percent; Specified owner-occupied units - SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 25 to 29 percent"
+rename hc02_vc92 y20_pnctowncostinc_30_34
+label variable y20_pnctowncostinc_30_34 "Percent; Specified owner-occupied units - SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 30 to 34 percent"
+rename hc02_vc93 y20_pnctowncostinc_35_more
+label variable y20_pnctowncostinc_35_more "Percent; Specified owner-occupied units - SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 35 percent or more"
+
+rename hc01_vc97 y20_rent_less_200
+label variable y20_rent_less_200 "Number; Specified renter-occupied units - GROSS RENT - Less than $200"
+rename hc01_vc98 y20_rent_200_299 
+label variable y20_rent_200_299 "Number; Specified renter-occupied units - GROSS RENT - $200 to $299"
+rename hc01_vc99 y20_rent_300_499 
+label variable y20_rent_300_499 "Number; Specified renter-occupied units - GROSS RENT - $300 to $499"
+rename hc01_vc100 y20_rent_500_749
+label variable y20_rent_500_749 "Number; Specified renter-occupied units - GROSS RENT - $500 to $749"
+rename hc01_vc101 y20_rent_750_999
+label variable y20_rent_750_999 "Number; Specified renter-occupied units - GROSS RENT - $750 to $999"
+rename hc01_vc102 y20_rent_1000_1499
+label variable y20_rent_1000_1499 "Number; Specified renter-occupied units - GROSS RENT - $1000 to $1499"
+rename hc01_vc103 y20_rent_1500_more
+label variable y20_rent_1500_more "Number; Specified renter-occupied units - GROSS RENT - $1000 or more"
+
+rename hc02_vc107 y20_pnctrentincome_less_15
+label variable y20_pnctrentincome_less_15 "Number; Specified renter-occupied units - GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - Less than 15 percent"
+rename hc02_vc108 y20_pnctrentincome_15_19
+label variable y20_pnctrentincome_15_19 "Number; Specified renter-occupied units - GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - Less than 15 percent"
+rename hc02_vc109 y20_pnctrentincome_20_24
+label variable y20_pnctrentincome_20_24 "Number; Specified renter-occupied units - GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 15 to 19 percent"
+rename hc02_vc110 y20_pnctrentincome_25_29
+label variable y20_pnctrentincome_25_29 "Number; Specified renter-occupied units - GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 20 to 24 percent"
+rename hc02_vc111 y20_pnctrentincome_30_34
+label variable y20_pnctrentincome_30_34 "Number; Specified renter-occupied units - GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 30 to 34 percent"
+rename hc02_vc112 y20_pnctrentincome_35_more
+label variable y20_pnctrentincome_35_more "Number; Specified renter-occupied units - GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN 1999 - 35 percent or more"
+
+drop hc01_vc01 hc02_vc01 hc01_vc03 hc02_vc03 hc01_vc04 hc02_vc04 hc01_vc05 hc02_vc05 hc01_vc06 hc02_vc06 ///
+hc01_vc07 hc02_vc07 hc01_vc08 hc02_vc08 hc01_vc09 hc02_vc09 hc01_vc10 hc02_vc10 hc01_vc11 hc02_vc11 hc01_vc13 ///
+ hc02_vc13 hc01_vc14 hc02_vc14 hc01_vc15 hc02_vc15 hc01_vc16 hc02_vc16 hc01_vc17 hc02_vc17 hc01_vc18 hc02_vc18 ///
+ hc01_vc19 hc02_vc19 hc01_vc20 hc02_vc20 hc01_vc22 hc02_vc22 hc01_vc23 hc02_vc23 hc01_vc24 hc02_vc24 hc01_vc25 ///
+ hc02_vc25 hc01_vc26 hc02_vc26 hc01_vc27 hc02_vc27 hc01_vc28 hc02_vc28 hc01_vc29 hc02_vc29 hc01_vc30 hc02_vc30 ///
+ hc01_vc31 hc02_vc31 hc02_vc32 hc01_vc34 hc02_vc34 hc01_vc35 hc02_vc35 hc01_vc36 hc02_vc36 hc01_vc37 hc02_vc37 ///
+ hc01_vc38 hc02_vc38 hc01_vc39 hc02_vc39 hc01_vc41 hc02_vc41 hc01_vc42 hc02_vc42 hc01_vc43 hc02_vc43 hc01_vc44 ///
+ hc02_vc44 hc01_vc46 hc02_vc46 hc01_vc47 hc02_vc47 hc01_vc48 hc02_vc48 hc01_vc49 hc02_vc49 hc01_vc50 hc02_vc50 ///
+ hc01_vc51 hc02_vc51 hc01_vc52 hc02_vc52 hc01_vc53 hc02_vc53 hc01_vc54 hc02_vc54 hc01_vc56 hc02_vc56 hc01_vc57 ///
+ hc02_vc57 hc01_vc58 hc02_vc58 hc01_vc60 hc02_vc60 hc01_vc61 hc02_vc61 hc01_vc62 hc02_vc62 hc01_vc63 hc02_vc63 ///
+ hc01_vc64 hc02_vc64 hc02_vc74 hc01_vc76 hc02_vc76 hc02_vc78 hc01_vc84 hc02_vc84 hc01_vc85 hc02_vc85 hc01_vc86 ///
+ hc02_vc86 hc01_vc88 hc01_vc90 hc01_vc92 hc01_vc93 hc01_vc94 hc02_vc94 hc01_vc95 hc02_vc95 hc02_vc97 hc02_vc98 ///
+ hc02_vc99 hc02_vc100 hc02_vc101 hc02_vc102 hc02_vc103 hc01_vc104 hc02_vc104 hc01_vc105 hc02_vc105 hc01_vc107 ///
+ hc01_vc108 hc01_vc109 hc01_vc110 hc01_vc111 hc01_vc112 hc01_vc113 hc02_vc113 hc01_vc91 hc01_vc89
+
+ drop in 1
+
+ destring y20ocuhouse y20ownocu_0_50k y20_pctownocu_0_50k y20ownocu_50k_99k y20_pctownocu_50k_99k ///
+ y20ownocu_100k_149k y20_pctownocu_100k_149k y20ownocu_150k_199k y20_pctownocu_150k_199k y20ownocu_200k_299k ///
+ y20_pctownocu_200k_299k y20ownocu_300k_499k y20_pctownocu_300k_499k y20ownocu_500k_999k y20_pctownocu_500k_999k ///
+ y20ownocu_1000k_more y20_pctownocu_1000k_more medianhousevalue y20_morg_less300 y20_pctmorg_less300 ///
+ y20_morg_300_499 y20_morg_500_699 y20_pctmorg_500_699 y20_morg_700_999 y20_pctmorg_700_999 y20_morg_1000_1499 ///
+ y20_pctmorg_1000_1499 y20_morg_1500_1999 y20_pctmorg_1500_1999 y20_morg_2000_more y20_pctmorg_2000_more ///
+ y20_pnctowncostinc_less_15 y20_pnctowncostinc_15_19 y20_pnctowncostinc_20_24 ///
+ y20_pnctowncostinc_25_29 y20_pnctowncostinc_30_34 y20_pnctowncostinc_35_more y20_rent_less_200 y20_rent_200_299 ///
+ y20_rent_300_499 y20_rent_500_749 y20_rent_750_999 y20_rent_1000_1499 y20_rent_1500_more ///
+ y20_pnctrentincome_less_15 y20_pnctrentincome_15_19 y20_pnctrentincome_20_24 y20_pnctrentincome_25_29 ///
+ y20_pnctrentincome_30_34 y20_pnctrentincome_35_more, replace ignore ("(X)")
+
+
+//////////////////////////////////////////// 2017- Housing ///////////////////////////
+
+clear 
 //2017- housing
 //retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_DP04&prodType=table
 import delimited "https://docs.google.com/uc?id=13f25i2Cwl8VlM1cAfqkS0iCrYCy9R-zq&export=download", varnames(1)
