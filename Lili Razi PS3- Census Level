@@ -337,7 +337,6 @@ export delimited using camden_smarthgrowth_2017, replace
 
 
 //------------------------------------------------------------------------------
-
 //////////work place camden census 2010
 /////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08016&prodType=table
 clear
@@ -373,3 +372,103 @@ drop in 1
 destring principal2017 notprincipal2017, replace 
 
 save workplace_2017_camden, replace 
+
+******************merge workplace 2010 and 2017******************
+
+clear
+use workplace_2017_camden
+merge 1:1 geoid2 using workplace_2010_camden
+drop _merge
+save workplace_20172010_camdencensus, replace
+// this row below is for gis so that I can add it to my layers 
+//export delimited using housetenure_20172010_camdencensus, replace
+
+
+******************merge all the 2010, 2017  info******************
+
+clear
+use housetenure_20172010_camdencensus
+merge 1:1 geoid2 using trans_20172010_camdencensus
+drop _merge 
+save camden_smarthgrowth_census, replace 
+merge 1:1 geoid2 using income_20172010_camdencensus
+drop _merge 
+save camden_smarthgrowth_census, replace 
+merge 1:1 geoid2 using pov_20172010_camdencensus
+drop _merge 
+save camden_smarthgrowth_census, replace 
+merge 1:1 geoid2 using empunemp_20172010_camdencensus
+drop _merge
+save camden_smarthgrowth_census, replace 
+merge 1:1 geoid2 using workplace_20172010_camdencensus
+drop _merge
+save camden_smarthgrowth_census, replace 
+edit 
+
+
+
+********************reshape and divide 2010, 2017 info *************************
+clear 
+use camden_smarthgrowth_census
+encode geoid2, gen(ctc)
+
+///these below two rows should be run together 
+reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool principal notprincipal ///
+totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
+
+reshape wide totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
+totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate, i(ctc) j(year)
+edit
+
+///these below two rows should be run together 
+reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool principal notprincipal ///
+totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
+
+
+sort year
+save camden_sg_reshcensus, replace
+//-------------------------------------------------------------------------
+keep if year==2010
+drop ctc
+save camden_smarthgrowth_2010, replace 
+use camden_sg_reshcensus
+keep if year==2017
+drop ctc
+save camden_smarthgrowth_2017, replace
+
+// this row below is for gis so that I can add it to my layers 
+export delimited using camden_smarthgrowth_2010, replace
+export delimited using camden_smarthgrowth_2017, replace
+
+//----------------------------------------graphs 
+
+clear 
+use camden_sg_reshcensus
+
+
+tabstat totunit ownervac rentvac, by(year) stat(mean sd min max)
+tabstat totunit ownervac rentvac, by(year) stat(mean sd min max) nototal long col(stat)
+** this table shows that rentvacancy rate mean has dropped in 7 years but owber vacancy rate has increased  and total units mean has slightly increased. 
+
+tabstat totaltrans drvalone drvcarpool totalwalk pubtrans workhome, by(year) stat(mean sd min max) nototal long format
+** this table shows total transportation increased over 7 years. Many worked at home and the use of pubtrans has not changed
+** less people walk and use carpooling and ther is a slight increase for driving alone 
+
+tabstat laborpart medincome emplrate unemprate pbelpov, by(year) stat(mean sd min max) nototal long format
+** this table shows labor participation, employment, unemployment and poverty rate for both year is the same. 
+** However the median income something is wrong the number is incorrect!
+
+scatter unemprate pbelpov, by(year)
+*I want a line here in for the trend 
+
+twoway (scatter medincome totalwalk principal), by(year)
+
+scatter medincome unemprate pubtrans, by(year) legend(size(small))
+ 
+histogram medincome, percent 
+
+
+webuse nlsw88
+graph dot wage hours ttl_exp, over(occ)
+gr dot wage, over(collgrad) over(occ) over(race) by(union) 
+gr hbar ttl_exp tenure, over(married) over(race) by(union, missing total)
