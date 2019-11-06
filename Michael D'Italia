@@ -1,83 +1,232 @@
-
-
-
-
 ///// this is the social services services offered by the office of civic engagement Michael D'Italia////
+
 ///// This is the beginning f spliting up the data/////
+
+
 
 cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source"
 
 
 
+
+
+
+
 /////////////////////////////////////////FOOD///////////////////////////////////////////////////////////
+
+
 
 clear 
 
-import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", ///
-sheet("in") firstrow clear
+
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
  
+
 keep if State =="NJ" | State =="PA"
 
+
+
 gen foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food)[0-9 a-zA-Z]*")
+
 replace foodct=regexs(1) if regexm(ProgramServices, "(food)[0-9 a-zA-Z]*")
+
 replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food)")
 
+
+
 replace foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(meals)[0-9 a-zA-Z]*")
+
 replace foodct=regexs(1) if regexm(ProgramServices, "(meals)[0-9 a-zA-Z]*")
+
 replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(meals)")
 
+
+
 replace foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)[0-9 a-zA-Z]*")
+
 replace foodct=regexs(1) if regexm(ProgramServices, "(nutrition)[0-9 a-zA-Z]*")
+
 replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)")
 
 
 
+
+
+
+
 foreach code in "[0-9 a-zA-Z]*(nutrition)[0-9 a-zA-Z]*"  "(nutrition)[0-9 a-zA-Z]*" "[0-9 a-zA-Z]*(nutrition)"{
+
 replace foodct=regexs(1) if regexm(ProgramServices, `code')
+
 }
 
 
 
 
+
+
+
+
+
 ta ProgramServices 
+
 ta ProgramServices foodct
+
+
 
 drop if mi(foodct)
 
+
+
 export excel using "foodct", firstrow(variables)
+
 //export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\foodct.xls", firstrow(variables), replace
+
 
 
 
 /////////////////////////////////////////HOUSING///////////////////////////////////////////////////////////
 
+
+
 clear 
 
+
+
 import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", ///
+
 sheet("in") firstrow clear
+
+
 
 keep if State =="NJ" | State =="PA"
 
+
+
 gen housingct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(housing)[0-9 a-zA-Z]*")
+
 replace housingct=regexs(1) if regexm(ProgramServices, "(housing)[0-9 a-zA-Z]*")
+
 replace housingct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(housing)")
 
+
+
 replace housingct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(maintenance)[0-9 a-zA-Z]*")
+
 replace housingct=regexs(1) if regexm(ProgramServices, "(maintenance)[0-9 a-zA-Z]*")
+
 replace housingct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(maintenance)")
 
+
+
 replace housingct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(shelter)[0-9 a-zA-Z]*")
+
 replace housingct=regexs(1) if regexm(ProgramServices, "(shelter)[0-9 a-zA-Z]*")
+
 replace housingct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(shelter)")
 
+
+
 ta ProgramServices 
+
 ta ProgramServices housingct
+
+
 
 drop if mi(housingct)
 
+
+
 export excel using "housingct", firstrow(variables)
+
 //export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
 
 
-/////////////////////////////////////////____///////////////////////////////////////////////////////////
+/////////////////////////////////////////Transit///////////////////////////////////////////////////////////
 
+
+
+clear 
+
+
+** variables for transit are "Help Pay for Transit" & "Transportation"  also transportation for health care 
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+
+
+keep if State =="NJ" | State =="PA"
+
+
+
+gen transitct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(trans*)[0-9 a-zA-Z]*")
+
+replace transitct=regexs(1) if regexm(ProgramServices, "(trans*)[0-9 a-zA-Z]*")
+
+replace transitct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(trans*)")
+
+
+** changes will be made ...I get an error which I don't know why! 
+ta ProgramServices transitct
+
+
+drop if mi(transitct)
+
+
+export excel using "transitct", firstrow(variables)
+
+//export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
+
+
+/////////////////////////////////////////Work///////////////////////////////////////////////////////////
+
+//Help Find Work  
+//Help Pay For Work Expenses help pay for work expenses 
+//Skills & Training 
+//Supported Employment  
+//Workplace Rights--- this one is not there   
+
+
+clear 
+
+
+ 
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+
+
+keep if State =="NJ" | State =="PA"
+
+
+***I want to exclude network from here!
+** Maybe this one all in the () help pay for work expenses
+
+gen workct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(work)[0-9 a-zA-Z]*")
+
+replace workct=regexs(1) if regexm(ProgramServices, "(work)[0-9 a-zA-Z]*")
+
+replace workct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(work)")
+
+
+
+replace workct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(skills & training)[0-9 a-zA-Z]*")
+
+replace workct=regexs(1) if regexm(ProgramServices, "(skills & training)[0-9 a-zA-Z]*")
+
+replace workct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(skills & training)")
+
+
+
+replace workct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(supported employment)[0-9 a-zA-Z]*")
+
+replace workct=regexs(1) if regexm(ProgramServices, "(supported employment)[0-9 a-zA-Z]*")
+
+replace workct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(supported employment)")
+
+tab workct
+
+
+export excel using "workct", firstrow(variables)
+
+//export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
