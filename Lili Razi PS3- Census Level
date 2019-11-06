@@ -463,6 +463,7 @@ scatter unemprate pbelpov, by(year)
 twoway (scatter medincome totalwalk principal, mlab(ctc)), by(year)
 
 scatter medincome unemprate pubtrans, by(ctc) legend(size(small))
+tw (scatter unemprate pbelpov, by(year))(lfit unemprate pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
  
 histogram medincome, percent 
 
