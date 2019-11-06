@@ -441,7 +441,6 @@ export delimited using camden_smarthgrowth_2010, replace
 export delimited using camden_smarthgrowth_2017, replace
 
 //----------------------------------------graphs 
-
 clear 
 use camden_sg_reshcensus
 
@@ -461,14 +460,29 @@ tabstat laborpart medincome emplrate unemprate pbelpov, by(year) stat(mean sd mi
 scatter unemprate pbelpov, by(year)
 *I want a line here in for the trend 
 
-twoway (scatter medincome totalwalk principal), by(year)
+twoway (scatter medincome totalwalk principal, mlab(ctc)), by(year)
 
-scatter medincome unemprate pubtrans, by(year) legend(size(small))
+scatter medincome unemprate pubtrans, by(ctc) legend(size(small))
  
 histogram medincome, percent 
 
+sort ctc year
+gr dot percvac if year==2010 in 1/60, over(ctc)
+gr dot *vac if year==2010 in 1/60, over(ctc, label(labsize(tiny)) )
 
-webuse nlsw88
-graph dot wage hours ttl_exp, over(occ)
-gr dot wage, over(collgrad) over(occ) over(race) by(union) 
-gr hbar ttl_exp tenure, over(married) over(race) by(union, missing total)
+
+//webuse nlsw88
+//graph dot wage hours ttl_exp, over(occ)
+//gr dot wage, over(collgrad) over(occ) over(race) by(union) 
+//gr hbar ttl_exp tenure, over(married) over(race) by(union, missing total)
+
+
+
+
+//sum medincome
+
+//gen highinc=(medincome> 36130.45 )
+//gen lowinc=(medincome< 36130.45 )
+//----------------------------------------loops and macros 
+
+ 
