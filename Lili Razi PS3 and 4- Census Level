@@ -1,7 +1,6 @@
-// This is census block of camden for Data Management and GIS class 
+// This is census track data of Camden County for Data Management and GIS class 
 // Fall 2019 ---- Prof. Adam
-
-
+// Stata 15
 // Lili Razi 
 
 //Research interest:
@@ -13,17 +12,25 @@
 //Above all, smart growth is about helping every town and city become a more economically prosperous, socially equitable, and 
 //environmentally sustainable place to live. This approach looks different for every community, but can help neighborhoods of any 
 //kind flourish, make towns and cities competitive in a 21st century economy, and improve lives by improving neighborhoods.
+//“"smart growth" (also referred to by its original title of growth management) 
+//(local, regional, state and federal plans and legislation that promote non-sprawl, compact, transit corridor or new town development patterns 
+//and require adequate public facilities to be available at the time of development); "new urbanism" (focusing on transit oriented, traditional 
+//neighborhood and mixed use walkable communities)” (Freilich & Popowitz, 2010, p-4). 
+
+//In my research I am trying to understand if there is 
+//affordable housing around work places and whether there is walkability and integrated public transportation in both residential and workplaces. 
+//This requires looking at households number, land use and the economic status of the residents which may guide authorities for better policies and
+// development strategies shown by the following maps at census tracks in Camden County. 
 //Variables:
 //diversity in the home choices 
 //walkability 
-//green space 
-//land change land use 
 //transportation 
+
 __________________________________________________________________
 //
 //Research questions include the following:
 //1- Is smarth growth plan effective in Camden?
-//2- Is there a noticebale improvement in spatial change after 7 years?
+//2- Is there a noticebale improvement?
 //3- Has smarth growth helped with housing and economic status?
 //4- Has there been any walkability/compact design happening in these years?
 
@@ -49,7 +56,6 @@ destring unemprate2017, replace
 //edit
 save empl2017_census_camden, replace  
 clear
-
 
 
 ///////////  employment census blck camden 2010 
@@ -95,7 +101,6 @@ destring pbelpov2010, replace
 save percentbelowpov2010, replace 
 edit 
 
-//hc02_est_vc01 hc02_moe_vc29 hc02_est_vc30 hc02_est_vc32
 //////////poverty camden census 2017
 /////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1702&prodType=table
 clear
@@ -163,9 +168,6 @@ drop _merge
 save income_20172010_camdencensus, replace
 // this row below is for gis so that I can add it to may layers 
 export delimited using income_20172010_camdencensus, replace
-
-
-
 
 
 //------------------------------------------------------------------------------
@@ -241,9 +243,6 @@ rename hc03_vc05 percvac2010
 label var percvac2010 "Percent; HOUSING OCCUPANCY - Vacant housing units"
 rename hc01_vc07 ownervac2010 
 label var ownervac2010 "Estimate; HOUSING OCCUPANCY - Homeowner vacancy rate"
-***********
-***********this rentvac2010 cannot change to string var and is causing problem
-***********
 rename hc01_vc08 rentvac2010 
 label var rentvac2010 "Estimate; HOUSING OCCUPANCY - Rental vacancy rate" 
 drop in 1 
@@ -282,58 +281,6 @@ drop _merge
 save housetenure_20172010_camdencensus, replace
 // this row below is for gis so that I can add it to my layers 
 export delimited using housetenure_20172010_camdencensus, replace
-
-
-******************merge all the 2010, 2017  info******************
-
-clear
-use housetenure_20172010_camdencensus
-merge 1:1 geoid2 using trans_20172010_camdencensus
-drop _merge 
-save camden_smarthgrowth_census, replace 
-merge 1:1 geoid2 using income_20172010_camdencensus
-drop _merge 
-save camden_smarthgrowth_census, replace 
-merge 1:1 geoid2 using pov_20172010_camdencensus
-drop _merge 
-save camden_smarthgrowth_census, replace 
-merge 1:1 geoid2 using empunemp_20172010_camdencensus
-drop _merge
-save camden_smarthgrowth_census, replace 
-edit 
-
-********************reshape and divide 2010, 2017 info *************************
-clear 
-use camden_smarthgrowth_census
-encode geoid2, gen(ctc)
-
-///these below two rows should be run together 
-reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
-totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
-
-reshape wide totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
-totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate, i(ctc) j(year)
-edit
-
-///these below two rows should be run together 
-reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
-totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
-
-
-sort year
-save camden_sg_reshcensus, replace
-keep if year==2010
-drop ctc
-save camden_smarthgrowth_2010, replace 
-use camden_sg_reshcensus
-keep if year==2017
-drop ctc
-save camden_smarthgrowth_2017, replace
-
-// this row below is for gis so that I can add it to my layers 
-export delimited using camden_smarthgrowth_2010, replace
-export delimited using camden_smarthgrowth_2017, replace
-
 
 
 //------------------------------------------------------------------------------
@@ -416,7 +363,7 @@ encode geoid2, gen(ctc)
 reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool principal notprincipal ///
 totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
 
-reshape wide totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool ///
+reshape wide totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool principal notprincipal ///
 totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate, i(ctc) j(year)
 edit
 
@@ -440,7 +387,9 @@ save camden_smarthgrowth_2017, replace
 export delimited using camden_smarthgrowth_2010, replace
 export delimited using camden_smarthgrowth_2017, replace
 
-//----------------------------------------graphs 
+//------------------------------------------------------------------------------
+//////////Graph and Reg
+
 clear 
 use camden_sg_reshcensus
 
@@ -466,24 +415,71 @@ scatter medincome unemprate pubtrans, by(ctc) legend(size(small))
 tw (scatter unemprate pbelpov, by(year))(lfit unemprate pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
  
 histogram medincome, percent 
+////////////////////////////////////////////////
+destring geoid2, replace                      //
+gen censustrack = mod(geoid2,1000000)         //
+////////////////////////////////////////////////
+sort censustrack year
+gr dot percvac if year==2010 in 1/60, over(censustrack)
+gr dot *vac if year==2010 in 1/60, over(censustrack, label(labsize(tiny)) )
+* this dot graph shows 
 
-sort ctc year
-gr dot percvac if year==2010 in 1/60, over(ctc)
-gr dot *vac if year==2010 in 1/60, over(ctc, label(labsize(tiny)) )
+gr dot percvac if year==2017 in 1/60, over(censustrack)
+gr dot *vac if year==2017 in 1/60, over(censustrack, label(labsize(tiny)) )
+* this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
+* but for some others ther is high vacancy in northern camden area 
 
 
-//webuse nlsw88
-//graph dot wage hours ttl_exp, over(occ)
-//gr dot wage, over(collgrad) over(occ) over(race) by(union) 
-//gr hbar ttl_exp tenure, over(married) over(race) by(union, missing total)
-
-
-
-
-//sum medincome
-
-//gen highinc=(medincome> 36130.45 )
-//gen lowinc=(medincome< 36130.45 )
-//----------------------------------------loops and macros 
+graph bar emplrate unemprate, over(year) stack
+** there is not much diference in employment rate but unemployment decreased slightly. 
 
  
+twoway (scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustrack) mlabsize(tiny)) 
+ 
+graph matrix percocc totalwalk pubtrans medincome pbelpov emplrate principal, half
+** this is a total presentation of graphs in the scattered plot 
+
+pwcorr unempr princip notprincip d* p*, star(.05)
+
+net install outreg2, from(http://fmwww.bc.edu/RePEc/bocode/o)
+
+use merge1, clear ///
+
+	 
+/* Regress */
+regress medincome pubtrans percvac
+predict yhat, xb	
+
+separate yhat, by(year)
+
+
+reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool principal notprincipal ///
+totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
+
+
+reg medincome laborpart
+/* *and then export to excel, note eform option that will exponentiate betas; ct will give it column title A1 */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel replace ct(A1) lab
+/* *then i run some other specification */
+reg medincome laborpart emplrate
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A2) lab  
+reg medincome laborpart emplrate ownervac
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A3) lab
+reg medincome laborpart emplrate ownervac rentvac
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A4) lab  
+reg medincome laborpart emplrate ownervac rentvac principal
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A5) lab
+reg medincome laborpart emplrate ownervac rentvac principal totalwalk
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A6) lab
+reg medincome laborpart emplrate ownervac rentvac principal totalwalk pubtrans
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A8) lab
+reg medincome laborpart emplrate ownervac rentvac principal totalwalk pubtrans drvalone
+/* *and outreg2 again but i append instead of replace */
+
+** Nothing Significant! 
