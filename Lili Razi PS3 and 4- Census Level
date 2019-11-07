@@ -26,7 +26,7 @@
 //walkability 
 //transportation 
 __________________________________________________________________
-
+//
 //Research questions include the following:
 //1- Is smarth growth plan effective in Camden?
 //2- Is there a noticebale improvement?
@@ -126,8 +126,6 @@ save pov_20172010_camdencensus, replace
 // this row below is for gis so that I can add it to may layers 
 export delimited using pov_20172010_camdencensus, replace
 
-
-
 //------------------------------------------------------------------------------
 //////////median income camden census 2010
 /////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1903&prodType=table
@@ -141,7 +139,6 @@ rename hc02_est_vc02 medincome2010
 label variable medincome2010 "Median income (dollars); Estimate; Households2010"
 destring medincome2010 households2010, replace 
 save medianincome_camden_2010, replace 
-
 
 
 //////////median income camden census 2017
@@ -214,7 +211,6 @@ destring workhome2017 pubtrans2017 totalwalk2017 drvcarpool2017 drvalone2017 tot
 save trans_2017_camden, replace 
 
 
-
 ******************merge trans 2010 and 2017******************
 clear
 use trans_2017_camden
@@ -223,8 +219,6 @@ drop _merge
 save trans_20172010_camdencensus, replace
 // this row below is for gis so that I can add it to may layers 
 export delimited using trans_20172010_camdencensus, replace
-
-
 
 
 //------------------------------------------------------------------------------
@@ -351,8 +345,6 @@ drop _merge
 save camden_smarthgrowth_census, replace 
 edit 
 
-
-
 ********************reshape and divide 2010, 2017 info *************************
 clear 
 use camden_smarthgrowth_census
@@ -451,10 +443,28 @@ predict yhat, xb
 
 separate yhat, by(year)
 
+line ownervac rentvac year, legend(size(medsmall)) 
 
-reshape long totunit percocc percvac ownervac rentvac totaltrans drvalone drvcarpool principal notprincipal ///
-totalwalk pubtrans workhome households medincome pbelpov laborpart emplrate unemprate,i(ctc)j(year)
+twoway rcap emplrate unemprate year 
 
+graph hbar principal totalwalk, over(censustrack)
+graph hbar principal totalwalk, over(censustrack, sort(1) descending)
+* this graph shows the mean of people working in principal cities and how much they walk to get to their work place 
+
+graph hbar principal drvalone, over(censustrack, sort(1) descending)
+* this graph shows the mean of people working in principal cities and how many drive alone to to get to their work place which is really noticable 
+
+graph hbar principal pubtrans, over(censustrack, sort(1) descending)
+* this graph shows the mean of people working in principal cities and how many drive alone to to get to their work place which is really noticable 
+
+
+graph box percvac, over(year)
+** this graph shows vacancy has increased in 7 years 
+
+graph box percvac pbelpov unemprate, over(year)
+** this graph shows vacancy has risen considering the low level of poverty 
+
+sunflower totalwalk notprincipal
 
 reg medincome laborpart
 /* *and then export to excel, note eform option that will exponentiate betas; ct will give it column title A1 */
@@ -482,3 +492,11 @@ reg medincome laborpart emplrate ownervac rentvac principal totalwalk pubtrans d
 /* *and outreg2 again but i append instead of replace */
 
 ** Nothing Significant! 
+
+//sum medincome
+
+//gen highinc=(medincome> 36130.45 )
+//gen lowinc=(medincome< 36130.45 )
+//----------------------------------------loops and macros 
+
+ 
