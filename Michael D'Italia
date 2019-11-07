@@ -1,31 +1,28 @@
-///// this is the social services services offered by the office of civic engagement Michael D'Italia////
+///// This is the social services data offered by the office of civic engagement Michael D'Italia////
 
-///// This is the beginning f spliting up the data/////
+///// This is the beginning of spliting up the data/////
+
+/// Data sorted based on https://myresourcepal.org/search_results/08101
+
+// Stata version 15 
+// Fall 2019 
+// Lili Razi 
+// Dr. Adam 
 
 
-
-cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source"
-
-
-
-
-
+cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files"
 
 
 /////////////////////////////////////////FOOD///////////////////////////////////////////////////////////
 
 
-
 clear 
-
-
 
 import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
 
- 
-
 keep if State =="NJ" | State =="PA"
 
+//keep if State =="NJ" 
 
 
 gen foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(food)[0-9 a-zA-Z]*")
@@ -51,36 +48,23 @@ replace foodct=regexs(1) if regexm(ProgramServices, "(nutrition)[0-9 a-zA-Z]*")
 replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)")
 
 
+//foreach code in "[0-9 a-zA-Z]*(nutrition)[0-9 a-zA-Z]*"  "(nutrition)[0-9 a-zA-Z]*" "[0-9 a-zA-Z]*(nutrition)"{
+
+//replace foodct=regexs(1) if regexm(ProgramServices, `code')
+
+//}
 
 
+//ta ProgramServices 
 
-
-
-foreach code in "[0-9 a-zA-Z]*(nutrition)[0-9 a-zA-Z]*"  "(nutrition)[0-9 a-zA-Z]*" "[0-9 a-zA-Z]*(nutrition)"{
-
-replace foodct=regexs(1) if regexm(ProgramServices, `code')
-
-}
-
-
-
-
-
-
-
-
-
-ta ProgramServices 
-
-ta ProgramServices foodct
-
+//ta ProgramServices foodct
 
 
 drop if mi(foodct)
 
+export delimited using "foodct", replace
 
-
-export excel using "foodct", firstrow(variables)
+//export excel using "foodct", firstrow(variables)
 
 //export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\foodct.xls", firstrow(variables), replace
 
@@ -90,9 +74,7 @@ export excel using "foodct", firstrow(variables)
 /////////////////////////////////////////HOUSING///////////////////////////////////////////////////////////
 
 
-
 clear 
-
 
 
 import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", ///
@@ -100,9 +82,7 @@ import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&ex
 sheet("in") firstrow clear
 
 
-
 keep if State =="NJ" | State =="PA"
-
 
 
 gen housingct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(housing)[0-9 a-zA-Z]*")
@@ -138,18 +118,23 @@ ta ProgramServices housingct
 drop if mi(housingct)
 
 
+export delimited using "housingct", replace
 
-export excel using "housingct", firstrow(variables)
+//export excel using "housingct", firstrow(variables)
 
 //export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
 
 
 /////////////////////////////////////////Transit///////////////////////////////////////////////////////////
 
+//Sub categories : 
+
+//Help Pay for Transit  
+
+//Transportation  
 
 
 clear 
-
 
 ** variables for transit are "Help Pay for Transit" & "Transportation"  also transportation for health care 
 import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
@@ -170,11 +155,11 @@ replace transitct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(trans*)")
 ** changes will be made ...I get an error which I don't know why! 
 ta ProgramServices transitct
 
-
 drop if mi(transitct)
 
+export delimited using "transitct", replace
 
-export excel using "transitct", firstrow(variables)
+//export excel using "transitct", firstrow(variables)
 
 //export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
 
@@ -190,31 +175,27 @@ export excel using "transitct", firstrow(variables)
 
 clear 
 
-
- 
 import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
-
-
 
 keep if State =="NJ" | State =="PA"
 
 
-***I want to exclude network from here!
+***I want to exclude network from here so I used a space before work so it will be excluded 
 ** Maybe this one all in the () help pay for work expenses
 
-gen workct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(work)[0-9 a-zA-Z]*")
+gen workct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*( work)[0-9 a-zA-Z]*")
 
-replace workct=regexs(1) if regexm(ProgramServices, "(work)[0-9 a-zA-Z]*")
+replace workct=regexs(1) if regexm(ProgramServices, "( work)[0-9 a-zA-Z]*")
 
-replace workct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(work)")
+replace workct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*( work)")
 
 
 
-replace workct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(skills & training)[0-9 a-zA-Z]*")
+replace workct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(skills \& training)[0-9 a-zA-Z]*")
 
-replace workct=regexs(1) if regexm(ProgramServices, "(skills & training)[0-9 a-zA-Z]*")
+replace workct=regexs(1) if regexm(ProgramServices, "(skills \& training)[0-9 a-zA-Z]*")
 
-replace workct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(skills & training)")
+replace workct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(skills \& training)")
 
 
 
@@ -226,7 +207,132 @@ replace workct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(supported emp
 
 tab workct
 
+drop if mi(workct)
 
-export excel using "workct", firstrow(variables)
+export delimited using "workct", replace
+
+//export excel using "workct", firstrow(variables)
 
 //export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
+
+
+/////////////////////////////////////////Education///////////////////////////////////////////////////////////
+
+//Education: 
+
+//Help pay for school  
+//Help find school  
+//More education  
+//Preschool  
+//Screening & exams  
+//Skills & training 
+
+
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+keep if State =="NJ" | State =="PA"
+
+
+
+gen educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(school)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "(school)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(school)")
+
+
+
+replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(Screening \& exams)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "(Screening \& exams)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(Screening \& exams)")
+
+
+
+replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(education)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "(education)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(education)")
+
+
+replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(Skills \& training)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "(Skills \& training)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(Skills \& training)")
+
+
+tab educt
+
+drop if mi(educt)
+
+export delimited using "educt", replace
+
+
+/////////////////////////////////////////legal///////////////////////////////////////////////////////////
+
+//Legal:  
+
+//Advocacy & legal aid  
+//Mediation  
+//Representation  
+//Translation & interpretation  
+
+ 
+/////////////////////////////////////////Health///////////////////////////////////////////////////////////
+
+
+//Health:  
+
+//Addiction & Recovery  
+//Dental Care 
+//End-Of-Life Care 
+//Health Education  
+//Help Pay for Health Care  
+//Medical Care  
+//Mental Health Care  
+//Sexual And Reproductive Care 
+//Vision Care 
+
+
+
+/////////////////////////////////////////Care///////////////////////////////////////////////////////////
+
+//Care:  
+
+//Adoption & Foster Care  
+//Animal Welfare  
+//Community Support Services 
+//Daytime Care 
+//End-Of-Life Care 
+//Navigating The System  
+//Physical Safety  
+//Residential Care  
+//Support Network  
+
+
+/////////////////////////////////////////Money///////////////////////////////////////////////////////////
+
+//Money:  
+
+//Financial Assistance 
+//Financial Education 
+//Government Benefits  
+//Insurance  
+//Loans  
+//Tax Preparation  
+
+/////////////////////////////////////////Goods///////////////////////////////////////////////////////////
+
+//Goods:
+
+//Baby Supplies  
+//Clothing  
+//Home Goods  
+//Medical Supplies  
+//Personal Safety 
+//Toys & gifts
