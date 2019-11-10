@@ -2,7 +2,9 @@
 
 ///// This is the beginning of spliting up the data/////
 
-/// Data sorted based on https://myresourcepal.org/search_results/08101
+/// Data sorted based on categories found in https://myresourcepal.org/search_results/08101
+// which are found in ProgramServices column in the data
+/// NOTE: All THE LETTERS IN DATA FILE ARE LOWERCASE 
 
 // Stata version 15 
 // Fall 2019 
@@ -16,6 +18,15 @@ cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files"
 /////////////////////////////////////////FOOD///////////////////////////////////////////////////////////
 
 
+//Community Gardens  
+//Emergency Food 
+//Food Delivery  
+//Food pantry  
+//Help pay for food  
+//Meals  
+//Nutrition education  
+
+ 
 clear 
 
 import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
@@ -48,17 +59,22 @@ replace foodct=regexs(1) if regexm(ProgramServices, "(nutrition)[0-9 a-zA-Z]*")
 replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(nutrition)")
 
 
+replace foodct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(community gardens)[0-9 a-zA-Z]*")
+
+replace foodct=regexs(1) if regexm(ProgramServices, "(community gardens)[0-9 a-zA-Z]*")
+
+replace foodct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(community gardens)")
+
+
 //foreach code in "[0-9 a-zA-Z]*(nutrition)[0-9 a-zA-Z]*"  "(nutrition)[0-9 a-zA-Z]*" "[0-9 a-zA-Z]*(nutrition)"{
 
 //replace foodct=regexs(1) if regexm(ProgramServices, `code')
 
 //}
 
-
 //ta ProgramServices 
 
-//ta ProgramServices foodct
-
+ta ProgramServices foodct
 
 drop if mi(foodct)
 
@@ -73,7 +89,14 @@ export delimited using "foodct", replace
 
 /////////////////////////////////////////HOUSING///////////////////////////////////////////////////////////
 
+//Help find housing  
+//Help pay for housing  
+//Housing advice 
+//Maintenance & repairs 
+//Residential housing  
+//Temporary shelter 
 
+ 
 clear 
 
 
@@ -109,28 +132,23 @@ replace housingct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(shelter)")
 
 
 
-ta ProgramServices 
+//ta ProgramServices 
 
 ta ProgramServices housingct
 
-
-
 drop if mi(housingct)
-
 
 export delimited using "housingct", replace
 
-//export excel using "housingct", firstrow(variables)
+export excel using "housingct", firstrow(variables)
 
 //export excel using "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\split up excel files\housingct.xls", firstrow(variables)
 
 
 /////////////////////////////////////////Transit///////////////////////////////////////////////////////////
 
-//Sub categories : 
 
 //Help Pay for Transit  
-
 //Transportation  
 
 
@@ -145,11 +163,19 @@ keep if State =="NJ" | State =="PA"
 
 
 
-gen transitct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(trans*)[0-9 a-zA-Z]*")
+gen transitct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(transit)[0-9 a-zA-Z]*")
 
-replace transitct=regexs(1) if regexm(ProgramServices, "(trans*)[0-9 a-zA-Z]*")
+replace transitct=regexs(1) if regexm(ProgramServices, "(transit)[0-9 a-zA-Z]*")
 
-replace transitct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(trans*)")
+replace transitct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(transit)")
+
+
+replace transitct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(transportation)[0-9 a-zA-Z]*")
+
+replace transitct=regexs(1) if regexm(ProgramServices, "(transportation)[0-9 a-zA-Z]*")
+
+replace transitct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(transportation)")
+
 
 
 ** changes will be made ...I get an error which I don't know why! 
@@ -167,11 +193,11 @@ export delimited using "transitct", replace
 /////////////////////////////////////////Work///////////////////////////////////////////////////////////
 
 //Help Find Work  
-//Help Pay For Work Expenses help pay for work expenses 
+//Help Pay For Work Expenses 
 //Skills & Training 
 //Supported Employment  
 //Workplace Rights--- this one is not there   
-
+ 
 
 clear 
 
@@ -235,52 +261,107 @@ import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&ex
 keep if State =="NJ" | State =="PA"
 
 
+//if I use "school" preschool will be included but other school terms will be included that we don't want 
+// so I have to put every term that as the way it is here 
 
-gen educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(school)[0-9 a-zA-Z]*")
+gen educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(for school)[0-9 a-zA-Z]*") 
 
-replace educt=regexs(1) if regexm(ProgramServices, "(school)[0-9 a-zA-Z]*")
+replace educt=regexs(1) if regexm(ProgramServices, "(for school)[0-9 a-zA-Z]*")
 
-replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(school)")
-
-
-
-replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(Screening \& exams)[0-9 a-zA-Z]*")
-
-replace educt=regexs(1) if regexm(ProgramServices, "(Screening \& exams)[0-9 a-zA-Z]*")
-
-replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(Screening \& exams)")
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(for school)")
 
 
+replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(find school)[0-9 a-zA-Z]*")
 
-replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(education)[0-9 a-zA-Z]*")
+replace educt=regexs(1) if regexm(ProgramServices, "(find school)[0-9 a-zA-Z]*")
 
-replace educt=regexs(1) if regexm(ProgramServices, "(education)[0-9 a-zA-Z]*")
-
-replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(education)")
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(find school)")
 
 
-replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(Skills \& training)[0-9 a-zA-Z]*")
+replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(preschool)[0-9 a-zA-Z]*")
 
-replace educt=regexs(1) if regexm(ProgramServices, "(Skills \& training)[0-9 a-zA-Z]*")
+replace educt=regexs(1) if regexm(ProgramServices, "(preschool)[0-9 a-zA-Z]*")
 
-replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(Skills \& training)")
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(preschool)")
 
+
+replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(screening \& exams)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "(screening \& exams)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(screening \& exams)")
+
+
+
+replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(more education)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "(more education)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(more education)")
+
+
+replace educt= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(skills \& training)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "(skills \& training)[0-9 a-zA-Z]*")
+
+replace educt=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(skills \& training)")
+
+
+drop if mi(educt)
 
 tab educt
 
-drop if mi(educt)
+// There is a catch! ...  variables "one-on-one support", "food pantry", "adult daycare" is also there!
 
 export delimited using "educt", replace
 
 
 /////////////////////////////////////////legal///////////////////////////////////////////////////////////
 
-//Legal:  
-
 //Advocacy & legal aid  
 //Mediation  
 //Representation  
 //Translation & interpretation  
+
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+keep if State =="NJ" | State =="PA"
+
+
+gen legalct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(legal aid)[0-9 a-zA-Z]*") 
+
+replace legalct=regexs(1) if regexm(ProgramServices, "(for legal aid)[0-9 a-zA-Z]*")
+
+replace legalct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(legal aid)")
+
+
+replace legalct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(mediation)[0-9 a-zA-Z]*")
+
+replace legalct=regexs(1) if regexm(ProgramServices, "(mediation)[0-9 a-zA-Z]*")
+
+replace legalct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(mediation)")
+
+
+replace legalct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(representation)[0-9 a-zA-Z]*")
+
+replace legalct=regexs(1) if regexm(ProgramServices, "(representation)[0-9 a-zA-Z]*")
+
+replace legalct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(representation)")
+
+
+replace legalct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*( interpretation)[0-9 a-zA-Z]*")
+
+replace legalct=regexs(1) if regexm(ProgramServices, "( interpretation)[0-9 a-zA-Z]*")
+
+replace legalct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*( interpretation)")
+
+drop if mi(legalct)
+
+tab legalct
+
+export delimited using "legalct", replace
 
  
 /////////////////////////////////////////Health///////////////////////////////////////////////////////////
@@ -299,10 +380,80 @@ export delimited using "educt", replace
 //Vision Care 
 
 
+//when I use " care" other stuff are included: daytime care, personal care items, child care, relief for caregivers and etc
+
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+keep if State =="NJ" | State =="PA"
+
+
+gen healthct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(dental care)[0-9 a-zA-Z]*") 
+
+replace healthct=regexs(1) if regexm(ProgramServices, "(dental care)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(dental care)")
+
+
+replace healthct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(life care)[0-9 a-zA-Z]*") 
+
+replace healthct=regexs(1) if regexm(ProgramServices, "(life care)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(life care)")
+
+
+replace healthct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(health care)[0-9 a-zA-Z]*") 
+
+replace healthct=regexs(1) if regexm(ProgramServices, "(health care)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(health care)")
+
+
+replace healthct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(medical care)[0-9 a-zA-Z]*") 
+
+replace healthct=regexs(1) if regexm(ProgramServices, "(medical care)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(medical care)")
+
+
+replace healthct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(reproductive care)[0-9 a-zA-Z]*") 
+
+replace healthct=regexs(1) if regexm(ProgramServices, "(reproductive care)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(reproductive care)")
+
+
+replace healthct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(vision care)[0-9 a-zA-Z]*") 
+
+replace healthct=regexs(1) if regexm(ProgramServices, "(vision care)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(vision care)")
+
+
+replace healthct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*( recovery)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "( recovery)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*( recovery)")
+
+
+replace healthct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(health education)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "(health education)[0-9 a-zA-Z]*")
+
+replace healthct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(health education)")
+
+
+drop if mi(healthct)
+
+tab healthct
+
+edit
+
+export delimited using "healthct", replace
 
 /////////////////////////////////////////Care///////////////////////////////////////////////////////////
-
-//Care:  
 
 //Adoption & Foster Care  
 //Animal Welfare  
@@ -314,6 +465,84 @@ export delimited using "educt", replace
 //Residential Care  
 //Support Network  
 
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+keep if State =="NJ" | State =="PA"
+
+
+gen carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(foster care)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(foster care)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(foster care)")
+
+
+replace carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(welfare)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(welfare)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(welfare)")
+
+
+replace carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(support services)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(support services)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(support services)")
+
+
+replace carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(daytime care)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(daytime care)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(daytime care)")
+
+
+replace carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(life care)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(life care)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(life care)")
+
+
+replace carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(residential care)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(residential care)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(residential care)")
+
+
+replace carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(navigating the system)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(navigating the system)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(navigating the system)")
+
+
+replace carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(physical safety)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(physical safety)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(physical safety)")
+
+
+replace carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(support network)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(support network)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(support network)")
+
+
+drop if mi(carect)
+
+tab carect
+
+edit
+
+export delimited using "carect", replace
+
 
 /////////////////////////////////////////Money///////////////////////////////////////////////////////////
 
@@ -324,7 +553,68 @@ export delimited using "educt", replace
 //Government Benefits  
 //Insurance  
 //Loans  
-//Tax Preparation  
+//Tax Preparation  // not in the data 
+
+
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+keep if State =="NJ" | State =="PA"
+
+
+gen moneyct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(financial assistance)[0-9 a-zA-Z]*") 
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "(financial assistance)[0-9 a-zA-Z]*")
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(financial assistance)")
+
+
+replace moneyct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(financial education)[0-9 a-zA-Z]*") 
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "(financial education)[0-9 a-zA-Z]*")
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(financial education)")
+
+
+replace moneyct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(government benefits)[0-9 a-zA-Z]*") 
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "(government benefits)[0-9 a-zA-Z]*")
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(government benefits)")
+
+
+replace moneyct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(insurance)[0-9 a-zA-Z]*") 
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "(insurance)[0-9 a-zA-Z]*")
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(insurance)")
+
+
+replace moneyct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(loans)[0-9 a-zA-Z]*") 
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "(loans)[0-9 a-zA-Z]*")
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(loans)")
+
+
+replace moneyct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(tax )[0-9 a-zA-Z]*") 
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "(loans)[0-9 a-zA-Z]*")
+
+replace moneyct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(loans)")
+
+
+drop if mi(moneyct)
+
+tab moneyct
+
+edit
+
+export delimited using "moneyct", replace
+
+
+
 
 /////////////////////////////////////////Goods///////////////////////////////////////////////////////////
 
@@ -336,3 +626,60 @@ export delimited using "educt", replace
 //Medical Supplies  
 //Personal Safety 
 //Toys & gifts
+
+
+
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+keep if State =="NJ" | State =="PA"
+
+
+gen goodsct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*( supplies)[0-9 a-zA-Z]*") 
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "( supplies)[0-9 a-zA-Z]*")
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*( supplies)")
+
+
+replace goodsct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(clothing)[0-9 a-zA-Z]*") 
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "(clothing)[0-9 a-zA-Z]*")
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(clothing)")
+
+
+replace goodsct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(home goods)[0-9 a-zA-Z]*") 
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "(home goods)[0-9 a-zA-Z]*")
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(home goods)")
+
+
+replace goodsct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(personal safety)[0-9 a-zA-Z]*") 
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "(personal safety)[0-9 a-zA-Z]*")
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(personal safety)")
+
+
+replace goodsct= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(gifts)[0-9 a-zA-Z]*") 
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "(gifts)[0-9 a-zA-Z]*")
+
+replace goodsct=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(gifts)")
+
+
+drop if mi(goodsct)
+
+tab goodsct
+
+edit
+
+export delimited using "goodsct", replace
+
+
+
+
+
