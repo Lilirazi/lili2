@@ -604,13 +604,6 @@ save workplace_20172010_camdencensus, replace
 
 
 ******************merge all the 2010, 2017  info*****************************************************************************************
-empunemp_20172010_camdencensus
-pov_20172010_camdencensus
-income_20172010_camdencensus
-trans_20172010_camdencensus
-housetenure_20172010_camdencensus
-timework_20172010_camdencensus
-workplace_20172010_camdencensus
 
 
 clear
@@ -663,7 +656,7 @@ encode geoid2, gen(ctc)
 reshape long civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
 timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
 timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
-totaltrans drvalone drvcarpooltotalwalk pubtrans workhome timework_90_moremin_ ///
+totaltrans drvalone drvcarpool totalwalk pubtrans workhome timework_90_moremin_ ///
 totunit occ percocc vac percvac ownervacrate rentvacrate ///
 morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
 nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
@@ -671,33 +664,29 @@ nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_mor
 ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
 principal notprincipal,i(ctc)j(year)
 
-reshape wide civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
-timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
-timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
-totaltrans drvalone drvcarpooltotalwalk pubtrans workhome timework_90_moremin_ ///
-totunit occ percocc vac percvac ownervacrate rentvacrate ///
-morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
-nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
-nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
-ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
-principal notprincipal, i(ctc)j(year)
+//reshape wide civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
+//timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+//timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
+//totaltrans drvalone drvcarpool totalwalk pubtrans workhome timework_90_moremin_ ///
+//totunit occ percocc vac percvac ownervacrate rentvacrate ///
+//morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
+//nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+//nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+//ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+//principal notprincipal, i(ctc)j(year)
 
-edit
-
-
-///these below two rows should be run together 
-reshape long civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
-timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
-timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
-totaltrans drvalone drvcarpooltotalwalk pubtrans workhome timework_90_moremin_ ///
-totunit occ percocc vac percvac ownervacrate rentvacrate ///
-morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
-nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
-nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
-ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
-principal notprincipal,i(ctc)j(year)
 
 sort year
+
+destring geoid2, replace                      
+gen censustract = mod(geoid2,1000000)  
+
+drop geoid geoid2 
+move geodisplaylabel ctc
+
+move censustract ctc
+ 
+
 save camden_sg_reshcensus, replace
 
 *-------------------------------------------------------------------------------
@@ -720,7 +709,6 @@ clear
 use camden_sg_reshcensus
 
 
-tabstat totunit ownervac rentvac, by(year) stat(mean sd min max)
 tabstat totunit ownervac rentvac, by(year) stat(mean sd min max) nototal long col(stat)
 ** this table shows that rentvacancy rate mean has dropped in 7 years but owber vacancy rate has increased  and total units mean has slightly increased. 
 
@@ -728,44 +716,56 @@ tabstat totaltrans drvalone drvcarpool totalwalk pubtrans workhome, by(year) sta
 ** this table shows total transportation increased over 7 years. Many worked at home and the use of pubtrans has not changed
 ** less people walk and use carpooling and ther is a slight increase for driving alone 
 
-tabstat laborpart medincome emplrate unemprate pbelpov, by(year) stat(mean sd min max) nototal long format
+tabstat civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome, by(year) stat(mean sd min max) nototal long format
 ** this table shows labor participation, employment, unemployment and poverty rate for both year is the same. 
 ** However the median income something is wrong the number is incorrect!
 
-scatter unemprate pbelpov, by(year)
+tabstat timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ,by(year) stat(mean sd min max) nototal long format
+** this table shows labor participation, employment, unemployment and poverty rate for both year is the same. 
+** However the median income something is wrong the number is incorrect!
+
+
+tabstat morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
+morg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
+
+tabstat nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
+
+
+
+scatter unemp_civlabor belpov, by(year)
 *I want a line here in for the trend 
 
-twoway (scatter medincome totalwalk principal, mlab(ctc)), by(year)
+twoway (scatter medincome totalwalk principal, mlab(censustract)), by(year)
 
-scatter medincome unemprate pubtrans, by(ctc) legend(size(small))
-tw (scatter unemprate pbelpov, by(year))(lfit unemprate pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
+scatter medincome unemp_civlabor pubtrans, by(ctc) legend(size(small))
+tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemprate pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
  
 histogram medincome, percent 
-////////////////////////////////////////////////
-destring geoid2, replace                      //
-gen censustrack = mod(geoid2,1000000)         //
-////////////////////////////////////////////////
+
+
 sort censustrack year
-gr dot percvac if year==2010 in 1/60, over(censustrack)
-gr dot *vac if year==2010 in 1/60, over(censustrack, label(labsize(tiny)) )
+gr dot percvac if year==2010 in 1/60, over(censustract)
+gr dot *vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) )
 * this dot graph shows 
 
-gr dot percvac if year==2017 in 1/60, over(censustrack)
-gr dot *vac if year==2017 in 1/60, over(censustrack, label(labsize(tiny)) )
+gr dot percvac if year==2017 in 1/60, over(censustract)
+gr dot *vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) )
 * this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
 * but for some others ther is high vacancy in northern camden area 
 
 
-graph bar emplrate unemprate, over(year) stack
+graph bar emp_civlabor unemp_civlabor, over(year) stack
 ** there is not much diference in employment rate but unemployment decreased slightly. 
 
  
-twoway (scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustrack) mlabsize(tiny)) 
+twoway (scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)) 
  
-graph matrix percocc totalwalk pubtrans medincome pbelpov emplrate principal, half
+graph matrix percocc totalwalk pubtrans medincome pbelpov emp_civlabor principal, half
 ** this is a total presentation of graphs in the scattered plot 
 
-pwcorr unempr princip notprincip d* p*, star(.05)
+pwcorr unemp_civlabor princip notprincip d* p*, star(.05)
 
 net install outreg2, from(http://fmwww.bc.edu/RePEc/bocode/o)
 
@@ -778,28 +778,28 @@ predict yhat, xb
 
 separate yhat, by(year)
 
-line ownervac rentvac year, legend(size(medsmall)) 
+//line ownervac rentvac year, legend(size(medsmall)) 
 
-twoway rcap emplrate unemprate year 
+twoway rcap unemp_civlabor emp_civlabor year 
 
-graph hbar principal totalwalk, over(censustrack)
-graph hbar principal totalwalk, over(censustrack, sort(1) descending)
+graph hbar principal totalwalk, over(censustract)
+graph hbar principal totalwalk, over(censustract, sort(1) descending)
 * this graph shows the mean of people working in principal cities and how much they walk to get to their work place 
 
-graph hbar principal drvalone, over(censustrack, sort(1) descending)
+graph hbar medincome drvalone, over(censustract, sort(1) descending)
 * this graph shows the mean of people working in principal cities and how many drive alone to to get to their work place which is really noticable 
 
-graph hbar principal pubtrans, over(censustrack, sort(1) descending)
+graph hbar principal pubtrans, over(censustract, sort(1) descending)
 * this graph shows the mean of people working in principal cities and how many drive alone to to get to their work place which is really noticable 
 
 
 graph box percvac, over(year)
 ** this graph shows vacancy has increased in 7 years 
 
-graph box percvac pbelpov unemprate, over(year)
+graph box vac belpov unemp_civlabor, over(year)
 ** this graph shows vacancy has risen considering the low level of poverty 
 
-sunflower totalwalk notprincipal
+
 
 reg medincome laborpart
 /* *and then export to excel, note eform option that will exponentiate betas; ct will give it column title A1 */
