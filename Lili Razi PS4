@@ -230,6 +230,7 @@ destring workhome2010 pubtrans2010 totalwalk2010 drvcarpool2010 drvalone2010 tot
 save trans_2010_camden, replace 
 
 
+
 /////transportation camden census 2017/////////////////////////////////////////////////////////////////////////////////////////////////////
 /////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08101&prodType=table
 clear
@@ -286,10 +287,10 @@ rename hc01_vc05 vac2010
 label variable vac2010  "2010 Estimate; HOUSING OCCUPANCY - Vacant housing units"
 rename hc03_vc05 percvac2010 
 label var percvac2010 "2010 Percent; HOUSING OCCUPANCY - Vacant housing units"
-rename hc01_vc07 ownervac2010 
-label var ownervac2010 "2010 Estimate; HOUSING OCCUPANCY - Homeowner vacancy rate"
-rename hc01_vc08 rentvac2010 
-label var rentvac2010 "2010 Estimate; HOUSING OCCUPANCY - Rental vacancy rate" 
+rename hc01_vc07 ownervacrate2010 
+label var ownervacrate2010 "2010 Estimate; HOUSING OCCUPANCY - Homeowner vacancy rate"
+rename hc01_vc08 rentvacrate2010 
+label var rentvacrate2010 "2010 Estimate; HOUSING OCCUPANCY - Rental vacancy rate" 
 
 
 rename hc03_vc156 morg_ptowncostinc_less_20_2010
@@ -319,7 +320,7 @@ label variable nomorg_ptowncostinc_30_34_2010 "2010 Percent; SELECTED MONTHLY OW
 rename hc03_vc171 nomorg_ptowncostinc_35_more_2010
 label variable nomorg_ptowncostinc_35_more_2010 "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 30.0 and more percent"
  
- 
+
 rename hc03_vc192 ptrentincome_less_15_2010
 label variable ptrentincome_less_15_2010 "2010 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - Less than 15 percent"
 rename hc03_vc193 ptrentincome_15_19_2010
@@ -336,6 +337,13 @@ label variable ptrentincome_35_more_2010 "2010 Estimate; GROSS RENT AS A PERCENT
  
 drop in 1 
 
+//replace rentvac2010="." if rentvac2010=="-"
+
+//experiment 
+foreach var of varlist rentvacrate2010 ptrentincome_less_15_2010 ptrentincome_15_19_2010 ptrentincome_20_24_2010 ptrentincome_25_29_2010 ptrentincome_30_34_2010 ptrentincome_30_34_2010 ptrentincome_35_more_2010{
+ replace `var'="." if `var'=="-"
+ }
+ 
 
 **** These won't become string: 
 ****************************************************** ptrentincome_less_15_2010
@@ -345,13 +353,13 @@ drop in 1
 ******************************************************* ptrentincome_30_34_2010
 ******************************************************** ptrentincome_35_more_2010
 
-destring rentvac2010, ignore("-")replace
-destring ptrentincome_less_15_2010, ignore("-")replace  
-destring ownervac2010 percvac2010 percocc2010 totunit2010 occ2010 vac2010 ///
+
+
+destring rentvacrate2010 ptrentincome_less_15_2010 ownervacrate2010 percvac2010 percocc2010 totunit2010 occ2010 vac2010 ///
 morg_ptowncostinc_less_20_2010 morg_ptowncostinc_less_20_2010 morg_ptowncostinc_20_24_2010 morg_ptowncostinc_25_29_2010 morg_ptowncostinc_30_34_2010 ///
 morg_ptowncostinc_35_more_2010 nomorg_ptowncostinc_less_10_2010 nomorg_ptowncostinc_10_14_2010 nomorg_ptowncostinc_15_19_2010 ///
 nomorg_ptowncostinc_20_24_2010 nomorg_ptowncostinc_25_29_2010 nomorg_ptowncostinc_30_34_2010 nomorg_ptowncostinc_35_more_2010 ///
-ptrentincome_15_19_2010 ptrentincome_20_24_2010 ptrentincome_25_29_2010 ptrentincome_30_34_2010 ptrentincome_35_more_2010, ignore("-")replace
+ptrentincome_15_19_2010 ptrentincome_20_24_2010 ptrentincome_25_29_2010 ptrentincome_30_34_2010 ptrentincome_35_more_2010, replace
 
 save housetenure_2010_camden, replace 
 
@@ -376,10 +384,10 @@ rename hc01_vc05 vac2017
 label variable vac2017  "2017 Estimate; HOUSING OCCUPANCY - Vacant housing units"
 rename hc03_vc05 percvac2017 
 label var percvac2017 "2017 Percent; HOUSING OCCUPANCY - Vacant housing units"
-rename hc01_vc08 ownervac2017 
-label var ownervac2017 "2017 Estimate; HOUSING OCCUPANCY - Homeowner vacancy rate"
-rename hc01_vc09 rentvac2017
-label var rentvac2017 "2017 Estimate; HOUSING OCCUPANCY - Rental vacancy rate" 
+rename hc01_vc08 ownervacrate2017 
+label var ownervacrate2017 "2017 Estimate; HOUSING OCCUPANCY - Homeowner vacancy rate"
+rename hc01_vc09 rentvacrate2017
+label var rentvacrate2017 "2017 Estimate; HOUSING OCCUPANCY - Rental vacancy rate" 
 
 
 rename hc03_vc160 morg_ptowncostinc_less_20_2017
@@ -428,8 +436,12 @@ label variable ptrentincome_35_more_2017 "2017 Estimate; GROSS RENT AS A PERCENT
 
 drop in 1 
 
-
-destring rentvac2017 ownervac2017 percvac2017 percocc2017 totunit2017 occ2017 vac2017 ///
+//experiment 
+foreach var of varlist rentvacrate2017 ptrentincome_less_15_2017 ptrentincome_15_19_2017 ptrentincome_20_24_2017 ptrentincome_25_29_2017 ptrentincome_30_34_2017 ptrentincome_30_34_2017 ptrentincome_35_more_2017{
+ replace `var'="." if `var'=="-"
+ }
+ 
+destring rentvacrate2017 ownervacrate2017 percvac2017 percocc2017 totunit2017 occ2017 vac2017 ///
 morg_ptowncostinc_less_20_2017 morg_ptowncostinc_less_20_2017 morg_ptowncostinc_20_24_2017 morg_ptowncostinc_25_29_2017 morg_ptowncostinc_30_34_2017 ///
 morg_ptowncostinc_35_more_2017 nomorg_ptowncostinc_less_10_2017 nomorg_ptowncostinc_10_14_2017 nomorg_ptowncostinc_15_19_2017 ///
 nomorg_ptowncostinc_20_24_2017 nomorg_ptowncostinc_25_29_2017 nomorg_ptowncostinc_30_34_2017 nomorg_ptowncostinc_35_more_2017 ///
@@ -481,6 +493,7 @@ rename hd01_vd11 timework_60_89min_2010
 label variable timework_60_89min_2010 "2010 Estimate; Total: - 60 to 89 minutes"
 rename hd01_vd12 timework_90_moremin_2010
 label variable timework_90_moremin_2010 "2010 Estimate; Total: - 90 or more minutes"
+
 
 
 drop in 1
@@ -626,19 +639,63 @@ save camden_smarthgrowth_census, replace
 edit 
 
 ********************reshape and divide 2010, 2017 info *************************
+
+
+
+//variables names: civlaborpop2010 emp_civlabor2010 unemp_civlabor2010 belpov2010 pbelpov2010 households2010 medincome2010
+//timework_less_5min_2010 timework_5_9min_2010 timework_10_14min_2010 timework_15_19min_2010 timework_20_24min_2010 timework_25_34min_2010
+//timework_35_39min_2010 timework_40_44min_2010 timework_45_59min_2010 timework_60_89min_2010
+//totaltrans2010 drvalone2010 drvcarpool2010 totalwalk2010 pubtrans2010 workhome2010 timework_90_moremin_2010
+// totunit2010 occ2010 percocc2010 vac2010 percvac2010 ownervacrate2010 rentvacrate2010
+//morg_ptowncostinc_less_20_2010 morg_ptowncostinc_20_24_2010 morg_ptowncostinc_25_29_2010 morg_ptowncostinc_30_34_2010 morg_ptowncostinc_35_more_2010
+// nomorg_ptowncostinc_less_10_2010 nomorg_ptowncostinc_10_14_2010 nomorg_ptowncostinc_15_19_2010 nomorg_ptowncostinc_20_24_2010
+// nomorg_ptowncostinc_25_29_2010 nomorg_ptowncostinc_30_34_2010 nomorg_ptowncostinc_35_more_2010
+//ptrentincome_less_15_2010 ptrentincome_15_19_2010 ptrentincome_20_24_2010 ptrentincome_25_29_2010 ptrentincome_30_34_2010 ptrentincome_35_more_2010
+// principal2010 notprincipal2010
+
+
+
 clear 
 use camden_smarthgrowth_census
 encode geoid2, gen(ctc)
 
 ///these below two rows should be run together 
-reshape long civlaborpop emp_civlabor unemp_civlabor pcemp_civlabor pcunemp_civlabor,i(ctc)j(year)
+reshape long civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
+timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
+totaltrans drvalone drvcarpooltotalwalk pubtrans workhome timework_90_moremin_ ///
+totunit occ percocc vac percvac ownervacrate rentvacrate ///
+morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
+nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+principal notprincipal,i(ctc)j(year)
 
-reshape wide civlaborpop2010 emp_civlabor2010 unemp_civlabor2010 pcemp_civlabor2010 pcunemp_civlabor2010, i(ctc) j(year)
+reshape wide civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
+timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
+totaltrans drvalone drvcarpooltotalwalk pubtrans workhome timework_90_moremin_ ///
+totunit occ percocc vac percvac ownervacrate rentvacrate ///
+morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
+nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+principal notprincipal, i(ctc)j(year)
+
 edit
 
-///these below two rows should be run together 
-reshape long civlaborpop2010 emp_civlabor2010 unemp_civlabor2010 pcemp_civlabor2010 pcunemp_civlabor2010,i(ctc)j(year)
 
+///these below two rows should be run together 
+reshape long civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
+timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
+totaltrans drvalone drvcarpooltotalwalk pubtrans workhome timework_90_moremin_ ///
+totunit occ percocc vac percvac ownervacrate rentvacrate ///
+morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
+nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+principal notprincipal,i(ctc)j(year)
 
 sort year
 save camden_sg_reshcensus, replace
@@ -653,8 +710,8 @@ drop ctc
 save camden_smarthgrowth_2017, replace
 
 // this row below is for gis so that I can add it to my layers 
-export delimited using camden_smarthgrowth_2010, replace
-export delimited using camden_smarthgrowth_2017, replace
+//export delimited using camden_smarthgrowth_2010, replace
+//export delimited using camden_smarthgrowth_2017, replace
 
 *-------------------------------------------------------------------------------
 //////////Graph and Reg
