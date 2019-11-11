@@ -337,7 +337,7 @@ label variable ptrentincome_35_more_2010 "2010 Estimate; GROSS RENT AS A PERCENT
 drop in 1 
 
 
-
+**** These won't become string: 
 ****************************************************** ptrentincome_less_15_2010
 *******************************************************ptrentincome_15_19_2010
 ******************************************************* ptrentincome_20_24_2010
