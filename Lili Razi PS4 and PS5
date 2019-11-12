@@ -38,6 +38,7 @@ cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\files for graphs"
 *----------------------------------------------------------------------------------------
 
 
+
 /////2010-Employment////////////////////////////////////////////////////////////////////
 
 clear
@@ -127,9 +128,9 @@ import delimited "https://docs.google.com/uc?id=1-TcJuxRHthGEri7FJjOpmZ6Z_yJ_Ouf
 edit
 keep geodisplaylabel geoid2 hc02_est_vc01 hc01_est_vc01
 rename hc01_est_vc01 belpov2010
-label variable belpov2010 "All families 2010- Total below poverty level; Estimate; Families"
+label variable belpov2010 "2010 All families - Total below poverty level; Estimate; Families"
 rename hc02_est_vc01 pbelpov2010
-label variable pbelpov2010 "All families 2010- Percent below poverty level; Estimate; Families"
+label variable pbelpov2010 "2010 All families - Percent below poverty level; Estimate; Families"
 drop in 1
 destring pbelpov2010 belpov2010, replace
 save belowpov2010, replace 
@@ -142,9 +143,9 @@ import delimited "https://docs.google.com/uc?id=1nrZFfZHdiAPWzwy95ZCzG2EACt-IP0h
 edit
 keep geodisplaylabel geoid2 hc02_est_vc01 hc01_est_vc01
 rename hc01_est_vc01 belpov2017
-label variable belpov2017 "All families 2017- Total below poverty level; Estimate; Families"
+label variable belpov2017 "2017 All families - Total below poverty level; Estimate; Families"
 rename hc02_est_vc01 pbelpov2017
-label variable pbelpov2017 "All families 2017- Percent below poverty level; Estimate; Families"
+label variable pbelpov2017 "2017 All families - Percent below poverty level; Estimate; Families"
 drop in 1 
 destring pbelpov2017 belpov2017, replace 
 save belowpov2017, replace 
@@ -173,9 +174,9 @@ import delimited "https://docs.google.com/uc?id=1keGwMtoCY6YCOTjdlx_PqvbWfkmjoOv
 keep geoid2 geodisplaylabel hc01_est_vc02 hc02_est_vc02
 drop in 1 
 rename hc01_est_vc02 households2010
-label variable households2010 "Total; Estimate; Households2010"
+label variable households2010 "2010 Total; Estimate; Households"
 rename hc02_est_vc02 medincome2010
-label variable medincome2010 "Median income (dollars); Estimate; Households2010"
+label variable medincome2010 "2010 Median income (dollars); Estimate; Households"
 destring medincome2010 households2010, replace 
 save medianincome_camden_2010, replace 
 
@@ -189,9 +190,9 @@ import delimited "https://docs.google.com/uc?id=1HHZL8yTMRHOPqbTdFxYRTQLbkGTJhfB
 keep geoid2 geodisplaylabel hc01_est_vc02 hc03_est_vc02
 drop in 1 
 rename hc01_est_vc02 households2017
-label variable households2017 "Total; Estimate; Households2017"
+label variable households2017 "2017 Total; Estimate; Households"
 rename hc03_est_vc02 medincome2017
-label variable medincome2017 "Median income (dollars); Estimate; Households2017"
+label variable medincome2017 "2017 Median income (dollars); Estimate; Households"
 destring medincome2017 households2017, replace 
 save medianincome_camden_2017, replace 
 
@@ -344,16 +345,6 @@ foreach var of varlist rentvacrate2010 ptrentincome_less_15_2010 ptrentincome_15
  replace `var'="." if `var'=="-"
  }
  
-
-**** These won't become string: 
-****************************************************** ptrentincome_less_15_2010
-*******************************************************ptrentincome_15_19_2010
-******************************************************* ptrentincome_20_24_2010
-******************************************************* ptrentincome_25_29_2010
-******************************************************* ptrentincome_30_34_2010
-******************************************************** ptrentincome_35_more_2010
-
-
 
 destring rentvacrate2010 ptrentincome_less_15_2010 ownervacrate2010 percvac2010 percocc2010 totunit2010 occ2010 vac2010 ///
 morg_ptowncostinc_less_20_2010 morg_ptowncostinc_less_20_2010 morg_ptowncostinc_20_24_2010 morg_ptowncostinc_25_29_2010 morg_ptowncostinc_30_34_2010 ///
@@ -605,6 +596,13 @@ save workplace_20172010_camdencensus, replace
 
 ******************merge all the 2010, 2017  info*****************************************************************************************
 
+clear 
+foreach file in pov_20172010_camdencensus income_20172010_camdencensus trans_20172010_camdencensus housetenure_20172010_camdencensus ///
+timework_20172010_camdencensus workplace_20172010_camdencensus{
+merge `file' 1:1 geoid2 using empunemp_20172010_camdencensus
+drop _merge
+}
+
 
 clear
 
@@ -676,18 +674,20 @@ principal notprincipal,i(ctc)j(year)
 //principal notprincipal, i(ctc)j(year)
 
 
+//  I am just sorting the data better 
 sort year
 
 destring geoid2, replace                      
 gen censustract = mod(geoid2,1000000)  
 
 drop geoid geoid2 
+
 move geodisplaylabel ctc
 
 move censustract ctc
  
-
 save camden_sg_reshcensus, replace
+
 
 *-------------------------------------------------------------------------------
 keep if year==2010
@@ -702,12 +702,35 @@ save camden_smarthgrowth_2017, replace
 //export delimited using camden_smarthgrowth_2010, replace
 //export delimited using camden_smarthgrowth_2017, replace
 
+
+
+
 *-------------------------------------------------------------------------------
-//////////Graph and Reg
+//////////Graph and Reg//////////////////////////////////////////////////////////////////////////////////////
 
 clear 
 use camden_sg_reshcensus
 
+//civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome 
+
+//timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ 
+//timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
+
+//totaltrans drvalone drvcarpool totalwalk pubtrans workhome 
+ 
+//totunit occ vac percocc percvac ownervacrate rentvacrate 
+
+//morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_
+ 
+//nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ 
+//nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ 
+
+//ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
+
+//principal notprincipal
+
+
+* tabstat----------------------------------------------------------------------
 
 tabstat totunit ownervac rentvac, by(year) stat(mean sd min max) nototal long col(stat)
 ** this table shows that rentvacancy rate mean has dropped in 7 years but owber vacancy rate has increased  and total units mean has slightly increased. 
@@ -716,7 +739,7 @@ tabstat totaltrans drvalone drvcarpool totalwalk pubtrans workhome, by(year) sta
 ** this table shows total transportation increased over 7 years. Many worked at home and the use of pubtrans has not changed
 ** less people walk and use carpooling and ther is a slight increase for driving alone 
 
-tabstat civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome, by(year) stat(mean sd min max) nototal long format
+tabstat civlaborpop emp_civlabor unemp_civlabor belpov medincome, by(year) stat(mean sd min max) nototal long format
 ** this table shows labor participation, employment, unemployment and poverty rate for both year is the same. 
 ** However the median income something is wrong the number is incorrect!
 
@@ -725,27 +748,58 @@ timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ,by(
 ** this table shows labor participation, employment, unemployment and poverty rate for both year is the same. 
 ** However the median income something is wrong the number is incorrect!
 
-
 tabstat morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
 morg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
 
 tabstat nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
 nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
 
+tabstat ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ,by(year) stat(mean sd min max) nototal long format
 
+tabstat principal notprincipal, by(year) stat(mean sd min max) nototal long format
+
+
+* scatterplot----------------------------------------------------------------------
 
 scatter unemp_civlabor belpov, by(year)
 *I want a line here in for the trend 
 
+scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) by(year)
+* this means for people who spent more than %30 of income on rent and based on their income how much do they walk to their work place 
+
+foreach v in timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ {
+tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get To Work) xtitle(Use Of Public Transportation) title(Workplace And Time To Get To Work)
+}
+* This shows there is a positive colleration between these two 
+
+
+
+
+** Assessing the %30 of income 
+tw(scatter morg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit morg_ptowncostinc_35_more_ vac, msize(vsmall)), ytitle(More than %35 of income spent on morgage owner house(tiny)) xtitle(Vaccancy) by(year)
+*strong correlation, better in 2017 
+tw(scatter nomorg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit nomorg_ptowncostinc_35_more_ vac, msize(tiny)), ytitle(More than %35 of income spent on nonmorgage owner house(tiny)) xtitle(Vaccancy) by(year)
+* noticeable for vaccancy of 200 not much for 2010 but strong correlation for 2017 
+tw(scatter ptrentincome_35_more_ vac, msize(vsmall))(lfit ptrentincome_35_more_ vac, msize(vsmall)), ytitle(More than %35 of income spent on rent) xtitle(Vaccancy) by(year)
+* direct correlation and slightly more in 2017 
+
+foreach v in morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ptrentincome_30_34_ ptrentincome_35_more_ {
+tw (scatter `v' vac, msize(vsmall))(lfit `v' vac), ytitle(More than %30 of income spent on housing) xtitle(Vaccancy) title(Affordable Housing) by(year) 
+}
+
+
+
+
 twoway (scatter medincome totalwalk principal, mlab(censustract)), by(year)
 
-scatter medincome unemp_civlabor pubtrans, by(ctc) legend(size(small))
-tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemprate pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
- 
-histogram medincome, percent 
+tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemp_civlabor pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
+
+tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)) 
 
 
-sort censustrack year
+*gr dot----------------------------------------------------------------------
+
+sort censustract year
 gr dot percvac if year==2010 in 1/60, over(censustract)
 gr dot *vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) )
 * this dot graph shows 
@@ -755,34 +809,47 @@ gr dot *vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) )
 * this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
 * but for some others ther is high vacancy in northern camden area 
 
+*gr dot----------------------------------------------------------------------
+
+gr dot vac ptrentincome_30_34_ ptrentincome_35_more_ morg_ptowncostinc_35_more_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+if year==2010 in 1/60, over(censustract, label(labsize(tiny)) )
+* this dot graph shows 
+
+gr dot vac ptrentincome_30_34_ ptrentincome_35_more_ morg_ptowncostinc_35_more_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+if year==2017 in 1/60, over(censustract, label(labsize(tiny)) )
+* this dot graph shows 
+
+*----------------------------------------------------------------------
+
+ 
+histogram medincome, percent 
+
+
+*-----------------------------------------------------------------------
 
 graph bar emp_civlabor unemp_civlabor, over(year) stack
 ** there is not much diference in employment rate but unemployment decreased slightly. 
 
- 
-twoway (scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)) 
+graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(year) stack
+graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(censustract) stack
+
+
  
 graph matrix percocc totalwalk pubtrans medincome pbelpov emp_civlabor principal, half
 ** this is a total presentation of graphs in the scattered plot 
 
 pwcorr unemp_civlabor princip notprincip d* p*, star(.05)
 
-net install outreg2, from(http://fmwww.bc.edu/RePEc/bocode/o)
 
-use merge1, clear ///
 
-	 
-/* Regress */
-regress medincome pubtrans percvac
-predict yhat, xb	
+*gr hbar----------------------------------------------------------------------
 
-separate yhat, by(year)
+graph hbar ownervacrate rentvacrate, over(year)
 
-//line ownervac rentvac year, legend(size(medsmall)) 
-
-twoway rcap unemp_civlabor emp_civlabor year 
+graph hbar percocc percvac pbelpov, over(year)
 
 graph hbar principal totalwalk, over(censustract)
+
 graph hbar principal totalwalk, over(censustract, sort(1) descending)
 * this graph shows the mean of people working in principal cities and how much they walk to get to their work place 
 
@@ -793,6 +860,8 @@ graph hbar principal pubtrans, over(censustract, sort(1) descending)
 * this graph shows the mean of people working in principal cities and how many drive alone to to get to their work place which is really noticable 
 
 
+*gr box ----------------------------------------------------------------------
+
 graph box percvac, over(year)
 ** this graph shows vacancy has increased in 7 years 
 
@@ -801,37 +870,54 @@ graph box vac belpov unemp_civlabor, over(year)
 
 
 
-reg medincome laborpart
+*-----------------------------------------------------------------------------
+
+foreach var in drvalone occ principal morg_ptowncostinc_less_20_ nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ ptrentincome_less_15_ ptrentincome_15_19_{
+reg `var' medincome
+}
+
+
+
+loc c drvalone occ principal morg_ptowncostinc_less_20_ nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ ptrentincome_less_15_ ptrentincome_15_19_
+
+reg medincome                     emp_civlabor `c'
+reg medincome          households emp_civlabor `c'
+reg medincome drvalone households emp_civlabor `c'
+
+
+
+net install outreg2, from(http://fmwww.bc.edu/RePEc/bocode/o)
+
+use merge1, clear ///
+
+reg medincome civlaborpop
 /* *and then export to excel, note eform option that will exponentiate betas; ct will give it column title A1 */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel replace ct(A1) lab
 /* *then i run some other specification */
-reg medincome laborpart emplrate
+reg medincome civlaborpop emp_civlabor
 /* *and outreg2 again but i append instead of replace */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A2) lab  
-reg medincome laborpart emplrate ownervac
+reg medincome civlaborpop emp_civlabor vac
 /* *and outreg2 again but i append instead of replace */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A3) lab
-reg medincome laborpart emplrate ownervac rentvac
+reg medincome civlaborpop emp_civlabor vac occ
 /* *and outreg2 again but i append instead of replace */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A4) lab  
-reg medincome laborpart emplrate ownervac rentvac principal
+reg medincome civlaborpop emp_civlabor vac occ principal
 /* *and outreg2 again but i append instead of replace */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A5) lab
-reg medincome laborpart emplrate ownervac rentvac principal totalwalk
+reg medincome civlaborpop emp_civlabor vac occ principal totalwalk
 /* *and outreg2 again but i append instead of replace */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A6) lab
-reg medincome laborpart emplrate ownervac rentvac principal totalwalk pubtrans
+reg medincome civlaborpop emp_civlabor vac occ principal totalwalk pubtrans
 /* *and outreg2 again but i append instead of replace */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A8) lab
-reg medincome laborpart emplrate ownervac rentvac principal totalwalk pubtrans drvalone
+reg medincome civlaborpop emp_civlabor vac occ principal totalwalk pubtrans drvalone
 /* *and outreg2 again but i append instead of replace */
 
-** Nothing Significant! 
 
-//sum medincome
+reg emp_civlabor occ timework_less_5min_ totalwalk
 
-//gen highinc=(medincome> 36130.45 )
-//gen lowinc=(medincome< 36130.45 )
-//----------------------------------------loops and macros 
+
 
  
