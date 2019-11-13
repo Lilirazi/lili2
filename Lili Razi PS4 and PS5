@@ -711,6 +711,7 @@ save camden_smarthgrowth_2017, replace
 clear 
 use camden_sg_reshcensus
 
+**my Variables: 
 //civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome 
 
 //timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ 
@@ -721,6 +722,7 @@ use camden_sg_reshcensus
 //totunit occ vac percocc percvac ownervacrate rentvacrate 
 
 //morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_
+
  
 //nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ 
 //nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ 
@@ -733,7 +735,7 @@ use camden_sg_reshcensus
 * tabstat----------------------------------------------------------------------
 
 tabstat totunit ownervac rentvac, by(year) stat(mean sd min max) nototal long col(stat)
-** this table shows that rentvacancy rate mean has dropped in 7 years but owber vacancy rate has increased  and total units mean has slightly increased. 
+** this table shows that vacancy rate mean has dropped in 7 years but owner vacancy rate has increased and total units mean slightly increased. 
 
 tabstat totaltrans drvalone drvcarpool totalwalk pubtrans workhome, by(year) stat(mean sd min max) nototal long format
 ** this table shows total transportation increased over 7 years. Many worked at home and the use of pubtrans has not changed
@@ -750,13 +752,18 @@ timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ,by(
 
 tabstat morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
 morg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
+** owner expenditure of income shows those who spent less than %20of their income on housing with morgage increased in 2017 but other percentages decreased 
 
 tabstat nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
 nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
+** not much difference for housing with no morgage 
 
 tabstat ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ,by(year) stat(mean sd min max) nototal long format
-
+** Renters expenditure of income shows those who spent over %35 of their income on housing increased 
+ 
 tabstat principal notprincipal, by(year) stat(mean sd min max) nototal long format
+** people working in not principal cities decreased significantly but those that worked in principal cities almost remaned the same 
+
 
 
 * scatterplot----------------------------------------------------------------------
@@ -764,6 +771,9 @@ tabstat principal notprincipal, by(year) stat(mean sd min max) nototal long form
 scatter unemp_civlabor belpov, by(year)
 *I want a line here in for the trend 
 
+******
+******
+****** This is circular and interesting 
 scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) by(year)
 * this means for people who spent more than %30 of income on rent and based on their income how much do they walk to their work place 
 
@@ -783,33 +793,51 @@ tw(scatter nomorg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit nomorg_ptowncos
 tw(scatter ptrentincome_35_more_ vac, msize(vsmall))(lfit ptrentincome_35_more_ vac, msize(vsmall)), ytitle(More than %35 of income spent on rent) xtitle(Vaccancy) by(year)
 * direct correlation and slightly more in 2017 
 
+
+
 foreach v in morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ptrentincome_30_34_ ptrentincome_35_more_ {
 tw (scatter `v' vac, msize(vsmall))(lfit `v' vac), ytitle(More than %30 of income spent on housing) xtitle(Vaccancy) title(Affordable Housing) by(year) 
 }
 
 
 
-
 twoway (scatter medincome totalwalk principal, mlab(censustract)), by(year)
 
 tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemp_civlabor pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
+** In 2010 there was a high correlation between unemployment rate and percent below povert but the relationship became weaker in 2017 
+** The first %20 of poverty is related to high rate of unemployment by the amount of 400
 
-tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)) 
+
+******
+******
+****** This is circular, over census tracts and interesting 
+tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny))
+
+tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation) by(year) 
+** this graph shows the correlation between median income and public transportation over census tract 
+** Use of public transportation increased in 2017 
 
 
 *gr dot----------------------------------------------------------------------
 
-sort censustract year
-gr dot percvac if year==2010 in 1/60, over(censustract)
-gr dot *vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) )
-* this dot graph shows 
 
-gr dot percvac if year==2017 in 1/60, over(censustract)
-gr dot *vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) )
+******
+******
+****** This is dot graph over census tracts and interesting 
+sort censustract year
+gr dot occ vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g4.gph, replace)
+
 * this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
 * but for some others ther is high vacancy in northern camden area 
 
-*gr dot----------------------------------------------------------------------
+gr dot occ vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g5.gph, replace)
+* this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
+* but for some others ther is high vacancy in northern camden area 
+
+gr combine g4.gph g5.gph, row(1) ycommon title(Occupancy and Vacancy in 2010 and 2017, size(Medium))
+
+gr dot mP0_29 mP0n_29 Rent_29 if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) title(Monthly Cost of Income for Housing, size(Medium)) legend(order(1 "Housing w. Morgage" 2 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
+
 
 gr dot vac ptrentincome_30_34_ ptrentincome_35_more_ morg_ptowncostinc_35_more_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
 if year==2010 in 1/60, over(censustract, label(labsize(tiny)) )
@@ -819,13 +847,13 @@ gr dot vac ptrentincome_30_34_ ptrentincome_35_more_ morg_ptowncostinc_35_more_ 
 if year==2017 in 1/60, over(censustract, label(labsize(tiny)) )
 * this dot graph shows 
 
-*----------------------------------------------------------------------
+*histogram----------------------------------------------------------------------
 
  
 histogram medincome, percent 
 
 
-*-----------------------------------------------------------------------
+* graphy bar-----------------------------------------------------------------------
 
 graph bar emp_civlabor unemp_civlabor, over(year) stack
 ** there is not much diference in employment rate but unemployment decreased slightly. 
@@ -840,6 +868,71 @@ graph matrix percocc totalwalk pubtrans medincome pbelpov emp_civlabor principal
 
 pwcorr unemp_civlabor princip notprincip d* p*, star(.05)
 
+
+*bar charts stacked; aok comments --------------------------------------------------
+*--------------------aok comments --------------------------------------------------
+*--------------------aok comments --------------------------------------------------
+
+la var morg_ptowncostinc_less_20_ "Ms"
+la var morg_ptowncostinc_20_24_ "sdas"
+
+
+
+gr bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
+ morg_ptowncostinc_35_more_ ,over(year) stack saving(g1.gph, replace)
+
+gr bar nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,over(year) stack saving(g2.gph, replace)
+
+gr combine g1.gph g2.gph, row(1) ycommon
+
+
+
+graph bar (mean) morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
+morg_ptowncostinc_35_more_, over(year) stack ytitle(Comparison of tenure and income spent) legend(order(1 ///
+"A" 2 "B" 3 "C" 4 "D" 5 "E") size(vsmall)rows(2))
+
+
+edit morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_
+edit morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ mP0_24
+egen mP0_24=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_)
+
+
+*bar charts stacked; Lili --------------------------------------------------
+*--------------------Lili --------------------------------------------------
+*--------------------Lili --------------------------------------------------
+
+
+gr bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
+ morg_ptowncostinc_35_more_ ,over(year) stack ytitle(Owner W. Morgage-% Of Income Expenditure) ytitle(, margin(top)) title(, size(Tiny)) legend(order(1 ///
+"Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))saving(g1.gph, replace)
+* This bar graph shows that affordable housing perhaps has increased in 2017 for homeowners with morgage 
+
+
+gr bar nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,over(year) stack ytitle(Owner W. NoMorgage-% Of Income Expenditure) ytitle(, margin(esubhead)) title(, size(Tiny)) legend(order(1 ///
+"Less Than %10" 2 "%10-14" 3 "%15-19" 4 "%20-24" 5 "%25-29" 6 "%30-34" 7 "More Than %35 Of Income") size(vsmall)rows(2))saving(g2.gph, replace)
+* This bar graph shows that affordable housing slightly increased in 2017 for homeowners with no morgage 
+
+
+gr bar ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+,over(year) stack ytitle(Renter Costs-% Of Income Expenditure) ytitle(, margin(esubhead)) title(, size(Tiny)) legend(order(1 ///
+"Less Than %10" 2 "%10-14" 3 "%15-19" 4 "%20-24" 5 "%25-29" 6 "%30-34" 7 "More Than %35 Of Income") size(vsmall)rows(2))saving(g3.gph, replace)
+* This bar graph shows there is not that much difference for renters between 2010 and 2017 
+
+
+gr combine g1.gph g2.gph, row(1) ycommon
+gr combine g1.gph g2.gph g3.gph, row(1) ycommon
+
+
+* I am combining all tenures under %30 of income expenditure to see the aount of affordable housing in 2007 and 2017 
+egen mP0_29=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29)
+egen mP0n_29=rowtotal(nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_)
+egen Rent_29=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_)
+
+gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Housing Costs <%30 Of Income Expenditure) ytitle(, margin(top)) title(, size(Tiny)) legend(order(1 ///
+"Owner w. Morgage" 2 "Owner w/o Morgage" 3 "Renter" ) size(vsmall)rows(2))
+* The graph shows the amount for renters has got better but not much change for house owners 
 
 
 *gr hbar----------------------------------------------------------------------
@@ -859,15 +952,34 @@ graph hbar medincome drvalone, over(censustract, sort(1) descending)
 graph hbar principal pubtrans, over(censustract, sort(1) descending)
 * this graph shows the mean of people working in principal cities and how many drive alone to to get to their work place which is really noticable 
 
+loc nonmorg nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_
+loc rent ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_
+
+loc morg morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ 
+
+
+*** I wanna show these bars under one another!
+graph bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ `morg' , stack
+graph bar `morg' `nonmorg'
+graph bar `morg' `nonmorg' `rent'
+
+graph hbar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
+nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_
+
 
 *gr box ----------------------------------------------------------------------
 
 graph box percvac, over(year)
 ** this graph shows vacancy has increased in 7 years 
 
+******
+******
+****** This is interesting 
 graph box vac belpov unemp_civlabor, over(year)
 ** this graph shows vacancy has risen considering the low level of poverty 
-
 
 
 *-----------------------------------------------------------------------------
@@ -917,6 +1029,13 @@ reg medincome civlaborpop emp_civlabor vac occ principal totalwalk pubtrans drva
 
 
 reg emp_civlabor occ timework_less_5min_ totalwalk
+
+reg households belpov vac
+
+reg drvalone drvcarpool totalwalk pubtrans timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ 
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_, over(censustract) 
+
+reg  occ totaltrans totalwalk
 
 
 
