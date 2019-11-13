@@ -1,4 +1,4 @@
-// This is census track data of Camden County for Data Management and GIS class 
+// This is census tract data of Camden County for Data Management and GIS class 
 // Fall 2019 ---- Prof. Adam
 // Stata 15
 // Lili Razi 
@@ -732,7 +732,7 @@ use camden_sg_reshcensus
 //principal notprincipal
 
 
-* tabstat----------------------------------------------------------------------
+*tabstat------------------------------------------------------------------------
 
 tabstat totunit ownervac rentvac, by(year) stat(mean sd min max) nototal long col(stat)
 ** this table shows that vacancy rate mean has dropped in 7 years but owner vacancy rate has increased and total units mean slightly increased. 
@@ -766,7 +766,7 @@ tabstat principal notprincipal, by(year) stat(mean sd min max) nototal long form
 
 
 
-* scatterplot----------------------------------------------------------------------
+*scatterplot--------------------------------------------------------------------
 
 scatter unemp_civlabor belpov, by(year)
 *I want a line here in for the trend 
@@ -781,7 +781,6 @@ foreach v in timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15
 tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get To Work) xtitle(Use Of Public Transportation) title(Workplace And Time To Get To Work)
 }
 * This shows there is a positive colleration between these two 
-
 
 
 
@@ -818,7 +817,7 @@ tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlab
 ** Use of public transportation increased in 2017 
 
 
-*gr dot----------------------------------------------------------------------
+*gr dot-------------------------------------------------------------------------
 
 
 ******
@@ -853,7 +852,7 @@ if year==2017 in 1/60, over(censustract, label(labsize(tiny)) )
 histogram medincome, percent 
 
 
-* graphy bar-----------------------------------------------------------------------
+*graphy bar---------------------------------------------------------------------
 
 graph bar emp_civlabor unemp_civlabor, over(year) stack
 ** there is not much diference in employment rate but unemployment decreased slightly. 
@@ -862,16 +861,21 @@ graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(year) stack
 graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(censustract) stack
 
 
- 
-graph matrix percocc totalwalk pubtrans medincome pbelpov emp_civlabor principal, half
-** this is a total presentation of graphs in the scattered plot 
 
-pwcorr unemp_civlabor princip notprincip d* p*, star(.05)
+loc rent ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_
+loc twork drvalone drvcarpool totalwalk pubtrans timework_less_5min_ timework_5_9min_ timework_10_14min_
+loc trans drvalone drvcarpool totalwalk pubtrans
+
+*** I want to show these bars under one another!
+graph bar `rent', by(year) legend(size(vsmall))
+graph bar `rent' `twork', by(year) legend(size(vsmall))
+graph bar `twork' `trans', by(year) legend(size(vsmall))
 
 
-*bar charts stacked; aok comments --------------------------------------------------
-*--------------------aok comments --------------------------------------------------
-*--------------------aok comments --------------------------------------------------
+
+*bar charts stacked; aok comments ----------------------------------------------
+*--------------------aok comments ----------------------------------------------
+*--------------------aok comments ----------------------------------------------
 
 la var morg_ptowncostinc_less_20_ "Ms"
 la var morg_ptowncostinc_20_24_ "sdas"
@@ -898,9 +902,9 @@ edit morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ mP0_24
 egen mP0_24=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_)
 
 
-*bar charts stacked; Lili --------------------------------------------------
-*--------------------Lili --------------------------------------------------
-*--------------------Lili --------------------------------------------------
+*bar charts stacked; Lili ------------------------------------------------------
+*--------------------Lili ------------------------------------------------------
+*--------------------Lili ------------------------------------------------------
 
 
 gr bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
@@ -935,42 +939,14 @@ gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Housing Costs <%30 Of Inco
 * The graph shows the amount for renters has got better but not much change for house owners 
 
 
-*gr hbar----------------------------------------------------------------------
+*gr hbar------------------------------------------------------------------------
 
 graph hbar ownervacrate rentvacrate, over(year)
 
 graph hbar percocc percvac pbelpov, over(year)
 
-graph hbar principal totalwalk, over(censustract)
 
-graph hbar principal totalwalk, over(censustract, sort(1) descending)
-* this graph shows the mean of people working in principal cities and how much they walk to get to their work place 
-
-graph hbar medincome drvalone, over(censustract, sort(1) descending)
-* this graph shows the mean of people working in principal cities and how many drive alone to to get to their work place which is really noticable 
-
-graph hbar principal pubtrans, over(censustract, sort(1) descending)
-* this graph shows the mean of people working in principal cities and how many drive alone to to get to their work place which is really noticable 
-
-loc nonmorg nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
-nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_
-loc rent ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_
-
-loc morg morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ 
-
-
-*** I wanna show these bars under one another!
-graph bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ `morg' , stack
-graph bar `morg' `nonmorg'
-graph bar `morg' `nonmorg' `rent'
-
-graph hbar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
-nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
-nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
-ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_
-
-
-*gr box ----------------------------------------------------------------------
+*gr box ------------------------------------------------------------------------
 
 graph box percvac, over(year)
 ** this graph shows vacancy has increased in 7 years 
@@ -982,12 +958,20 @@ graph box vac belpov unemp_civlabor, over(year)
 ** this graph shows vacancy has risen considering the low level of poverty 
 
 
-*-----------------------------------------------------------------------------
+*Misc---------------------------------------------------------------------------
+ 
+graph matrix percocc totalwalk pubtrans medincome pbelpov emp_civlabor principal, half
+** this is a total presentation of graphs in the scattered plot 
+
+pwcorr unemp_civlabor princip notprincip d* p*, star(.05)
+
+
+*Reg----------------------------------------------------------------------------
+
 
 foreach var in drvalone occ principal morg_ptowncostinc_less_20_ nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ ptrentincome_less_15_ ptrentincome_15_19_{
 reg `var' medincome
 }
-
 
 
 loc c drvalone occ principal morg_ptowncostinc_less_20_ nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ ptrentincome_less_15_ ptrentincome_15_19_
@@ -1032,8 +1016,8 @@ reg emp_civlabor occ timework_less_5min_ totalwalk
 
 reg households belpov vac
 
-reg drvalone drvcarpool totalwalk pubtrans timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ 
-timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_, over(censustract) 
+reg drvalone drvcarpool totalwalk pubtrans timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
 
 reg  occ totaltrans totalwalk
 
