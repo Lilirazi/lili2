@@ -596,12 +596,13 @@ save workplace_20172010_camdencensus, replace
 
 ******************merge all the 2010, 2017  info*****************************************************************************************
 
-clear 
-foreach file in pov_20172010_camdencensus income_20172010_camdencensus trans_20172010_camdencensus housetenure_20172010_camdencensus ///
-timework_20172010_camdencensus workplace_20172010_camdencensus{
-merge `file' 1:1 geoid2 using empunemp_20172010_camdencensus
-drop _merge
-}
+//Is there a way to do this?
+//clear 
+//foreach file in pov_20172010_camdencensus income_20172010_camdencensus trans_20172010_camdencensus housetenure_20172010_camdencensus ///
+//timework_20172010_camdencensus workplace_20172010_camdencensus{
+//merge `file' 1:1 geoid2 using empunemp_20172010_camdencensus
+//drop _merge
+//}
 
 
 clear
@@ -650,7 +651,7 @@ clear
 use camden_smarthgrowth_census
 encode geoid2, gen(ctc)
 
-///these below two rows should be run together 
+///these below rows should run together 
 reshape long civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
 timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
 timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
@@ -701,8 +702,6 @@ save camden_smarthgrowth_2017, replace
 // this row below is for gis so that I can add it to my layers 
 //export delimited using camden_smarthgrowth_2010, replace
 //export delimited using camden_smarthgrowth_2017, replace
-
-
 
 
 *-------------------------------------------------------------------------------
@@ -799,7 +798,6 @@ tw (scatter `v' vac, msize(vsmall))(lfit `v' vac), ytitle(More than %30 of incom
 }
 
 
-
 twoway (scatter medincome totalwalk principal, mlab(censustract)), by(year)
 
 tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemp_civlabor pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
@@ -861,7 +859,6 @@ graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(year) stack
 graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(censustract) stack
 
 
-
 loc rent ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_
 loc twork drvalone drvcarpool totalwalk pubtrans timework_less_5min_ timework_5_9min_ timework_10_14min_
 loc trans drvalone drvcarpool totalwalk pubtrans
@@ -889,7 +886,6 @@ gr bar nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncosti
 nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,over(year) stack saving(g2.gph, replace)
 
 gr combine g1.gph g2.gph, row(1) ycommon
-
 
 
 graph bar (mean) morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
