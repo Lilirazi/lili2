@@ -800,7 +800,8 @@ tw (scatter `v' vac, msize(vsmall))(lfit `v' vac), ytitle(More than %30 of incom
 
 twoway (scatter medincome totalwalk principal, mlab(censustract)), by(year)
 
-tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemp_civlabor pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace)
+tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemp_civlabor pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace) ///
+legend(order(1 "Civil Labor Unemployment" 2 "Fited Values"))
 ** In 2010 there was a high correlation between unemployment rate and percent below povert but the relationship became weaker in 2017 
 ** The first %20 of poverty is related to high rate of unemployment by the amount of 400
 
@@ -808,9 +809,10 @@ tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemp_civlabor pbelpov, by(ye
 ******
 ******
 ****** This is circular, over census tracts and interesting 
-tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny))
+tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)) ytitle(Median Income) xtitle(Public Transportation)
 
-tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation) by(year) 
+tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation)
+tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation) by(year)
 ** this graph shows the correlation between median income and public transportation over census tract 
 ** Use of public transportation increased in 2017 
 
@@ -822,27 +824,58 @@ tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlab
 ******
 ****** This is dot graph over census tracts and interesting 
 sort censustract year
-gr dot occ vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g4.gph, replace)
+gr dot occ vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g4.gph, replace) title(2010, size(medium))
 
 * this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
 * but for some others ther is high vacancy in northern camden area 
 
-gr dot occ vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g5.gph, replace)
+gr dot occ vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g5.gph, replace) title(2017, size(medium))
 * this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
 * but for some others ther is high vacancy in northern camden area 
 
-gr combine g4.gph g5.gph, row(1) ycommon title(Occupancy and Vacancy in 2010 and 2017, size(Medium))
+gr combine g4.gph g5.gph, row(1) ycommon title(Occupancy and Vacancy, size(Medium))
+
+
+* I am combining all tenures under %30 of income expenditure to see the aount of affordable housing in 2007 and 2017 
+egen mP0_29=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29)
+egen mP0n_29=rowtotal(nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_)
+egen Rent_29=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_)
 
 gr dot mP0_29 mP0n_29 Rent_29 if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) title(Monthly Cost of Income for Housing, size(Medium)) legend(order(1 "Housing w. Morgage" 2 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
 
 
-gr dot vac ptrentincome_30_34_ ptrentincome_35_more_ morg_ptowncostinc_35_more_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
-if year==2010 in 1/60, over(censustract, label(labsize(tiny)) )
+* It it hard to see the changes for vac that's why we divide it by 10 
+gen vac10= vac/10
+
+gr dot mP0n_29 Rent_29 if year==2010 in 1/40, over(censustract, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(medium)) legend(size(vsmall)) ///
+legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
 * this dot graph shows 
 
-gr dot vac ptrentincome_30_34_ ptrentincome_35_more_ morg_ptowncostinc_35_more_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
-if year==2017 in 1/60, over(censustract, label(labsize(tiny)) )
+gr dot mP0n_29 Rent_29 if year==2017 in 1/40, over(censustract, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(medium)) legend(size(vsmall)) ///
+legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
 * this dot graph shows 
+
+***********
+***********
+*********** Those who spend less than 20 are grouped in one 
+egen nomorg_ptowncostinc_less_20=rowtotal( nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_)
+egen ptrentincome_less_20=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_)
+
+gr dot morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29 nomorg_ptowncostinc_less_20 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ///
+nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ if year==2010 in 1/30, over(censustract, label(labsize(tiny)) ) ///
+title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(medium)) legend(size(vsmall)) ///
+legend(order(1 "Morgage <%20" 2 "Morgage %20-24" 3 "Morgage %25-29" 4 "w/o Morgage <%20" 5 "w/o Morgage %20-24" 6 "w/o Morgage %25-29" ///
+7 "Rent <%20" 8 "Rent %20-24" 9 "Rent %25-29") size(vsmall)rows(2))
+* this dot graph shows that those without morgage who spend less that %20 are many, then comes with morgage 
+
+
+gr dot morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29 nomorg_ptowncostinc_less_20 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ///
+nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ if year==2017 in 1/30, over(censustract, label(labsize(tiny)) ) ///
+title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(medium)) legend(size(vsmall)) ///
+legend(order(1 "Morgage <%20" 2 "Morgage %20-24" 3 "Morgage %25-29" 4 "w/o Morgage <%20" 5 "w/o Morgage %20-24" 6 "w/o Morgage %25-29" ///
+7 "Rent <%20" 8 "Rent %20-24" 9 "Rent %25-29") size(vsmall)rows(2))
+* this dot graph shows that those with morgage exceed those without morgage who spend less that %20  
+
 
 *histogram----------------------------------------------------------------------
 
@@ -852,8 +885,11 @@ histogram medincome, percent
 
 *graphy bar---------------------------------------------------------------------
 
-graph bar emp_civlabor unemp_civlabor, over(year) stack
+graph bar emp_civlabor unemp_civlabor, bargap(2) legend(order(1 "Civil Labor employment" 2 "Civil Labor Unemploymemt")) by(year) stack
 ** there is not much diference in employment rate but unemployment decreased slightly. 
+***********
+***********
+*********** Is there a way to make them narrow?
 
 graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(year) stack
 graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(censustract) stack
@@ -902,35 +938,37 @@ egen mP0_24=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_)
 *--------------------Lili ------------------------------------------------------
 *--------------------Lili ------------------------------------------------------
 
-
+*I am turning this legend off 
 gr bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
- morg_ptowncostinc_35_more_ ,over(year) stack ytitle(Owner W. Morgage-% Of Income Expenditure) ytitle(, margin(top)) title(, size(Tiny)) legend(order(1 ///
-"Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))saving(g1.gph, replace)
+ morg_ptowncostinc_35_more_ , title(Owner W. Morgage, size(tiny)) over(year) stack title(, size(Tiny)) legend(order(1 ///
+"Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))  saving(g1.gph, replace)
 * This bar graph shows that affordable housing perhaps has increased in 2017 for homeowners with morgage 
 
-
-gr bar nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
-nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,over(year) stack ytitle(Owner W. NoMorgage-% Of Income Expenditure) ytitle(, margin(esubhead)) title(, size(Tiny)) legend(order(1 ///
-"Less Than %10" 2 "%10-14" 3 "%15-19" 4 "%20-24" 5 "%25-29" 6 "%30-34" 7 "More Than %35 Of Income") size(vsmall)rows(2))saving(g2.gph, replace)
+*I am turning this legend off 
+gr bar nomorg_ptowncostinc_less_20 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ///
+nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ , title(Owner W. NoMorgage, size(tiny)) over(year) stack  ///
+legend(off) ytitle(, margin(esubhead)) title(, size(Tiny)) legend(order(1 ///
+"Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))saving(g2.gph, replace)
 * This bar graph shows that affordable housing slightly increased in 2017 for homeowners with no morgage 
 
-
-gr bar ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
-,over(year) stack ytitle(Renter Costs-% Of Income Expenditure) ytitle(, margin(esubhead)) title(, size(Tiny)) legend(order(1 ///
-"Less Than %10" 2 "%10-14" 3 "%15-19" 4 "%20-24" 5 "%25-29" 6 "%30-34" 7 "More Than %35 Of Income") size(vsmall)rows(2))saving(g3.gph, replace)
+* I am turning this legend off 
+gr bar ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+,legend(off) title(Renter Costs, size(tiny)) over(year) stack  ytitle(, margin(esubhead)) title(, size(Tiny)) legend(order(1 ///
+1 "Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))saving(g3.gph, replace)
 * This bar graph shows there is not that much difference for renters between 2010 and 2017 
 
+ 
+ 
 
 gr combine g1.gph g2.gph, row(1) ycommon
-gr combine g1.gph g2.gph g3.gph, row(1) ycommon
+gr combine g1.gph g2.gph g3.gph, row(1) ycommon title(Monthly Renter Costs As A Percentage Of Household Income, size(medium)
+
+gr combine g1.gph g2.gph g3.gph, row(1) ycommon title(Monthly Renter Costs As A Percentage Of Household Income, size(medium)) ///
+legend (order(1 ///
+"Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2)) 
 
 
-* I am combining all tenures under %30 of income expenditure to see the aount of affordable housing in 2007 and 2017 
-egen mP0_29=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29)
-egen mP0n_29=rowtotal(nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_)
-egen Rent_29=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_)
-
-gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Housing Costs <%30 Of Income Expenditure) ytitle(, margin(top)) title(, size(Tiny)) legend(order(1 ///
+gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Monthly Costs <%30 Of Household Income) ytitle(, margin(top)) title(, size(Tiny)) legend(order(1 ///
 "Owner w. Morgage" 2 "Owner w/o Morgage" 3 "Renter" ) size(vsmall)rows(2))
 * The graph shows the amount for renters has got better but not much change for house owners 
 
@@ -950,7 +988,8 @@ graph box percvac, over(year)
 ******
 ******
 ****** This is interesting 
-graph box vac belpov unemp_civlabor, over(year)
+graph box vac belpov unemp_civlabor, over(year) legend (order(1 ///
+"Vaccancy" 2 "Below Poverty" 3 "Unemployed Civil Labors") size(small)rows(2)) 
 ** this graph shows vacancy has risen considering the low level of poverty 
 
 
