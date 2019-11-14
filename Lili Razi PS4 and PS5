@@ -767,7 +767,7 @@ tabstat principal notprincipal, by(year) stat(mean sd min max) nototal long form
 
 *scatterplot--------------------------------------------------------------------
 
-scatter unemp_civlabor belpov, by(year)
+tw(scatter unemp_civlabor belpov)(lfit unemp_civlabor belpov), by(year)
 *I want a line here in for the trend 
 
 ******
@@ -938,10 +938,10 @@ egen mP0_24=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_)
 *--------------------Lili ------------------------------------------------------
 *--------------------Lili ------------------------------------------------------
 
-*I am turning this legend off 
+*I am turning this legend on 
 gr bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
  morg_ptowncostinc_35_more_ , title(Owner W. Morgage, size(tiny)) over(year) stack title(, size(Tiny)) legend(order(1 ///
-"Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))  saving(g1.gph, replace)
+"<%20" 2 "%20-4" 3 "%25-9" 4 "%30-4" 5 ">%35 Income") size(vsmall)rows(2)) legend(position(1) ring(0)) saving(g1.gph, replace)
 * This bar graph shows that affordable housing perhaps has increased in 2017 for homeowners with morgage 
 
 *I am turning this legend off 
@@ -961,11 +961,8 @@ gr bar ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome
  
 
 gr combine g1.gph g2.gph, row(1) ycommon
-gr combine g1.gph g2.gph g3.gph, row(1) ycommon title(Monthly Renter Costs As A Percentage Of Household Income, size(medium)
+gr combine g1.gph g2.gph g3.gph, row(1) ycommon title(Monthly Renter Costs As A Percentage Of Household Income, size(medium))
 
-gr combine g1.gph g2.gph g3.gph, row(1) ycommon title(Monthly Renter Costs As A Percentage Of Household Income, size(medium)) ///
-legend (order(1 ///
-"Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2)) 
 
 
 gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Monthly Costs <%30 Of Household Income) ytitle(, margin(top)) title(, size(Tiny)) legend(order(1 ///
