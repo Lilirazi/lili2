@@ -30,7 +30,7 @@ clear
 
 import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
 
-//global x SunOpen SunClose MonOpen MonClose TuesOpen TuesClose WedOpen WedClose ThursOpen ThursClose FriOpen FriClose SatOpen SatClose 
+//global x Address2 SunOpen SunClose MonOpen MonClose TuesOpen TuesClose WedOpen WedClose ThursOpen ThursClose FriOpen FriClose SatOpen SatClose 
 //drop $x
 
 drop SunOpen SunClose MonOpen MonClose TuesOpen TuesClose WedOpen WedClose ThursOpen ThursClose FriOpen FriClose SatOpen SatClose 
