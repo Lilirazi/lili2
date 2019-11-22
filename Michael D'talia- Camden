@@ -562,6 +562,183 @@ edit
 
 export delimited using "carect", replace
 
+/////////////////////////////////////////care downsized /////////////////////////////////////////////////
+
+
+//Adoption & Foster Care  
+//Animal Welfare  
+//Community Support Services 
+//Daytime Care 
+//End-Of-Life Care 
+//Navigating The System  
+//Physical Safety  
+//Residential Care  
+//Support Network  
+
+clear 
+
+import excel "https://docs.google.com/uc?id=1W2p26mSozgghxeftVL-h_e9u6Kl7xe6j&export=download", sheet("in") firstrow clear
+
+drop SunOpen SunClose MonOpen MonClose TuesOpen TuesClose WedOpen WedClose ThursOpen ThursClose FriOpen FriClose SatOpen SatClose 
+
+keep if City =="Camden" 
+
+save care, replace 
+
+*******
+
+clear 
+
+use care
+
+gen fostercare= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(foster care)[0-9 a-zA-Z]*") 
+
+replace fostercare=regexs(1) if regexm(ProgramServices, "(foster care)[0-9 a-zA-Z]*")
+
+replace fostercare=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(foster care)")
+
+drop if mi(fostercare)
+
+export delimited using "fostercare", replace
+
+
+*******
+
+clear 
+
+use care 
+
+gen animalwelfare= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(animal welfare)[0-9 a-zA-Z]*") 
+
+replace animalwelfare=regexs(1) if regexm(ProgramServices, "(animal welfare)[0-9 a-zA-Z]*")
+
+replace animalwelfare=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(animal welfare)")
+
+drop if mi(animalwelfare)
+
+export delimited using "animalwelfare", replace
+
+
+*******
+
+clear 
+
+use care 
+
+gen supportservices= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(support services)[0-9 a-zA-Z]*") 
+
+replace supportservices=regexs(1) if regexm(ProgramServices, "(support services)[0-9 a-zA-Z]*")
+
+replace supportservices=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(support services)")
+
+drop if mi(supportservices)
+
+export delimited using "supportservices", replace
+
+
+*******
+
+clear 
+
+use care 
+
+gen daytimecare= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(daytime care)[0-9 a-zA-Z]*") 
+
+replace daytimecare=regexs(1) if regexm(ProgramServices, "(daytime care)[0-9 a-zA-Z]*")
+
+replace daytimecare=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(daytime care)")
+
+drop if mi(daytimecare)
+
+export delimited using "daytimecare", replace
+
+
+*******
+
+clear 
+
+use care 
+
+gen carect= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(life care)[0-9 a-zA-Z]*") 
+
+replace carect=regexs(1) if regexm(ProgramServices, "(life care)[0-9 a-zA-Z]*")
+
+replace carect=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(life care)")
+
+drop if mi(carect)
+
+export delimited using "carect", replace
+
+
+*******
+
+clear 
+
+use care 
+
+gen endlifecare= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(residential care)[0-9 a-zA-Z]*") 
+
+replace endlifecare=regexs(1) if regexm(ProgramServices, "(residential care)[0-9 a-zA-Z]*")
+
+replace endlifecare=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(residential care)")
+
+drop if mi(endlifecare)
+
+export delimited using "endlifecare", replace
+
+
+*******
+
+clear 
+
+use care 
+
+gen navsystem= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(navigating the system)[0-9 a-zA-Z]*") 
+
+replace navsystem=regexs(1) if regexm(ProgramServices, "(navigating the system)[0-9 a-zA-Z]*")
+
+replace navsystem=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(navigating the system)")
+
+drop if mi(navsystem)
+
+export delimited using "navsystem", replace
+
+
+*******
+
+clear 
+
+use care 
+
+gen physafety= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(physical safety)[0-9 a-zA-Z]*") 
+
+replace physafety=regexs(1) if regexm(ProgramServices, "(physical safety)[0-9 a-zA-Z]*")
+
+replace physafety=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(physical safety)")
+
+drop if mi(physafety)
+
+export delimited using "physafety", replace
+
+
+*******
+
+clear 
+
+use care 
+
+gen supportnetwork= regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(support network)[0-9 a-zA-Z]*") 
+
+replace supportnetwork=regexs(1) if regexm(ProgramServices, "(support network)[0-9 a-zA-Z]*")
+
+replace supportnetwork=regexs(1) if regexm(ProgramServices, "[0-9 a-zA-Z]*(support network)")
+
+drop if mi(supportnetwork)
+
+export delimited using "supportnetwork", replace
+
+
+
 
 /////////////////////////////////////////Money///////////////////////////////////////////////////////////
 
