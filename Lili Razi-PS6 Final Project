@@ -30,6 +30,7 @@ Variables:
  walkability
  transportation (walk a quarter-mile to places around)
 __________________________________________________________________
+
 Research questions include the following:
 
 1- Is smarth growth plan effective in Camden? Is there a noticebale improvement?
@@ -49,6 +50,7 @@ Indicators for the answers:
 
 3- 
 + less amount of time for commuting from home to work 
+
 __________________________________________________________________
 limitation: 
  Green space variable was hard to find in data sources and was hard to analyze in census track.
@@ -667,6 +669,15 @@ tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get 
 }
 * This shows there is a positive colleration between these two 
 
+
+foreach means in totaltrans drvalone drvcarpool totalwalk pubtrans workhome {
+foreach mins in timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_ {
+scatter `means' `mins'
+gr save `means' `mins'.gph
+gr combine `means' `mins'.gph
+}
+}
 
 
 ** Assessing the %30 of income 
