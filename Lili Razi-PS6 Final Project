@@ -580,6 +580,15 @@ clear
 use camden_smarthgrowth_census
 encode geoid2, gen(ctc)
 
+foreach v of var timework* {
+//local z=substr(`v', 1, strlen(`v') - 4)
+        local l`v' : variable label `v'
+            if `"`l`v''"' == "" {
+            local l`v' "`v'"
+	    
+        }
+	
+}
 ///these below rows should run together 
 reshape long civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome ///
 timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
@@ -591,6 +600,10 @@ nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_1
 nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
 ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
 principal notprincipal,i(ctc)j(year)
+
+foreach v of var * {
+        label var `v' "`l`v''"
+}
 
 sort year
 
@@ -631,38 +644,6 @@ use camden_sg_reshcensus
 //ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
 
 //principal notprincipal 
-
-/* 
-Research questions include the following:
-
-1- Is smarth growth plan effective in Camden? Is there a noticebale improvement?
-2- Has smarth growth helped with affordable housing and economic status?
-3- Has there been any walkability/compact design happening in these years?
-
-Indicators for the answers: 
-
-1- Comparing 2007 and 2017 data in terms of
-+ more population in urban areas that implies non sprawl development
-       measured by principal cities, households and civil labor force   
-+ more affordable housing/ home diversity for people
-       meaured by studying the houshold numbers, poverty, income and employment status 
-       and level of cost on housing based on income 
-+ more use of public transportation/ work at home because of tech advances 
-       measured by the number of households, use of transportation and income 
-+ compact development meaning that there is closer distantace between workplace and housing 
-       measured by 0.25mile distance or less that 5 mins time 
-+ how people are relying on cars, use public transportation and walk 
-       measured by total trans based on civil labor and households and the diversity of 
-	   the trans means comparing the two years 
-
-2- 
-+ Affordable housing means income housing that cost less that %30 of income 
-+ Economic Status means if there are more jobs and employment, less poverty and less spenditure on transit 
-
-3- 
-+ less amount of time for commuting from home to work:  
-* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
- and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
 
 
 */
@@ -727,7 +708,7 @@ legend(order(1 "Civil Labor Unemployment" 2 "Fited Values"))
 ******
 *QUESTION how to show the 2 years together
 ****** This is circular and interesting= in 1/30 
-scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) by(year) 
+scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) msize(vsmall) msymbol(circle_hollow) mlwidth(thin) by(year) 
 * this means for people who spent more than %30 of income on rent and based on their income how much do they walk to their work place 
 
 *QUESTION: what's the problem here? 
@@ -737,14 +718,21 @@ tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get 
 * This shows there is a positive colleration between these two 
 
 *QUESTION= this shows the last one 
+timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
+
 foreach means in totaltrans drvalone drvcarpool totalwalk pubtrans workhome {
-foreach mins in timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
-timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_ {
-scatter `means' `mins'
-gr save `means' `mins'.gph
-gr combine `means' `mins'.gph
+foreach mins in timework_less_5min_  {
+scatter `means' `mins' //, saving
+gr save `means'_`mins'.gph
+
 }
 }
+
+local data: dir . files "*.gph"
+//di "`data'"
+
+gr combine `data'
 
 
 ** Assessing the %30 of income 
