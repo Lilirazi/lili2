@@ -18,7 +18,7 @@ that promote non-sprawl, compact, transit corridor or new town development patte
 available at the time of development; "new urbanism" on the other hand  is focusing on transit oriented, traditional  neighborhood
 and mixed use walkable communities” (Freilich & Popowitz, 2010, p-4). It’s re-purposing the place to tell the public that this is a 
 different way to use an old infrastructure that’s still viable (NJpen, 2019). The idea of proximity is attracting more and more people
- to a place to live and to work and to recreate there.
+to a place to live and to work and to recreate there.
 
 In my research I am trying to understand if there is affordable housing around condensed work places and whether there is walkability 
 and integrated public transportation in both residential area and workplaces. This requires looking at households number, land use and 
@@ -28,7 +28,7 @@ data at census tracks in Camden County.
 Variables:
  diversity in the home choices based on income
  walkability
- transportation (walk a quarter-mile to places around)
+ transportation 
 __________________________________________________________________
 
 Research questions include the following:
@@ -39,17 +39,31 @@ Research questions include the following:
 
 Indicators for the answers: 
 
-1- Comparing 2007 and 2017 data in terms of 
-+ more affordable housing for people  wehich embodies studying the houshold numbers, poverty, income and employment status
-+ more use of public transportation/ work at home bevause of tech advances 
-+ compact development meaning that there is closer distantace between workplace and housing 
+1- Comparing 2007 and 2017 data in terms of
++ more population in urban areas that implies non sprawl development
+       measured by principal cities, households and civil labor force   
++ more affordable housing/ home diversity for people
+       meaured by studying the houshold numbers, poverty, income and employment status 
+       and level of cost based on income 
+	   also less vacanncy rate and more of occupancy 
++ more use of public transportation/ work at home because of tech advances 
+       measured by the number of households, use of transportation and income 
++ compact development meaning that there is closer distantace between workplace and housing
+  and more brownfield development 
+       measured by 0.25mile distance or less that 5 mins time
+	   measured by less vacancy and more occupancy 
++ how people are relying on cars, use public transportation and walk 
+       measured by total trans based on civil labor and households and the diversity of 
+	   the means comparing the two years 
 
 2- 
 + Affordable housing means income housing that cost less that %30 of income 
 + Economic Status means if there are more jobs and employment, less poverty and less spenditure on transit 
 
 3- 
-+ less amount of time for commuting from home to work 
++ less amount of time for commuting from home to work:  
+* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
+ and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
 
 __________________________________________________________________
 limitation: 
@@ -616,26 +630,74 @@ use camden_sg_reshcensus
 
 //ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
 
-//principal notprincipal
+//principal notprincipal 
+
+/* 
+Research questions include the following:
+
+1- Is smarth growth plan effective in Camden? Is there a noticebale improvement?
+2- Has smarth growth helped with affordable housing and economic status?
+3- Has there been any walkability/compact design happening in these years?
+
+Indicators for the answers: 
+
+1- Comparing 2007 and 2017 data in terms of
++ more population in urban areas that implies non sprawl development
+       measured by principal cities, households and civil labor force   
++ more affordable housing/ home diversity for people
+       meaured by studying the houshold numbers, poverty, income and employment status 
+       and level of cost on housing based on income 
++ more use of public transportation/ work at home because of tech advances 
+       measured by the number of households, use of transportation and income 
++ compact development meaning that there is closer distantace between workplace and housing 
+       measured by 0.25mile distance or less that 5 mins time 
++ how people are relying on cars, use public transportation and walk 
+       measured by total trans based on civil labor and households and the diversity of 
+	   the trans means comparing the two years 
+
+2- 
++ Affordable housing means income housing that cost less that %30 of income 
++ Economic Status means if there are more jobs and employment, less poverty and less spenditure on transit 
+
+3- 
++ less amount of time for commuting from home to work:  
+* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
+ and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
 
 
+*/
 *tabstat------------------------------------------------------------------------
 
+tabstat civlaborpop principal households, by(year) stat(mean sd min max) nototal long col(stat)f(%9.2f)
+/* the table shows the demographic changes as  civil labor population, principal cities workforce and number of households in camden
+ county decreased. 
+ this circles back to question1 
+*/
 tabstat totunit ownervac rentvac, by(year) stat(mean sd min max) nototal long col(stat)f(%9.2f)
-** this table shows that vacancy rate mean has dropped in 7 years but owner vacancy rate has increased and total units mean slightly increased. 
-
+/* this table shows that rent vacancy rate mean has dropped in 7 years but owner vacancy rate has increased and total units mean slightly increased.
+ circling back to question3,  it means compact design and brownfield development in housing sector is not significant 
+ circling back to question2, it seems there is improvements for renters in Camden  
+*/
 tabstat totaltrans drvalone drvcarpool totalwalk pubtrans workhome, by(year) stat(mean sd min max) nototal long format
-** this table shows total transportation increased over 7 years. Many worked at home and the use of pubtrans has not changed
-** less people walk and use carpooling and ther is a slight increase for driving alone 
-
+/* this table shows total transportation increased over 7 years. Many worked at home and the use of pubtrans has not changed
+ less people walk and use carpooling and ther is a slight increase for driving alone 
+ circling back to question1, there is no noticeable change for better use of public trans or encouraging walkability 
+*/
 tabstat civlaborpop emp_civlabor unemp_civlabor belpov medincome, by(year) stat(mean sd min max) nototal long format
-** this table shows labor participation, employment, unemployment and poverty rate for both year is the same. 
-** However the median income something is wrong the number is incorrect!
+** this table shows there is more labor participation, employment and in result unemployment and poverty rate for both year decreased. 
+* Circling back to question1 and 2 there is better economic prosperity that  helps with housing and 
 
 tabstat timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
 timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ,by(year) stat(mean sd min max) nototal long format
-** this table shows labor participation, employment, unemployment and poverty rate for both year is the same. 
-** However the median income something is wrong the number is incorrect!
+/* this table shows the time for getting to work. walkability measure means to get to places in less than 5 mins 
+ there is a remarkable drop in walkability. In general this table shows there is not much progress 
+ for 15 and 20 mins distance not much a difference between the two years 
+ more people are located in 24 and 40 mins away from work in 2017. which may imply there are more affordable housing in those distances. 
+ for people who live 44 and 59 mins away not much difference. probably implies there is not much housing difference in those distances.  
+ but there are more people for more than 90 mins away in 2017. Implying that people are commuting from other cities to work 
+ which is totally in contrast to the idea of compact design.  
+ circling back to question3 there is not a progress  
+*/
 
 tabstat morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
 morg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
@@ -647,29 +709,34 @@ nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_mor
 
 tabstat ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ,by(year) stat(mean sd min max) nototal long format
 ** Renters expenditure of income shows those who spent over %35 of their income on housing increased 
+* circling back to question2 comparing these three tabels we can conclude that renters and houseowners experinced housing tenure 
+* differently, renters put more income on housing and owners with morgage less and those without morgage there was not much change
  
 tabstat principal notprincipal, by(year) stat(mean sd min max) nototal long format
-** people working in not principal cities decreased significantly but those that worked in principal cities almost remaned the same 
-
+** people working in not principal cities decreased significantly but those that worked in principal cities almost remained the same 
 
 
 *scatterplot--------------------------------------------------------------------
 
-tw(scatter unemp_civlabor belpov)(lfit unemp_civlabor belpov), by(year)
-*I want a line here in for the trend 
+
+tw(scatter unemp_civlabor belpov)(lfit unemp_civlabor belpov), by(year) ytitle(Unemployed Civil Labor) xtitle(Below Poverty Line) ///
+legend(order(1 "Civil Labor Unemployment" 2 "Fited Values")) 
+** this graph reveals that poverty and unemployment got slightly less in 2017 
+*circling back to question2 means economic status got a little better 
 
 ******
-******
-****** This is circular and interesting 
-scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) by(year)
+*QUESTION how to show the 2 years together
+****** This is circular and interesting= in 1/30 
+scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) by(year) 
 * this means for people who spent more than %30 of income on rent and based on their income how much do they walk to their work place 
 
+*QUESTION: what's the problem here? 
 foreach v in timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ {
 tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get To Work) xtitle(Use Of Public Transportation) title(Workplace And Time To Get To Work)
 }
 * This shows there is a positive colleration between these two 
 
-
+*QUESTION= this shows the last one 
 foreach means in totaltrans drvalone drvcarpool totalwalk pubtrans workhome {
 foreach mins in timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
 timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_ {
@@ -681,49 +748,37 @@ gr combine `means' `mins'.gph
 
 
 ** Assessing the %30 of income 
-tw(scatter morg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit morg_ptowncostinc_35_more_ vac, msize(vsmall)), ytitle(More than %35 of income spent on morgage owner house(tiny)) xtitle(Vaccancy) by(year)
-*strong correlation, better in 2017 
-tw(scatter nomorg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit nomorg_ptowncostinc_35_more_ vac, msize(tiny)), ytitle(More than %35 of income spent on nonmorgage owner house(tiny)) xtitle(Vaccancy) by(year)
-* noticeable for vaccancy of 200 not much for 2010 but strong correlation for 2017 
-tw(scatter ptrentincome_35_more_ vac, msize(vsmall))(lfit ptrentincome_35_more_ vac, msize(vsmall)), ytitle(More than %35 of income spent on rent) xtitle(Vaccancy) by(year)
-* direct correlation and slightly more in 2017 
+tw(scatter morg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit morg_ptowncostinc_35_more_ vac, msize(vsmall)), xtitle(Vaccancy) by(year) legend(order(1 "%35> of Income Spent on Housing with Morgage" 2 "Fited Values")) 
+**strong correlation, less spent in 2017 
 
+tw(scatter nomorg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit nomorg_ptowncostinc_35_more_ vac, msize(tiny)), xtitle(Vaccancy) by(year)  legend(order(1 "%35> of Income Spent on Housing w/o Morgage" 2 "Fited Values")) 
+** noticeable for vaccancy of 200 not much for 2010 but strong correlation for 2017 
 
+tw(scatter ptrentincome_35_more_ vac, msize(vsmall))(lfit ptrentincome_35_more_ vac, msize(vsmall)), xtitle(Vaccancy) by(year) legend(order(1 "%35> of Income Spent on Rent " 2 "Fited Values")) 
+/* direct correlation and slightly more in 2017 
+ circling back to question2, these graphs show that compact development and housing occupancy relationship  
+ When the housing cost is more than %35 of income there are more vaccancy and less people are able to afford housing
+ housing with morgage caused more vacancy however this was not a case for houses w/o in 2010 but in 2017 there was a colleration. 
+ for renters there is a direct correlations with vacancy when the income spenditure is more than %35 
+ all that said means diversifying housing choices is still important for Camen County  
+*/
 
-foreach v in morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ptrentincome_30_34_ ptrentincome_35_more_ {
-tw (scatter `v' vac, msize(vsmall))(lfit `v' vac), ytitle(More than %30 of income spent on housing) xtitle(Vaccancy) title(Affordable Housing) by(year) 
-}
-
-
+//////I wish to see if income impacts the walkability and public transportation usage over census tract///// 
 twoway (scatter medincome totalwalk principal, mlab(censustract)), by(year)
+** it seems there is no correlation between income and walking from work to home.
 
-tw (scatter unemp_civlabor pbelpov, by(year))(lfit unemp_civlabor pbelpov, by(year)), ytitle(Unemployment Rates) xtitle(% Below Poverty) name(cor_unemploy_poverty, replace) ///
-legend(order(1 "Civil Labor Unemployment" 2 "Fited Values"))
-** In 2010 there was a high correlation between unemployment rate and percent below povert but the relationship became weaker in 2017 
-** The first %20 of poverty is related to high rate of unemployment by the amount of 400
-
-
-******
-******
-****** This is circular, over census tracts and interesting 
-tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)) ytitle(Median Income) xtitle(Public Transportation)
-
-tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation)
+****** This is circular, over census tracts and interesting!!! 
 tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation) by(year)
 ** this graph shows the correlation between median income and public transportation over census tract 
-** Use of public transportation increased in 2017 
+** Use of public transportation increased in 2017 and it is not really related to income level 
 
 
 *gr dot-------------------------------------------------------------------------
 
-
-******
-******
-****** This is dot graph over census tracts and interesting 
+****** This is dot graph over census tracts and interesting!!! 
 sort censustract year
 gr dot occ vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g4.gph, replace) title(2010, size(medium))
-
-* this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
+* this graph shows there is a high ownervaccancy in some census track that maybe is due to wooded land use and agricultural uses 
 * but for some others ther is high vacancy in northern camden area 
 
 gr dot occ vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g5.gph, replace) title(2017, size(medium))
@@ -731,6 +786,8 @@ gr dot occ vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) l
 * but for some others ther is high vacancy in northern camden area 
 
 gr combine g4.gph g5.gph, row(1) ycommon title(Occupancy and Vacancy, size(Medium))
+
+
 
 
 * I am combining all tenures under %30 of income expenditure to see the aount of affordable housing in 2007 and 2017 
