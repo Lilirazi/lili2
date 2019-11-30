@@ -390,17 +390,17 @@ clear
 import delimited "https://docs.google.com/uc?id=1lOFFB0_Q3Om5c89xCfGn6SXjdm6Gfrn7&export=download", varnames(1)
 keep geoid2 geodisplaylabel hd01_vd02 hd01_vd03 hd01_vd04 hd01_vd05 hd01_vd06 hd01_vd07 hd01_vd08 hd01_vd09 hd01_vd10 hd01_vd11 hd01_vd12
 
-rename hd01_vd02 timework_less_5min_2010
-rename hd01_vd03 timework_5_9min_2010
-rename hd01_vd04 timework_10_14min_2010
-rename hd01_vd05 timework_15_19min_2010
-rename hd01_vd06 timework_20_24min_2010
-rename hd01_vd07 timework_25_34min_2010
-rename hd01_vd08 timework_35_39min_2010
-rename hd01_vd09 timework_40_44min_2010
-rename hd01_vd10 timework_45_59min_2010
-rename hd01_vd11 timework_60_89min_2010
-rename hd01_vd12 timework_90_moremin_2010
+rename hd01_vd02 timework_less_5min2010
+rename hd01_vd03 timework_5_9min2010
+rename hd01_vd04 timework_10_14min2010
+rename hd01_vd05 timework_15_19min2010
+rename hd01_vd06 timework_20_24min2010
+rename hd01_vd07 timework_25_34min2010
+rename hd01_vd08 timework_35_39min2010
+rename hd01_vd09 timework_40_44min2010
+rename hd01_vd10 timework_45_59min2010
+rename hd01_vd11 timework_60_89min2010
+rename hd01_vd12 timework_90_moremin2010
 
 drop in 1
 
@@ -414,17 +414,17 @@ clear
 import delimited "https://docs.google.com/uc?id=1IZAqxlk06VA-dF87yWq1CHvI_x2IASJ8&export=download", varnames(1)
 keep geoid2 geodisplaylabel hd01_vd02 hd01_vd03 hd01_vd04 hd01_vd05 hd01_vd06 hd01_vd07 hd01_vd08 hd01_vd09 hd01_vd10 hd01_vd11 hd01_vd12
 
-rename hd01_vd02 timework_less_5min_2017
-rename hd01_vd03 timework_5_9min_2017
-rename hd01_vd04 timework_10_14min_2017
-rename hd01_vd05 timework_15_19min_2017
-rename hd01_vd06 timework_20_24min_2017
-rename hd01_vd07 timework_25_34min_2017
-rename hd01_vd08 timework_35_39min_2017
-rename hd01_vd09 timework_40_44min_2017
-rename hd01_vd10 timework_45_59min_2017
-rename hd01_vd11 timework_60_89min_2017
-rename hd01_vd12 timework_90_moremin_2017
+rename hd01_vd02 timework_less_5min2017
+rename hd01_vd03 timework_5_9min2017
+rename hd01_vd04 timework_10_14min2017
+rename hd01_vd05 timework_15_19min2017
+rename hd01_vd06 timework_20_24min2017
+rename hd01_vd07 timework_25_34min2017
+rename hd01_vd08 timework_35_39min2017
+rename hd01_vd09 timework_40_44min2017
+rename hd01_vd10 timework_45_59min2017
+rename hd01_vd11 timework_60_89min2017
+rename hd01_vd12 timework_90_moremin2017
 
 drop in 1
 
@@ -506,9 +506,9 @@ encode geoid2, gen(ctc)
 
 ///these below rows should run together 
 reshape long civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome pcemp_civlabor pcunemp_civlabor ///
-timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
-timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ///
-totaltrans drvalone drvcarpool totalwalk pubtrans workhome timework_90_moremin_ ///
+timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min ///
+timework_35_39min timework_40_44min timework_45_59min timework_60_89min ///
+totaltrans drvalone drvcarpool totalwalk pubtrans workhome timework_90_moremin ///
 totunit occ percocc vac percvac ownervacrate rentvacrate ///
 morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
 nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
@@ -549,17 +549,17 @@ label var vac  "Vacant housing units"
 label var percvac "Percent Vacant housing units"
 label var ownervacrate "Homeowner vacancy rate"
 label var rentvacrate "Rental vacancy rate" 
-label var timework_less_5min_ "Less than 5 minutes"
-label var timework_5_9min_ "5 to 9 minutes"
-label var timework_10_14min_ "10 to 14 minutes"
-label var timework_15_19min_ "15 to 19 minutes"
-label var timework_20_24min_ "20 to 24 minutes"
-label var timework_25_34min_ "25 to 34 minutes"
-label var timework_35_39min_ "35 to 39 minutes"
-label var timework_40_44min_ "40 to 44 minutes"
-label var timework_45_59min_ "45 to 59 minutes"
-label var timework_60_89min_ "60 to 89 minutes"
-label var timework_90_moremin_ "90 or more minutes"
+label var timework_less_5min "Less than 5 minutes"
+label var timework_5_9min "5 to 9 minutes"
+label var timework_10_14min "10 to 14 minutes"
+label var timework_15_19min "15 to 19 minutes"
+label var timework_20_24min "20 to 24 minutes"
+label var timework_25_34min "25 to 34 minutes"
+label var timework_35_39min "35 to 39 minutes"
+label var timework_40_44min "40 to 44 minutes"
+label var timework_45_59min "45 to 59 minutes"
+label var timework_60_89min "60 to 89 minutes"
+label var timework_90_moremin "90 or more minutes"
 label var principal "Estimate; Living in a principal city"
 label var notprincipal "Estimate; Living outside any principal city"
 
@@ -615,8 +615,8 @@ tabstat civlaborpop emp_civlabor unemp_civlabor belpov medincome, by(year) stat(
 ** this table shows there is more labor participation, employment and in result unemployment and poverty rate for both year decreased. 
 * Circling back to question1 and 2 there is better economic prosperity that  helps with housing and 
 
-tabstat timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
-timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ ,by(year) stat(mean sd min max) nototal long format
+tabstat timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min ///
+timework_35_39min timework_40_44min timework_45_59min timework_60_89min ,by(year) stat(mean sd min max) nototal long format
 /* this table shows the time for getting to work. walkability measure means to get to places in less than 5 mins 
  there is a remarkable drop in walkability. In general this table shows there is not much progress 
  for 15 and 20 mins distance not much a difference between the two years 
@@ -652,25 +652,20 @@ legend(order(1 "Civil Labor Unemployment" 2 "Fited Values"))
 ** this graph reveals that poverty and unemployment got slightly less in 2017 
 *circling back to question2 means economic status got a little better 
 
-******
-*QUESTION how to show the 2 years together
-****** This is circular and interesting= in 1/30 
+****** This is circular and interesting
 scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) msize(vsmall) msymbol(circle_hollow) mlwidth(thin) by(year) 
 * this means for people who spent more than %30 of income on rent and based on their income how much do they walk to their work place 
 
-*QUESTION: what's the problem here? 
-foreach v in timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ {
+
+foreach v in timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min timework_35_39min timework_40_44min timework_45_59min timework_60_89min {
 tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get To Work) xtitle(Use Of Public Transportation) title(Workplace And Time To Get To Work)
 }
 * This shows there is a positive colleration between these two 
 
-*QUESTION= this shows the last one 
-timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
-timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
 
 foreach means in totaltrans drvalone drvcarpool totalwalk pubtrans workhome {
 foreach mins in timework_less_5min_  {
-scatter `means' `mins' //, saving
+tw (scatter `means' `mins')(lfit `means' `mins') //, saving
 gr save `means'_`mins'.gph
 
 }
