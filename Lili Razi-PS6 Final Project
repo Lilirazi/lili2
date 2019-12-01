@@ -33,8 +33,8 @@ __________________________________________________________________
 
 Research questions include the following:
 
-1- Is smarth growth plan effective in Camden? Is there a noticebale improvement?
-2- Has smarth growth helped with affordable housing and economic status?
+1- Is smart growth plan effective in Camden? Is there a noticebale improvement?
+2- Has smart growth helped with affordable housing and economic status?
 3- Has there been any walkability/compact design happening in these years?
 
 Indicators for the answers: 
@@ -43,7 +43,7 @@ Indicators for the answers:
 + more population in urban areas that implies non sprawl development
        measured by principal cities, households and civil labor force   
 + more affordable housing/ home diversity for people
-       meaured by studying the houshold numbers, poverty, income and employment status 
+       meaured by studying the household numbers, poverty, income and employment status 
        and level of cost based on income 
 	   also less vacanncy rate and more of occupancy 
 + more use of public transportation/ work at home because of tech advances 
@@ -591,6 +591,40 @@ use camden_sg_reshcensus
 //ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
 
 //principal notprincipal 
+/*
+Research questions include the following:
+
+1- Is smart growth plan effective in Camden? Is there a noticebale improvement?
+2- Has smart growth helped with affordable housing and economic status?
+3- Has there been any walkability/compact design happening in these years?
+
+Indicators for the answers: 
+
+1- Comparing 2007 and 2017 data in terms of
++ more population in urban areas that implies non sprawl development
+       measured by principal cities, households and civil labor force   
++ more affordable housing/ home diversity for people
+       meaured by studying the household numbers, poverty, income and employment status 
+       and level of cost based on income 
+	   also less vacanncy rate and more of occupancy 
++ more use of public transportation/ work at home because of tech advances 
+       measured by the number of households, use of transportation and income 
++ compact development meaning that there is closer distantace between workplace and housing
+  and more brownfield development 
+       measured by 0.25mile distance or less that 5 mins time
+	   measured by less vacancy and more occupancy 
++ how people are relying on cars, use public transportation and walk 
+       measured by total trans based on civil labor and households and the diversity of 
+	   the means comparing the two years 
+
+2- 
++ Affordable housing means income housing that cost less that %30 of income 
++ Economic Status means if there are more jobs and employment, less poverty and less spenditure on transit 
+
+3- 
++ less amount of time for commuting from home to work:  
+* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
+ and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
 
 
 */
@@ -664,7 +698,7 @@ tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get 
 
 
 foreach means in totaltrans drvalone drvcarpool totalwalk pubtrans workhome {
-foreach mins in timework_less_5min_  {
+foreach mins in timework_less_5min  {
 tw (scatter `means' `mins')(lfit `means' `mins') //, saving
 gr save `means'_`mins'.gph
 
@@ -707,17 +741,18 @@ tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlab
 
 ****** This is dot graph over census tracts and interesting!!! 
 sort censustract year
+
+* Because there are 127 census tract and it is hard to see the changes of all I am using the first 60 tracts 
 gr dot occ vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g4.gph, replace) title(2010, size(medium))
 * this graph shows there is a high ownervaccancy in some census track that maybe is due to wooded land use and agricultural uses 
 * but for some others ther is high vacancy in northern camden area 
 
+* Because there are 127 census tract and it is hard to see the changes of all I am using the first 60 tracts 
 gr dot occ vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g5.gph, replace) title(2017, size(medium))
 * this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
 * but for some others ther is high vacancy in northern camden area 
 
 gr combine g4.gph g5.gph, row(1) ycommon title(Occupancy and Vacancy, size(Medium))
-
-
 
 
 * I am combining all tenures under %30 of income expenditure to see the aount of affordable housing in 2007 and 2017 
@@ -726,61 +761,66 @@ egen mP0n_29=rowtotal(nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ no
 egen Rent_29=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_)
 
 gr dot mP0_29 mP0n_29 Rent_29 if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) title(Monthly Cost of Income for Housing, size(Medium)) legend(order(1 "Housing w. Morgage" 2 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
-
+**************PROBLEM: in legend all three varaiables are shown in same color 
+*********************
+*********************
 
 * It it hard to see the changes for vac that's why we divide it by 10 
 gen vac10= vac/10
 
-gr dot mP0n_29 Rent_29 if year==2010 in 1/40, over(censustract, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(medium)) legend(size(vsmall)) ///
-legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
-* this dot graph shows 
+gr dot mP0n_29 Rent_29 if year==2010 in 1/40, over(censustract, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(vsmall)) legend(size(tiny)) ///
+legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g6.gph, replace)
 
-gr dot mP0n_29 Rent_29 if year==2017 in 1/40, over(censustract, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(medium)) legend(size(vsmall)) ///
-legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
-* this dot graph shows 
+gr dot mP0n_29 Rent_29 if year==2017 in 1/40, over(censustract, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(vsmall)) legend(size(tiny)) ///
+legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g7.gph, replace)
 
-***********
-***********
+gr combine g6.gph g7.gph, row(1) ycommon title(Housing Monthly Costs, size(Medium))
+* this dot graph shows in most census tracts the monthly cost of owners w/o are more than rent and the difference between rent and owner cost is really high 
+* especially in 2010 but in 2017 the differences has become less and that means more adjustment regarding prices have been implementent 
+** circiling back to question2 better housing price regulation has been implemented in 2017. 
+
+
+
 *********** Those who spend less than 20 are grouped in one 
+*********** Therefore affordable housing is compared 
 egen nomorg_ptowncostinc_less_20=rowtotal( nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_)
 egen ptrentincome_less_20=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_)
 
+* I am comparing the two graphs blow_ first I save them then see them in gr combine 
+* I am using legend only in this one and I'm pushing it into the graph 
 gr dot morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29 nomorg_ptowncostinc_less_20 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ///
 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ if year==2010 in 1/30, over(censustract, label(labsize(tiny)) ) ///
-title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(medium)) legend(size(vsmall)) ///
-legend(order(1 "Morgage <%20" 2 "Morgage %20-24" 3 "Morgage %25-29" 4 "w/o Morgage <%20" 5 "w/o Morgage %20-24" 6 "w/o Morgage %25-29" ///
-7 "Rent <%20" 8 "Rent %20-24" 9 "Rent %25-29") size(vsmall)rows(2))
-* this dot graph shows that those without morgage who spend less that %20 are many, then comes with morgage 
+title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(small)) legend(size(vsmall)) saving(g8.gph, replace) ///
+legend(order(1 "mtg<%20" 2 "mtg%20-24" 3 "mtg%25-29" 4 "womtg<%20" 5 "womtg%20-24" 6 "womtg%25-29" ///
+7 "Rent<%20" 8 "Rent%20-24" 9 "Rent%25-29") size(vsmall)rows(2)) legend(ring(0)) clegend(position(0))
 
-
+* I am turning the legend off for this one so I can combine these graphs together with one legend  
 gr dot morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29 nomorg_ptowncostinc_less_20 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ///
 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ if year==2017 in 1/30, over(censustract, label(labsize(tiny)) ) ///
-title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(medium)) legend(size(vsmall)) ///
-legend(order(1 "Morgage <%20" 2 "Morgage %20-24" 3 "Morgage %25-29" 4 "w/o Morgage <%20" 5 "w/o Morgage %20-24" 6 "w/o Morgage %25-29" ///
+title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(small)) legend(size(vsmall)) saving(g9.gph, replace) ///
+legend(off) legend(order(1 "Morgage <%20" 2 "Morgage %20-24" 3 "Morgage %25-29" 4 "w/o Morgage <%20" 5 "w/o Morgage %20-24" 6 "w/o Morgage %25-29" ///
 7 "Rent <%20" 8 "Rent %20-24" 9 "Rent %25-29") size(vsmall)rows(2))
-* this dot graph shows that those with morgage exceed those without morgage who spend less that %20  
+
+gr combine g8.gph g9.gph, row(1) ycommon title(Housing Monthly Costs, size(Medium))
+* 2010 dot graph shows that those without morgage who spend less that %20 are many, then the second are those with morgage 
+* 2017 dot graph shows that those with morgage exceed those without morgage who spend less that %20 and in general 
+* the gap is lessen and the housing prices perhaps are more regulated circling back to question 2   
 
 
 *histogram----------------------------------------------------------------------
 
- 
 histogram medincome, percent 
+* this shows people who have income around 6000 are most common 
 
+*graph bar----------------------------------------------------------------------
 
-*graphy bar---------------------------------------------------------------------
-
-graph bar emp_civlabor unemp_civlabor, bargap(2) legend(order(1 "Civil Labor employment" 2 "Civil Labor Unemploymemt")) by(year) stack
+graph bar emp_civlabor unemp_civlabor, bargap(2) outergap(60) legend(order(1 "Civil Labor Employment" 2 "Civil Labor Unemploymemt")) by(year) stack
 ** there is not much diference in employment rate but unemployment decreased slightly. 
-***********
-***********
-*********** Is there a way to make them narrow?
 
-graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(year) stack
-graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(censustract) stack
-
+graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(year) stack  outergap(60) 
 
 loc rent ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_
-loc twork drvalone drvcarpool totalwalk pubtrans timework_less_5min_ timework_5_9min_ timework_10_14min_
+loc twork drvalone drvcarpool totalwalk pubtrans timework_less_5min timework_5_9min timework_10_14min
 loc trans drvalone drvcarpool totalwalk pubtrans
 
 *** I want to show these bars under one another!
@@ -792,7 +832,7 @@ graph bar `twork' `trans', by(year) legend(size(vsmall))
 
 *bar charts stacked ------------------------------------------------------------
 
-*I am turning this legend on 
+*I am turning this legend on and put the position of the legend on top 
 gr bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
  morg_ptowncostinc_35_more_ , title(Owner W. Morgage, size(tiny)) over(year) stack title(, size(Tiny)) legend(order(1 ///
 "<%20" 2 "%20-4" 3 "%25-9" 4 "%30-4" 5 ">%35 Income") size(vsmall)rows(2)) legend(position(1) ring(0)) saving(g1.gph, replace)
@@ -826,6 +866,10 @@ gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Monthly Costs <%30 Of Hous
 graph hbar ownervacrate rentvacrate, over(year)
 
 graph hbar percocc percvac pbelpov, over(year)
+
+graph hbar drvalone drvcarpool totalwalk pubtrans workhome in 1/60, legend(order(1 "Driving alone" 2 ///
+"Car Pooling" 3 "Walk" 4 "Public Transportation" 5 "Work at Home")size(small)rows(2)) ///
+over(censustract, label(labsize (vsmall))) stack
 
 
 *gr box ------------------------------------------------------------------------
