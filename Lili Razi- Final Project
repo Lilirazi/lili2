@@ -1,0 +1,970 @@
+/* This is census tract data of Camden County for Data Management and GIS class 
+ Fall 2019 ---- Prof. Adam
+ Stata 15
+ Lili Razi 
+
+Research interest:
+ Smart growth means reinvesting in America’s downtowns and Main Streets, the economic engines of big cities and small towns alike.
+ Smart growth is creating homes for families of all income levels alongside one another, diversifying our transportation system so
+Americans have a choice in how they get around, building streets that are safe for people walking, bicycling or using a wheelchair,
+as well as driving, reimagining the places we have already built, and protecting our open green spaces for generations to come.
+(Smart Growth America, 2019)
+ Above all, smart growth is about helping every town and city become a more economically prosperous, socially equitable, and
+ environmentally sustainable place to live. This approach looks different for every community, but can help neighborhoods of any
+ kind flourish, make towns and cities competitive in a 21st century economy, and improve lives by improving neighborhoods.
+(Smart Growth America, 2019)
+ “"Smart Growth" (also referred to by its original title of growth management) is a local, regional, state and federal plans and legislation
+that promote non-sprawl, compact, transit corridor or new town development patterns and require adequate public facilities to be
+available at the time of development; "new urbanism" on the other hand  is focusing on transit oriented, traditional  neighborhood
+and mixed use walkable communities” (Freilich & Popowitz, 2010, p-4). It’s re-purposing the place to tell the public that this is a 
+different way to use an old infrastructure that’s still viable (NJpen, 2019). The idea of proximity is attracting more and more people
+to a place to live and to work and to recreate there.
+
+In my research I am trying to understand if there is affordable housing around condensed work places and whether there is walkability 
+and integrated public transportation in both residential area and workplaces. This requires looking at households number, land use and 
+the economic status of the residents which may guide authorities for better policies and development strategies shown by the following 
+data at census tracks in Camden County.
+
+Variables:
+ diversity in the home choices based on income
+ walkability
+ transportation 
+__________________________________________________________________
+
+Research questions include the following:
+
+1- Is smart growth plan effective in Camden? Is there a noticebale improvement?
+2- Has smart growth helped with affordable housing and economic status?
+3- Has there been any walkability/compact design happening in these years?
+
+Indicators for the answers: 
+
+1- Comparing 2007 and 2017 data in terms of
++ more population in urban areas that implies non sprawl development
+       measured by principal cities, households and civil labor force   
++ more affordable housing/ home diversity for people
+       meaured by studying the household numbers, poverty, income and employment status 
+       and level of cost based on income 
+	   also less vacanncy rate and more of occupancy 
++ more use of public transportation/ work at home because of tech advances 
+       measured by the number of households, use of transportation and income 
++ compact development meaning that there is closer distantace between workplace and housing
+  and more brownfield development 
+       measured by 0.25mile distance or less that 5 mins time
+	   measured by less vacancy and more occupancy 
++ how people are relying on cars, use public transportation and walk 
+       measured by total trans based on civil labor and households and the diversity of 
+	   the means comparing the two years 
+
+2- 
++ Affordable housing means income housing that cost less that %30 of income 
++ Economic Status means if there are more jobs and employment, less poverty and less spenditure on transit 
+
+3- 
++ less amount of time for commuting from home to work:  
+* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
+ and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
+
+__________________________________________________________________
+limitation: 
+ Green space variable was hard to find in data sources and was hard to analyze in census track.
+ It is recommened to be analyzed at neighborhood level. 
+ 
+----------------------------------------------------------------------------------------
+*/
+cd "E:\PhD\3. Fall semester 2019\GIS and Data Mng source\files for graphs" 
+
+/////2010-Employment////////////////////////////////////////////////////////////////////
+clear
+/* EMPLOYMENT STATUS FOR THE POPULATION 16 YEARS AND OVER Universe: Population 16 years and over  more information
+2007-2011 American Community Survey 5-Year Estimates
+retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B23025&prodType=table
+*/
+import delimited "https://docs.google.com/uc?id=1yMIUiQNc4fAQLOSKMRemIUTgLGLNoyX9&export=download", varnames(1)
+
+rename hd01_vd03 civlaborpop2010
+rename hd01_vd04 emp_civlabor2010
+rename hd01_vd05 unemp_civlabor2010
+
+keep geoid geoid2 geodisplaylabel civlaborpop2010 emp_civlabor2010 unemp_civlabor2010
+
+drop in 1
+
+destring *2010, replace
+
+* These numbers are hard to produce results and for comparison so I'm generating percantage for employed and 
+* Unemployed civil labor force 
+
+gen pcemp_civlabor2010=emp_civlabor2010/civlaborpop2010
+replace pcemp_civlabor2010=round(pcemp_civlabor2010, 0.01)
+
+gen pcunemp_civlabor2010=unemp_civlabor2010/civlaborpop2010
+replace pcunemp_civlabor2010=round(pcunemp_civlabor2010, 0.01)
+
+save empl2010_census_camden, replace
+
+/////2017-Employment////////////////////////////////////////////////////////////////////
+clear
+/* EMPLOYMENT STATUS FOR THE POPULATION 16 YEARS AND OVER Universe: Population 16 years and over  more information
+2013-2017 American Community Survey 5-Year Estimates
+retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B23025&prodType=table
+*/
+import delimited "https://docs.google.com/uc?id=1uz6OW27qcYPl40ETwXhtGQEmPCYrFd_w&export=download", varnames(1)
+
+rename hd01_vd03 civlaborpop2017
+rename hd01_vd04 emp_civlabor2017
+rename hd01_vd05 unemp_civlabor2017
+
+keep geoid geoid2 geodisplaylabel civlaborpop2017 emp_civlabor2017 unemp_civlabor2017
+
+drop in 1
+
+destring *2017, replace
+
+*These numbers are hard to produce results and for comparison so I'm generating percantage for employed and 
+* Unemployed civil labor force 
+
+gen pcemp_civlabor2017=emp_civlabor2017/civlaborpop2017
+replace pcemp_civlabor2017=round(pcemp_civlabor2017, 0.01)
+
+gen pcunemp_civlabor2017=unemp_civlabor2017/civlaborpop2017
+replace pcunemp_civlabor2017=round(pcunemp_civlabor2017, 0.01)
+
+save empl2017_census_camden, replace
+
+///// merge employ-unemployment 2010 and 2017////////////////////////////////////////////////////
+merge 1:1 geoid2 using empl2010_census_camden
+drop _merge
+save empunemp_20172010_camdencensus, replace
+
+*Below row is for gis so that I can add it to may layers 
+*export delimited using empunemp_20172010_camdencensus, replace
+
+*_____________________________________________________________________________________________________________________________
+
+/////poverty camden census 2010/////////////////////////////////////////////////////////////////////
+/* POVERTY STATUS IN THE PAST 12 MONTHS OF FAMILIES  more information
+retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1702&prodType=table
+*/
+clear
+import delimited "https://docs.google.com/uc?id=1-TcJuxRHthGEri7FJjOpmZ6Z_yJ_OufK&export=download", varnames(1)
+keep geodisplaylabel geoid2 hc02_est_vc01 hc01_est_vc01
+rename hc01_est_vc01 belpov2010
+rename hc02_est_vc01 pbelpov2010
+drop in 1
+destring pbelpov2010 belpov2010, replace
+save belowpov2010, replace 
+
+/////poverty camden census 2017////////////////////////////////////////////////////////////////////
+*retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1702&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1nrZFfZHdiAPWzwy95ZCzG2EACt-IP0h7&export=download", varnames(1)
+keep geodisplaylabel geoid2 hc02_est_vc01 hc01_est_vc01
+rename hc01_est_vc01 belpov2017
+rename hc02_est_vc01 pbelpov2017
+drop in 1 
+destring pbelpov2017 belpov2017, replace 
+save belowpov2017, replace 
+*export delimited using belowpov2017, replace
+
+/////merge  poverty 2010 and 2017//////////////////////////////////////////////////////////////////
+clear
+use belowpov2010
+merge 1:1 geoid2 using belowpov2017
+drop _merge
+save pov_20172010_camdencensus, replace
+*Below row is for gis so that I can add it to may layers 
+*export delimited using pov_20172010_camdencensus, replace
+
+*_____________________________________________________________________________________________________________________________
+
+/////median income camden census 2010///////////////////////////////////////////////////////////////////////////////
+*retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1903&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1keGwMtoCY6YCOTjdlx_PqvbWfkmjoOvI&export=download", varnames(1)
+keep geoid2 geodisplaylabel hc01_est_vc02 hc02_est_vc02
+drop in 1 
+rename hc01_est_vc02 households2010
+rename hc02_est_vc02 medincome2010
+destring medincome2010 households2010, replace 
+save medianincome_camden_2010, replace 
+
+/////median income camden census 2017////////////////////////////////////////////////////////////////////////////////
+*retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1903&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1HHZL8yTMRHOPqbTdFxYRTQLbkGTJhfBU&export=download", varnames(1)
+keep geoid2 geodisplaylabel hc01_est_vc02 hc03_est_vc02
+drop in 1 
+rename hc01_est_vc02 households2017
+rename hc03_est_vc02 medincome2017
+destring medincome2017 households2017, replace 
+save medianincome_camden_2017, replace 
+
+/////merge household income 2010 and 2017///////////////////////////////////////////////////////////////////////////
+merge 1:1 geoid2 using medianincome_camden_2010
+drop _merge
+save income_20172010_camdencensus, replace
+*this row below is for gis so that I can add it to may layers 
+*export delimited using income_20172010_camdencensus, replace
+
+*_____________________________________________________________________________________________________________________________
+
+//////////transportation camden census 2010/////////////////////////////////////////////////////////////////////////////
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08101&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1FueMBMpPotTCjVNwoH3n5llpmqRLGMPm&export=download=download", varnames(1)
+keep geoid2 geodisplaylabel hd01_vd01 hd01_vd10 hd01_vd18 hd01_vd34 hd01_vd42 hd01_vd50
+rename hd01_vd01 totaltrans2010
+rename hd01_vd10 drvalone2010
+rename hd01_vd18 drvcarpool2010 
+rename hd01_vd34 totalwalk2010
+rename hd01_vd42 pubtrans2010
+rename hd01_vd50 workhome2010
+drop in 1
+destring *2010, replace 
+save trans_2010_camden, replace 
+
+/////transportation camden census 2017/////////////////////////////////////////////////////////////////////////////////////////////////////
+*retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08101&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1FMo4POWwNEh8gf7MCw-H2rMow_w-xL0i&export=download", varnames(1)
+keep geoid2 geodisplaylabel hd01_vd01 hd01_vd10 hd01_vd18 hd01_vd34 hd01_vd42 hd01_vd50
+rename hd01_vd01 totaltrans2017
+rename hd01_vd10 drvalone2017
+rename hd01_vd18 drvcarpool2017 
+rename hd01_vd34 totalwalk2017
+rename hd01_vd42 pubtrans2017
+rename hd01_vd50 workhome2017
+drop in 1
+destring *2017, replace 
+save trans_2017_camden, replace 
+
+//////merge trans 2010 and 2017////////////////////////////////////////////////////////////////////////////////////////////////////////
+merge 1:1 geoid2 using trans_2010_camden
+drop _merge
+save trans_20172010_camdencensus, replace
+*this row below is for gis so that I can add it to may layers 
+*export delimited using trans_20172010_camdencensus, replace
+
+*_____________________________________________________________________________________________________________________________
+
+/////housing tenure camden census 2010//////////////////////////////////////////////////////////////////////////////////////////////
+*retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_16_5YR_DP04&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1G09ubEC8lNoqzIFDtYZm5pvEbPe4xYjN&export=download=download", varnames(1)
+keep geoid2 geodisplaylabel hc01_vc03 hc03_vc04 hc03_vc05 hc01_vc07 hc01_vc08 hc01_vc04 hc01_vc05 ///
+hc03_vc156 hc03_vc157 hc03_vc158 hc03_vc159 hc03_vc160 hc03_vc165 hc03_vc166 hc03_vc167 hc03_vc168 hc03_vc169 hc03_vc170 hc03_vc171 ///
+hc03_vc192 hc03_vc193 hc03_vc194 hc03_vc195 hc03_vc196 hc03_vc197
+
+rename hc01_vc03 totunit2010 
+rename hc01_vc04 occ2010
+rename hc03_vc04 percocc2010
+rename hc01_vc05 vac2010 
+rename hc03_vc05 percvac2010 
+rename hc01_vc07 ownervacrate2010 
+rename hc01_vc08 rentvacrate2010 
+
+rename hc03_vc156 morg_ptowncostinc_less_20_2010
+notes morg_ptowncostinc_less_20_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - Less than 20.0 percent"
+rename hc03_vc157 morg_ptowncostinc_20_24_2010
+notes morg_ptowncostinc_20_24_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - 20.0 to 24.9 percent"
+rename hc03_vc158 morg_ptowncostinc_25_29_2010
+notes morg_ptowncostinc_25_29_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - 25.0 to 29.9 percent"
+rename hc03_vc159 morg_ptowncostinc_30_34_2010
+notes morg_ptowncostinc_30_34_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - 30.0 to 34.9 percent"
+rename hc03_vc160 morg_ptowncostinc_35_more_2010
+notes morg_ptowncostinc_35_more_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - 35.0 and more percent"
+ 
+rename hc03_vc165 nomorg_ptowncostinc_less_10_2010
+notes nomorg_ptowncostinc_less_10_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - Less than 10.0 percent" 
+rename hc03_vc166 nomorg_ptowncostinc_10_14_2010
+notes nomorg_ptowncostinc_10_14_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 10 than 14.9 percent"
+rename hc03_vc167 nomorg_ptowncostinc_15_19_2010
+notes nomorg_ptowncostinc_15_19_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 15 than 19.9 percent"
+rename hc03_vc168 nomorg_ptowncostinc_20_24_2010
+notes nomorg_ptowncostinc_20_24_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 20.0 to 24.9 percent"
+rename hc03_vc169 nomorg_ptowncostinc_25_29_2010
+notes nomorg_ptowncostinc_25_29_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 25.0 to 29.9 percent"
+rename hc03_vc170 nomorg_ptowncostinc_30_34_2010
+notes nomorg_ptowncostinc_30_34_2010:"2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 30.0 to 34.9 percent"
+rename hc03_vc171 nomorg_ptowncostinc_35_more_2010
+notes nomorg_ptowncostinc_35_more_2010: "2010 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 35.0 and more percent"
+ 
+rename hc03_vc192 ptrentincome_less_15_2010
+notes ptrentincome_less_15_2010: "2010 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - Less than 15 percent"
+rename hc03_vc193 ptrentincome_15_19_2010
+notes ptrentincome_15_19_2010: "2010 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 15- 19.9 percent"
+rename hc03_vc194 ptrentincome_20_24_2010
+notes ptrentincome_20_24_2010: "2010 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 20 to 24.9 percent"
+rename hc03_vc195 ptrentincome_25_29_2010
+notes ptrentincome_25_29_2010: "2010 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 25 to 29.9 percent"
+rename hc03_vc196 ptrentincome_30_34_2010
+notes ptrentincome_30_34_2010: "2010 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 30 to 34.9 percent"
+rename hc03_vc197 ptrentincome_35_more_2010
+notes ptrentincome_35_more_2010: "2010 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 35 percent or more"
+ 
+drop in 1 
+
+foreach var of varlist rentvacrate2010 ptrentincome_less_15_2010 ptrentincome_15_19_2010 ptrentincome_20_24_2010 ptrentincome_25_29_2010 ptrentincome_30_34_2010 ptrentincome_30_34_2010 ptrentincome_35_more_2010{
+ replace `var'="." if `var'=="-"
+ }
+ 
+destring *2010, replace
+
+save housetenure_2010_camden, replace 
+
+/////housing tenure camden census 2017/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_16_5YR_DP04&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1jgBo8T4FCQFOqEPNUHzBwzW8hDTWoMuE&export=download=download", varnames(1)
+keep geoid2 geodisplaylabel hc01_vc03 hc03_vc04 hc03_vc05 hc01_vc08 hc01_vc09 hc01_vc04 hc01_vc05 ///
+hc03_vc160 hc03_vc161 hc03_vc162 hc03_vc163 hc03_vc164 hc03_vc170 hc03_vc171 hc03_vc172 hc03_vc173 hc03_vc174 hc03_vc175 hc03_vc176 ///
+hc03_vc199 hc03_vc200 hc03_vc201 hc03_vc202 hc03_vc203 hc03_vc204
+
+rename hc01_vc03 totunit2017 
+rename hc01_vc04 occ2017
+rename hc03_vc04 percocc2017
+rename hc01_vc05 vac2017 
+rename hc03_vc05 percvac2017 
+rename hc01_vc08 ownervacrate2017 
+rename hc01_vc09 rentvacrate2017
+
+rename hc03_vc160 morg_ptowncostinc_less_20_2017
+notes morg_ptowncostinc_less_20_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - Less than 20.0 percent"
+rename hc03_vc161 morg_ptowncostinc_20_24_2017
+notes morg_ptowncostinc_20_24_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - 20.0 to 24.9 percent"
+rename hc03_vc162 morg_ptowncostinc_25_29_2017
+notes morg_ptowncostinc_25_29_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - 25.0 to 29.9 percent"
+rename hc03_vc163 morg_ptowncostinc_30_34_2017
+notes morg_ptowncostinc_30_34_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - 30.0 to 34.9 percent"
+rename hc03_vc164 morg_ptowncostinc_35_more_2017
+notes morg_ptowncostinc_35_more_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units with a mortgage (excluding units where SMOCAPI cannot be computed) - 35.0 and more percent"
+
+rename hc03_vc170 nomorg_ptowncostinc_less_10_2017
+notes nomorg_ptowncostinc_less_10_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - Less than 10.0 percent" 
+rename hc03_vc171 nomorg_ptowncostinc_10_14_2017
+notes nomorg_ptowncostinc_10_14_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 10 than 14.9 percent"
+rename hc03_vc172 nomorg_ptowncostinc_15_19_2017
+notes nomorg_ptowncostinc_15_19_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 15 than 19.9 percent"
+rename hc03_vc173 nomorg_ptowncostinc_20_24_2017
+notes nomorg_ptowncostinc_20_24_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 20.0 to 24.9 percent"
+rename hc03_vc174 nomorg_ptowncostinc_25_29_2017
+notes nomorg_ptowncostinc_25_29_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 25.0 to 29.9 percent"
+rename hc03_vc175 nomorg_ptowncostinc_30_34_2017
+notes nomorg_ptowncostinc_30_34_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 30.0 to 34.9 percent"
+rename hc03_vc176 nomorg_ptowncostinc_35_more_2017
+notes nomorg_ptowncostinc_35_more_2017: "2017 Percent; SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI) - Housing units without a mortgage (excluding units where SMOCAPI cannot be computed) - 35.0 and more percent"
+ 
+rename hc03_vc199 ptrentincome_less_15_2017
+notes ptrentincome_less_15_2017: "2017 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - Less than 15 percent"
+rename hc03_vc200 ptrentincome_15_19_2017
+notes ptrentincome_15_19_2017: "2017 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 15 to 19.9 percent"
+rename hc03_vc201 ptrentincome_20_24_2017
+notes ptrentincome_20_24_2017: "2017 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 20 to 24.9 percent"
+rename hc03_vc202 ptrentincome_25_29_2017
+notes ptrentincome_25_29_2017: "2017 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 25 to 29.9 percent"
+rename hc03_vc203 ptrentincome_30_34_2017
+notes ptrentincome_30_34_2017: "2017 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 30 to 34.9 percent"
+rename hc03_vc204 ptrentincome_35_more_2017
+notes ptrentincome_35_more_2017: "2017 Estimate; GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - 35 percent or more"
+
+drop in 1 
+
+destring *2017, replace
+
+save housetenure_2017_camden, replace 
+
+/////merge housing owenership and vacancy 2010 and 2017//////////////////////////////////////////////////////////////////////////////////////////////////
+merge 1:1 geoid2 using housetenure_2010_camden
+drop _merge
+save housetenure_20172010_camdencensus, replace
+*this row below is for gis so that I can add it to my layers 
+*export delimited using housetenure_20172010_camdencensus, replace
+
+*_____________________________________________________________________________________________________________________________
+
+
+/////2010 transit to work time/////////////////////////////////////////////////////////////////////////////////////////////////////////
+clear 
+*retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08303&prodType=table
+import delimited "https://docs.google.com/uc?id=1lOFFB0_Q3Om5c89xCfGn6SXjdm6Gfrn7&export=download", varnames(1)
+keep geoid2 geodisplaylabel hd01_vd02 hd01_vd03 hd01_vd04 hd01_vd05 hd01_vd06 hd01_vd07 hd01_vd08 hd01_vd09 hd01_vd10 hd01_vd11 hd01_vd12
+
+rename hd01_vd02 timework_less_5min2010
+rename hd01_vd03 timework_5_9min2010
+rename hd01_vd04 timework_10_14min2010
+rename hd01_vd05 timework_15_19min2010
+rename hd01_vd06 timework_20_24min2010
+rename hd01_vd07 timework_25_34min2010
+rename hd01_vd08 timework_35_39min2010
+rename hd01_vd09 timework_40_44min2010
+rename hd01_vd10 timework_45_59min2010
+rename hd01_vd11 timework_60_89min2010
+rename hd01_vd12 timework_90_moremin2010
+
+drop in 1
+
+destring *2010, replace 
+
+save timework_2010_camden, replace 
+
+/////2017 transit to work time/////////////////////////////////////////////////////////////////////////////////////////////////////////
+clear 
+*retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08303&prodType=table
+import delimited "https://docs.google.com/uc?id=1IZAqxlk06VA-dF87yWq1CHvI_x2IASJ8&export=download", varnames(1)
+keep geoid2 geodisplaylabel hd01_vd02 hd01_vd03 hd01_vd04 hd01_vd05 hd01_vd06 hd01_vd07 hd01_vd08 hd01_vd09 hd01_vd10 hd01_vd11 hd01_vd12
+
+rename hd01_vd02 timework_less_5min2017
+rename hd01_vd03 timework_5_9min2017
+rename hd01_vd04 timework_10_14min2017
+rename hd01_vd05 timework_15_19min2017
+rename hd01_vd06 timework_20_24min2017
+rename hd01_vd07 timework_25_34min2017
+rename hd01_vd08 timework_35_39min2017
+rename hd01_vd09 timework_40_44min2017
+rename hd01_vd10 timework_45_59min2017
+rename hd01_vd11 timework_60_89min2017
+rename hd01_vd12 timework_90_moremin2017
+
+drop in 1
+
+destring *2017, replace 
+
+save timework_2017_camden, replace 
+
+/////merge workplace 2010 and 2017////////////////////////////////////////////////////////////////////////////////////////////////////
+merge 1:1 geoid2 using timework_2010_camden
+drop _merge
+save timework_20172010_camdencensus, replace 
+
+*this row below is for gis so that I can add it to my layers 
+*export delimited using housetenure_20172010_camdencensus, replace
+
+*_____________________________________________________________________________________________________________________________
+
+/////work place camden census 2010//////////////////////////////////////////////////////////////////////////////////////////////////
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B08016&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1IfppfV9eRC6x1_xeD1EAkHIM0vger3If&export=download", varnames(1)
+keep geoid2 geodisplaylabel hd01_vd02 hd01_vd13
+
+rename hd01_vd02 principal2010
+rename hd01_vd13 notprincipal2010
+
+drop in 1
+
+destring principal2010 notprincipal2010, replace 
+
+save workplace_2010_camden, replace 
+
+/////work place camden census 2017/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_10_5YR_B08016&prodType=table
+clear
+import delimited "https://docs.google.com/uc?id=1RnVKufRz3FBgcZkvWPzHzTK_6nB2T-Jh&export=download", varnames(1)
+keep geoid2 geodisplaylabel hd01_vd02 hd01_vd13
+
+rename hd01_vd02 principal2017
+rename hd01_vd13 notprincipal2017
+
+drop in 1
+
+destring principal2017 notprincipal2017, replace 
+
+save workplace_2017_camden, replace 
+
+/////merge workplace 2010 and 2017////////////////////////////////////////////////////////////////////////////////////////////////////
+merge 1:1 geoid2 using workplace_2010_camden
+drop _merge
+save workplace_20172010_camdencensus, replace
+*this row below is for gis so that I can add it to my layers 
+*export delimited using housetenure_20172010_camdencensus, replace
+
+*_____________________________________________________________________________________________________________________________
+
+******************merge all the 2010, 2017  info*****************************************************************************************
+clear
+
+use empunemp_20172010_camdencensus
+
+foreach file in pov_20172010_camdencensus income_20172010_camdencensus trans_20172010_camdencensus ///
+housetenure_20172010_camdencensus timework_20172010_camdencensus workplace_20172010_camdencensus {
+
+merge 1:1 geoid2 using `file'
+
+drop _merge 
+
+}
+
+save camden_smarthgrowth_census, replace
+ 
+*_____________________________________________________________________________________________________________________________
+
+********************reshape and divide 2010, 2017 info *************************
+clear 
+use camden_smarthgrowth_census
+encode geoid2, gen(ctc)
+
+///these below rows should run together 
+reshape long civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome pcemp_civlabor pcunemp_civlabor ///
+timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min ///
+timework_35_39min timework_40_44min timework_45_59min timework_60_89min ///
+totaltrans drvalone drvcarpool totalwalk pubtrans workhome timework_90_moremin ///
+totunit occ percocc vac percvac ownervacrate rentvacrate ///
+morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
+nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+principal notprincipal,i(ctc)j(year)
+
+sort year
+
+destring geoid2, replace                      
+gen censustract = mod(geoid2,1000000)  
+
+drop geoid geoid2 
+
+move geodisplaylabel ctc
+
+move censustract ctc
+ 
+label var civlaborpop "All Civilian labor force"
+label var emp_civlabor "Civilian labor force Employed"
+label var unemp_civlabor "Civilian labor force Unemployed"
+label var pcemp_civlabor "Percent Civilian labor force Employed"
+label var pcunemp_civlabor "Percent Civilian labor force Unemployed"
+label var belpov "Total families below poverty level"
+label var pbelpov "Total families Percent below poverty level"
+label var households "Total Households"
+label var medincome "Median income (dollars) Households"
+label var totaltrans "Total number of transportation" 
+label var drvalone "Car, truck, or van-drove alone"
+label var drvcarpool "Car, truck, or van-carpooled" 
+label var totalwalk "Walked"
+label var pubtrans "Taxicab, motorcycle, bicycle, or other means" 
+label var workhome "Worked at home"
+label var totunit "total housing units" 
+label var occ "Occupied housing units"
+label var percocc "Percent Occupied housing units"
+label var vac  "Vacant housing units"
+label var percvac "Percent Vacant housing units"
+label var ownervacrate "Homeowner vacancy rate"
+label var rentvacrate "Rental vacancy rate" 
+label var timework_less_5min "Less than 5 minutes"
+label var timework_5_9min "5 to 9 minutes"
+label var timework_10_14min "10 to 14 minutes"
+label var timework_15_19min "15 to 19 minutes"
+label var timework_20_24min "20 to 24 minutes"
+label var timework_25_34min "25 to 34 minutes"
+label var timework_35_39min "35 to 39 minutes"
+label var timework_40_44min "40 to 44 minutes"
+label var timework_45_59min "45 to 59 minutes"
+label var timework_60_89min "60 to 89 minutes"
+label var timework_90_moremin "90 or more minutes"
+label var principal "Estimate; Living in a principal city"
+label var notprincipal "Estimate; Living outside any principal city"
+
+save camden_sg_reshcensus, replace
+
+*_____________________________________________________________________________________________________________________________
+
+//////////Graph and Reg//////////////////////////////////////////////////////////////////////////////////////
+
+clear 
+use camden_sg_reshcensus
+
+**my Variables: 
+//civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome 
+
+//timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ 
+//timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
+
+//totaltrans drvalone drvcarpool totalwalk pubtrans workhome 
+ 
+//totunit occ vac percocc percvac ownervacrate rentvacrate 
+
+//morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_
+
+ 
+//nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ 
+//nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ 
+
+//ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
+
+//principal notprincipal 
+/*
+Research questions include the following:
+
+1- Is smart growth plan effective in Camden? Is there a noticebale improvement?
+2- Has smart growth helped with affordable housing and economic status?
+3- Has there been any walkability/compact design happening in these years?
+
+Indicators for the answers: 
+
+1- Comparing 2007 and 2017 data in terms of
++ more population in urban areas that implies non sprawl development
+       measured by principal cities, households and civil labor force   
++ more affordable housing/ home diversity for people
+       meaured by studying the household numbers, poverty, income and employment status 
+       and level of cost based on income 
+	   also less vacanncy rate and more of occupancy 
++ more use of public transportation/ work at home because of tech advances 
+       measured by the number of households, use of transportation and income 
++ compact development meaning that there is closer distantace between workplace and housing
+  and more brownfield development 
+       measured by 0.25mile distance or less that 5 mins time
+	   measured by less vacancy and more occupancy 
++ how people are relying on cars, use public transportation and walk 
+       measured by total trans based on civil labor and households and the diversity of 
+	   the means comparing the two years 
+
+2- 
++ Affordable housing means income housing that cost less that %30 of income 
++ Economic status means if there are more jobs and employment, less poverty and less spenditure on transit 
+
+3- 
++ less amount of time for commuting from home to work:  
+* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
+ and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
+
+
+*/
+*tabstat------------------------------------------------------------------------
+
+tabstat civlaborpop principal households, by(year) stat(mean sd min max) nototal long col(stat)f(%9.2f)
+/* the table shows the demographic changes as  civil labor population, principal cities workforce and number of households in camden
+ county decreased. 
+ this circles back to question1 
+*/
+tabstat totunit ownervac rentvac, by(year) stat(mean sd min max) nototal long col(stat)f(%9.2f)
+/* this table shows that rent vacancy rate mean has dropped in 7 years but owner vacancy rate has increased and total units mean slightly increased.
+ circling back to question3,  it means compact design and brownfield development in housing sector is not significant 
+ circling back to question2, it seems there is improvements for renters in Camden  
+*/
+tabstat totaltrans drvalone drvcarpool totalwalk pubtrans workhome, by(year) stat(mean sd min max) nototal long format
+/* this table shows total transportation increased over 7 years. Many worked at home and the use of pubtrans has not changed
+ less people walk and use carpooling and there is a slight increase for driving alone 
+ circling back to question1, there is no noticeable change for better use of public trans or encouraging walkability 
+*/
+tabstat civlaborpop emp_civlabor unemp_civlabor belpov medincome, by(year) stat(mean sd min max) nototal long format
+** this table shows there is more labor participation, employment and in result unemployment and poverty rate for both year decreased. 
+* Circling back to question1 and 2 there is better economic prosperity that  helps with housing  
+
+tabstat timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min ///
+timework_35_39min timework_40_44min timework_45_59min timework_60_89min ,by(year) stat(mean sd min max) nototal long format
+/* this table shows the time for getting to work. walkability measure means to get to places in less than 5 mins 
+ there is a remarkable drop in walkability. In general this table shows there is not much progress 
+ for 15 and 20 mins distance not much a difference between the two years 
+ more people are located in 24 and 40 mins away from work in 2017. which may imply there are more affordable housing in those distances. 
+ for people who live 44 and 59 mins away not much difference. probably implies there is not much housing difference in those distances.  
+ but there are more people for more than 90 mins away in 2017. Implying that people are commuting from other cities to work 
+ which is totally in contrast to the idea of compact design.  
+ circling back to question3 there is not a progress  
+*/
+
+tabstat morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
+morg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
+** owner expenditure of income shows those who spent less than %20of their income on housing with morgage increased in 2017 but other percentages decreased 
+
+tabstat nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
+** not much difference for housing with no morgage 
+
+tabstat ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ,by(year) stat(mean sd min max) nototal long format
+** Renters expenditure of income shows those who spent over %35 of their income on housing increased 
+* circling back to question2 comparing these three tabels we can conclude that renters and houseowners experinced housing tenure 
+* differently, renters allocate more of their income on housing and owners with morgage less and those without morgage there were not much change
+ 
+tabstat principal notprincipal, by(year) stat(mean sd min max) nototal long format
+** people working in not principal cities decreased significantly but those that worked in principal cities almost remained the same 
+
+
+*scatterplot--------------------------------------------------------------------
+
+
+tw(scatter unemp_civlabor belpov)(lfit unemp_civlabor belpov), by(year) ytitle(Unemployed Civil Labor) xtitle(Below Poverty Line) ///
+legend(order(1 "Civil Labor Unemployment" 2 "Fited Values")) 
+** this graph reveals that poverty and unemployment got slightly less in 2017 
+*circling back to question2 means economic status got a little better 
+
+****** This is circular and interesting
+scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) msize(vsmall) msymbol(circle_hollow) mlwidth(thin) by(year) 
+* this means for people who spent more than %30 of income on rent and based on their income how much do they walk to their work place 
+* When the income is higher than 100,000 there is less tendency to walk but there is a higher tendency to walk even with higher income than 100,000 in 2017 
+
+foreach v in timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min timework_35_39min timework_40_44min timework_45_59min timework_60_89min {
+tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get To Work) xtitle(Use Of Public Transportation) title(Workplace And Time To Get To Work)
+}
+/* This shows there is a positive colleration between these using public transportation. There is a high demand for public transportation for 
+15-20, 20-25 and 35-40 mins which all begin above 200 numbers, the least demand is for less than 5 mins which obviously people walk to work and 
+also 45-60 mins which starts at 60. for people who are more than 1 hour away there the trend is positive and less than 200 number 
+*/
+tw (scatter timework_less_5min pubtrans)(lfit timework_less_5min pubtrans) //less than 50 
+tw (scatter timework_5_9min pubtrans)(lfit timework_5_9min pubtrans) // less than 200
+tw (scatter timework_10_14min pubtrans)(lfit timework_10_14min pubtrans) //from 200
+tw (scatter timework_15_19min pubtrans)(lfit timework_15_19min pubtrans) //above 200
+tw (scatter timework_20_24min pubtrans)(lfit timework_20_24min pubtrans) //above 200
+tw (scatter timework_25_34min pubtrans)(lfit timework_25_34min pubtrans) //above 100
+tw (scatter timework_25_34min pubtrans)(lfit timework_25_34min pubtrans)  //above 100
+tw (scatter timework_25_34min pubtrans)(lfit timework_25_34min pubtrans)  //above 100
+tw (scatter timework_35_39min pubtrans)(lfit timework_35_39min pubtrans)  //above 200
+tw (scatter timework_40_44min pubtrans)(lfit timework_40_44min pubtrans)  //around 50
+tw (scatter timework_45_59min pubtrans)(lfit timework_45_59min pubtrans)  //above 60
+tw (scatter timework_60_89min pubtrans)(lfit timework_60_89min pubtrans)  //above 180
+
+foreach means in totaltrans drvalone drvcarpool totalwalk pubtrans {
+foreach mins in timework_less_5min  {
+tw (scatter `means' `mins')(lfit `means' `mins') 
+gr save `means'_`mins'.gph
+
+}
+}
+
+local data: dir . files "*.gph"
+//di "`data'"
+
+gr combine `data'
+* this graph shows that the using car is more pervalent in less than 5 mins than walking or cycling
+
+
+** Assessing the spenditure of %30 of income on housing 
+tw(scatter morg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit morg_ptowncostinc_35_more_ vac, msize(vsmall)), xtitle(Vaccancy) by(year) legend(order(1 "%35> of Income Spent on Housing with Morgage" 2 "Fited Values")) 
+** housing with morgage _ strong correlation, less spent in 2017 
+
+tw(scatter nomorg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit nomorg_ptowncostinc_35_more_ vac, msize(tiny)), xtitle(Vaccancy) by(year)  legend(order(1 "%35> of Income Spent on Housing w/o Morgage" 2 "Fited Values")) 
+** housing without morgage_ noticeable for vaccancy of 200 not much for 2010 but strong correlation for 2017 
+
+tw(scatter ptrentincome_35_more_ vac, msize(vsmall))(lfit ptrentincome_35_more_ vac, msize(vsmall)), xtitle(Vaccancy) by(year) legend(order(1 "%35> of Income Spent on Rent " 2 "Fited Values")) 
+/* direct correlation and slightly more in 2017 
+ circling back to question2, these graphs show that compact development and housing occupancy relationship  
+ When the housing cost is more than %35 of income there are more vaccancy and less people are able to afford housing.
+ Housing with morgage caused more vacancy, however, this was not a case for houses w/o in 2010 but in 2017 there was a colleration. 
+ for renters there is a direct correlations with vacancy when the income spenditure is more than %35 
+ all that said means diversifying housing choices is still important for Camen County  
+*/
+
+//////I wish to see if income impacts the walkability and public transportation usage over census tract///// 
+twoway (scatter medincome totalwalk principal, mlab(censustract)), by(year)
+** it seems there is no correlation between income and walking from work to home.
+
+****** This is circular, over census tracts and interesting!!! 
+tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation) by(year)
+** this graph shows the correlation between median income and public transportation over census tract 
+** Use of public transportation increased in 2017 and it is not really related to income level 
+
+
+*gr dot-------------------------------------------------------------------------
+
+****** This is dot graph over census tracts and interesting!!! 
+sort censustract year
+
+* Because there are 127 census tract and it is hard to see the changes of all I am using the first 60 tracts 
+gr dot occ vac if year==2010 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g4.gph, replace) title(2010, size(medium))
+
+* Because there are 127 census tract and it is hard to see the changes of all I am using the first 60 tracts 
+gr dot occ vac if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) legend(order(1 "Occupancy Mean" 2 "Vacancy Mean" ) size(small)rows(2)) saving(g5.gph, replace) title(2017, size(medium))
+* this graph shows there is a high ownervaccancy in some census track that is due to wooded land use and agricultural uses 
+* but for some others ther is high vacancy in northern camden area_ the difference between 2010 and 2017 is not really noticeable 
+
+gr combine g4.gph g5.gph, row(1) ycommon title(Occupancy and Vacancy, size(Medium))
+
+
+* I am combining all tenures under %30 of income expenditure to see the aount of affordable housing in 2007 and 2017 
+egen mP0_29=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29)
+egen mP0n_29=rowtotal(nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_)
+egen Rent_29=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_)
+
+gr dot mP0_29 mP0n_29 Rent_29 if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) title(Monthly Cost of Income for Housing, size(Medium)) legend(order(1 "Housing w. Morgage" 2 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
+**************PROBLEM: in legend all three varaiables are shown in same color 
+*********************
+*********************
+
+* It it hard to see the changes for vac that's why we divide it by 10 
+gen vac10= vac/10
+
+gr dot mP0n_29 Rent_29 if year==2010 in 1/40, over(censustract, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(vsmall)) legend(size(tiny)) ///
+legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g6.gph, replace)
+
+gr dot mP0n_29 Rent_29 if year==2017 in 1/40, over(censustract, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(vsmall)) legend(size(tiny)) ///
+legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g7.gph, replace)
+
+gr combine g6.gph g7.gph, row(1) ycommon title(Housing Monthly Costs, size(Medium))
+* this dot graph shows in most census tracts the monthly cost of owners w/o are more than rent and the difference between rent and owner cost is really high 
+* especially in 2010 but in 2017 the differences has become less and that means more adjustment regarding prices have been implementent 
+** circiling back to question2 better housing price regulation has been implemented in 2017. 
+
+
+
+*********** Those who spend less than %20 of their income on housing are grouped in one variable 
+*********** Therefore it is easier to compare affordable housing 
+egen nomorg_ptowncostinc_less_20=rowtotal( nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_)
+egen ptrentincome_less_20=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_)
+
+* I am comparing the two graphs blow_ first I save them then see them in gr combine 
+* I am using legend only in this one and I'm pushing it into the graph 
+gr dot morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29 nomorg_ptowncostinc_less_20 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ///
+nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ if year==2010 in 1/30, over(censustract, label(labsize(tiny)) ) ///
+title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(small)) legend(size(vsmall)) saving(g8.gph, replace) ///
+legend(order(1 "mtg<%20" 2 "mtg%20-24" 3 "mtg%25-29" 4 "womtg<%20" 5 "womtg%20-24" 6 "womtg%25-29" ///
+7 "Rent<%20" 8 "Rent%20-24" 9 "Rent%25-29") size(vsmall)rows(2)) legend(ring(0)) clegend(position(0))
+
+* I am turning the legend off for this one so I can combine these graphs together with one legend  
+gr dot morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29 nomorg_ptowncostinc_less_20 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ///
+nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ if year==2017 in 1/30, over(censustract, label(labsize(tiny)) ) ///
+title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(small)) legend(size(vsmall)) saving(g9.gph, replace) ///
+legend(off) legend(order(1 "Morgage <%20" 2 "Morgage %20-24" 3 "Morgage %25-29" 4 "w/o Morgage <%20" 5 "w/o Morgage %20-24" 6 "w/o Morgage %25-29" ///
+7 "Rent <%20" 8 "Rent %20-24" 9 "Rent %25-29") size(vsmall)rows(2))
+
+gr combine g8.gph g9.gph, row(1) ycommon title(Housing Monthly Costs, size(Medium))
+* 2010 dot graph shows that those without morgage who spend less that %20 are many, then the second are those with morgage 
+* 2017 dot graph shows that those with morgage exceed those without morgage who spend less that %20 and in general 
+* circling back to question 2  the gap is lessen and the housing prices perhaps are more regulated 
+
+
+*histogram----------------------------------------------------------------------
+
+histogram medincome, percent 
+* this shows people who have income around 6000 are most common 
+
+*graph bar----------------------------------------------------------------------
+
+graph bar emp_civlabor unemp_civlabor, bargap(2) outergap(60) legend(order(1 "Civil Labor Employment" 2 "Civil Labor Unemploymemt")) by(year) stack
+* there is not much diference in employment rate but unemployment decreased slightly. 
+
+graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(year) stack  outergap(70) legend(order(1 "Driving Alone" 2 "Carpooling" 3 "Walk" 4 "Public Transportation" 5 "Work At Home")) ///
+ title(Means to get tow work)
+* In both 2010 and 2017 driving to work is predominant 
+
+
+loc pop civlaborpop households medincome 
+loc rent ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
+loc twork drvalone drvcarpool totalwalk pubtrans timework_less_5min timework_5_9min timework_10_14min
+loc trans drvalone drvcarpool totalwalk pubtrans
+**************PROBLEM: rent stack is all one thing 
+*********************
+*********************
+graph bar `rent', by(year) legend(size(vsmall)) outergap(60) stack
+graph bar `rent' `twork', by(year) legend(size(vsmall)) outergap(60) stack
+graph bar `rent' `pop', by(year) legend(size(vsmall)) outergap(60) stack
+graph bar `twork' `trans', by(year) legend(size(vsmall)) outergap(60) stack
+
+*bar charts stacked ------------------------------------------------------------
+
+*I am turning this legend on and put the position of the legend on top 
+gr bar morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
+ morg_ptowncostinc_35_more_ , title(Owner W. Morgage, size(tiny)) over(year) stack title(, size(Tiny)) legend(order(1 ///
+"<%20" 2 "%20-4" 3 "%25-9" 4 "%30-4" 5 ">%35 Income") size(vsmall)rows(2)) legend(position(1) ring(0)) saving(g1.gph, replace)
+* This bar graph shows that affordable housing perhaps has increased in 2017 for homeowners with morgage 
+
+*I am turning this legend off 
+gr bar nomorg_ptowncostinc_less_20 nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_ ///
+nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ , title(Owner W. NoMorgage, size(tiny)) over(year) stack  ///
+legend(off) ytitle(, margin(esubhead)) title(, size(Tiny)) legend(order(1 ///
+"Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))saving(g2.gph, replace)
+* This bar graph shows that affordable housing slightly increased in 2017 for homeowners with no morgage 
+
+* I am turning this legend off 
+gr bar ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+,legend(off) title(Renter Costs, size(tiny)) over(year) stack  ytitle(, margin(esubhead)) title(, size(Tiny)) legend(order(1 ///
+1 "Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))saving(g3.gph, replace)
+* This bar graph shows there is not that much difference for renters between 2010 and 2017 
+
+
+gr combine g1.gph g2.gph, row(1) ycommon
+gr combine g1.gph g2.gph g3.gph, row(1) ycommon title(Monthly Renter Costs As A Percentage Of Household Income, size(medium))
+***********This is interesting! 
+
+gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Monthly Costs <%30 Of Household Income) ytitle(, margin(top)) title(, size(Tiny)) legend(order(1 ///
+"Owner w. Morgage" 2 "Owner w/o Morgage" 3 "Renter" ) size(vsmall)rows(2)) outergap(60)
+* The graph shows the amount for renters has got better but not much change for house owners 
+
+
+*gr hbar------------------------------------------------------------------------
+
+graph hbar ownervacrate rentvacrate, over(year)
+
+graph hbar percocc percvac pbelpov, over(year)
+
+graph hbar drvalone drvcarpool totalwalk pubtrans workhome in 1/60, legend(order(1 "Driving alone" 2 ///
+"Car Pooling" 3 "Walk" 4 "Public Transportation" 5 "Work at Home")size(small)rows(2)) ///
+over(censustract, label(labsize (vsmall))) stack
+
+
+*gr box ------------------------------------------------------------------------
+
+graph box percvac, over(year)
+** this graph shows vacancy has increased in 7 years 
+
+******
+******
+****** This is interesting 
+graph box vac belpov unemp_civlabor, over(year) legend (order(1 ///
+"Vaccancy" 2 "Below Poverty" 3 "Unemployed Civil Labors") size(small)rows(2)) 
+** this graph shows vacancy has risen considering the low level of poverty 
+
+
+*Misc---------------------------------------------------------------------------
+ 
+graph matrix percocc totalwalk pubtrans medincome pbelpov emp_civlabor principal, half
+** this is a total presentation of graphs in the scattered plot 
+
+pwcorr unemp_civlabor princip notprincip d* p*, star(.05)
+
+
+*Reg----------------------------------------------------------------------------
+
+
+foreach var in drvalone occ principal morg_ptowncostinc_less_20_ nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ ptrentincome_less_15_ ptrentincome_15_19_{
+reg `var' medincome
+}
+
+
+loc c drvalone occ principal morg_ptowncostinc_less_20_ nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ ptrentincome_less_15_ ptrentincome_15_19_
+
+reg medincome                     emp_civlabor `c'
+reg medincome          households emp_civlabor `c'
+reg medincome drvalone households emp_civlabor `c'
+
+
+
+net install outreg2, from(http://fmwww.bc.edu/RePEc/bocode/o)
+
+use merge1, clear ///
+
+reg medincome civlaborpop
+/* *and then export to excel, note eform option that will exponentiate betas; ct will give it column title A1 */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel replace ct(A1) lab
+/* *then i run some other specification */
+reg medincome civlaborpop emp_civlabor
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A2) lab  
+reg medincome civlaborpop emp_civlabor vac
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A3) lab
+reg medincome civlaborpop emp_civlabor vac occ
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A4) lab  
+reg medincome civlaborpop emp_civlabor vac occ principal
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A5) lab
+reg medincome civlaborpop emp_civlabor vac occ principal totalwalk
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A6) lab
+reg medincome civlaborpop emp_civlabor vac occ principal totalwalk pubtrans
+/* *and outreg2 again but i append instead of replace */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A8) lab
+reg medincome civlaborpop emp_civlabor vac occ principal totalwalk pubtrans drvalone
+/* *and outreg2 again but i append instead of replace */
+
+
+reg emp_civlabor occ timework_less_5min_ totalwalk
+
+reg households belpov vac
+
+reg drvalone drvcarpool totalwalk pubtrans timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
+timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
+
+reg  occ totaltrans totalwalk
+
+
+
+ 
