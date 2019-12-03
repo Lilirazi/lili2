@@ -966,5 +966,30 @@ timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ time
 reg  occ totaltrans totalwalk
 
 
+**For GIS 
+/*
+use camden_sg_reshcensus
 
+egen mP0_29=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29)
+egen mP0n_29=rowtotal(nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_)
+egen Rent_29=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_)
+gen vac10= vac/10
+egen nomorg_ptowncostinc_less_20=rowtotal( nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_)
+egen ptrentincome_less_20=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_)
+
+///these below rows should run together 
+reshape wide civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome pcemp_civlabor pcunemp_civlabor ///
+timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min ///
+timework_35_39min timework_40_44min timework_45_59min timework_60_89min ///
+totaltrans drvalone drvcarpool totalwalk pubtrans workhome timework_90_moremin ///
+totunit occ percocc vac percvac ownervacrate rentvacrate ///
+morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_ ///
+nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
+nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ///
+ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ ///
+principal notprincipal  ptrentincome_less_20 nomorg_ptowncostinc_less_20 Rent_29 mP0n_29 mP0_29 vac10,i(ctc)j(year)
+
+save camden_sg_gis, replace
+export delimited using camden_sg_gis, replace
+*/
  
