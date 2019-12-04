@@ -69,6 +69,7 @@ __________________________________________________________________
 limitation: 
  Green space variable was hard to find in data sources and was hard to analyze in census track.
  It is recommened to be analyzed at neighborhood level. 
+ Also looking at mixed use development was not doable since there was no data around that in websites. 
  
 ----------------------------------------------------------------------------------------
 */
@@ -592,40 +593,6 @@ use camden_sg_reshcensus
 
 //principal notprincipal 
 /*
-Research questions include the following:
-
-1- Is smart growth plan effective in Camden? Is there a noticebale improvement?
-2- Has smart growth helped with affordable housing and economic status?
-3- Has there been any walkability/compact design happening in these years?
-
-Indicators for the answers: 
-
-1- Comparing 2007 and 2017 data in terms of
-+ more population in urban areas that implies non sprawl development
-       measured by principal cities, households and civil labor force   
-+ more affordable housing/ home diversity for people
-       meaured by studying the household numbers, poverty, income and employment status 
-       and level of cost based on income 
-	   also less vacanncy rate and more of occupancy 
-+ more use of public transportation/ work at home because of tech advances 
-       measured by the number of households, use of transportation and income 
-+ compact development meaning that there is closer distantace between workplace and housing
-  and more brownfield development 
-       measured by 0.25mile distance or less that 5 mins time
-	   measured by less vacancy and more occupancy 
-+ how people are relying on cars, use public transportation and walk 
-       measured by total trans based on civil labor and households and the diversity of 
-	   the means comparing the two years 
-
-2- 
-+ Affordable housing means income housing that cost less that %30 of income 
-+ Economic status means if there are more jobs and employment, less poverty and less spenditure on transit 
-
-3- 
-+ less amount of time for commuting from home to work:  
-* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
- and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
-
 
 */
 *tabstat------------------------------------------------------------------------
@@ -698,18 +665,7 @@ tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get 
 15-20, 20-25 and 35-40 mins which all begin above 200 numbers, the least demand is for less than 5 mins which obviously people walk to work and 
 also 45-60 mins which starts at 60. for people who are more than 1 hour away there the trend is positive and less than 200 number 
 */
-tw (scatter timework_less_5min pubtrans)(lfit timework_less_5min pubtrans) //less than 50 
-tw (scatter timework_5_9min pubtrans)(lfit timework_5_9min pubtrans) // less than 200
-tw (scatter timework_10_14min pubtrans)(lfit timework_10_14min pubtrans) //from 200
-tw (scatter timework_15_19min pubtrans)(lfit timework_15_19min pubtrans) //above 200
-tw (scatter timework_20_24min pubtrans)(lfit timework_20_24min pubtrans) //above 200
-tw (scatter timework_25_34min pubtrans)(lfit timework_25_34min pubtrans) //above 100
-tw (scatter timework_25_34min pubtrans)(lfit timework_25_34min pubtrans)  //above 100
-tw (scatter timework_25_34min pubtrans)(lfit timework_25_34min pubtrans)  //above 100
-tw (scatter timework_35_39min pubtrans)(lfit timework_35_39min pubtrans)  //above 200
-tw (scatter timework_40_44min pubtrans)(lfit timework_40_44min pubtrans)  //around 50
-tw (scatter timework_45_59min pubtrans)(lfit timework_45_59min pubtrans)  //above 60
-tw (scatter timework_60_89min pubtrans)(lfit timework_60_89min pubtrans)  //above 180
+
 
 foreach means in totaltrans drvalone drvcarpool totalwalk pubtrans {
 foreach mins in timework_less_5min  {
@@ -882,17 +838,18 @@ gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Monthly Costs <%30 Of Hous
 
 graph hbar ownervacrate rentvacrate, over(year)
 
-graph hbar percocc percvac pbelpov, over(year)
+graph hbar percocc percvac pbelpov, over(year) legend(order(1 "Percent of Occupancy" 2 ///
+"Percent of Vaccancy" 3 "Percent Below Poverty")size(small)rows(2)) 
+* This graph shows the percent of occupancy is high, has dropped a little in 2017 and relatively percent of vacancy
+* and poverty is higher
+** circling back to question 2 there is not that progress for diversifying houses 
 
 graph hbar drvalone drvcarpool totalwalk pubtrans workhome in 1/60, legend(order(1 "Driving alone" 2 ///
 "Car Pooling" 3 "Walk" 4 "Public Transportation" 5 "Work at Home")size(small)rows(2)) ///
-over(censustract, label(labsize (vsmall))) stack
+over(censustract, label(labsize (tiny))) stack
 
 
 *gr box ------------------------------------------------------------------------
-
-graph box percvac, over(year)
-** this graph shows vacancy has increased in 7 years 
 
 ******
 ******
@@ -907,9 +864,10 @@ graph box vac belpov unemp_civlabor, over(year) legend (order(1 ///
 graph matrix percocc totalwalk pubtrans medincome pbelpov emp_civlabor principal, half
 ** this is a total presentation of graphs in the scattered plot 
 
-pwcorr unemp_civlabor princip notprincip d* p*, star(.05)
+pwcorr unemp_civlabor princip notprincip t* d* p*, star(.05)
 
-
+unem principal cities 
+totalwalk unemp
 *Reg----------------------------------------------------------------------------
 
 
@@ -930,40 +888,79 @@ net install outreg2, from(http://fmwww.bc.edu/RePEc/bocode/o)
 
 use merge1, clear ///
 
-reg medincome civlaborpop
-/* *and then export to excel, note eform option that will exponentiate betas; ct will give it column title A1 */
-outreg2 using reg1.xls, onecol bdec(2) st(coef) excel replace ct(A1) lab
-/* *then i run some other specification */
+
 reg medincome civlaborpop emp_civlabor
 /* *and outreg2 again but i append instead of replace */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A2) lab  
-reg medincome civlaborpop emp_civlabor vac
-/* *and outreg2 again but i append instead of replace */
-outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A3) lab
-reg medincome civlaborpop emp_civlabor vac occ
-/* *and outreg2 again but i append instead of replace */
-outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A4) lab  
-reg medincome civlaborpop emp_civlabor vac occ principal
-/* *and outreg2 again but i append instead of replace */
-outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A5) lab
-reg medincome civlaborpop emp_civlabor vac occ principal totalwalk
-/* *and outreg2 again but i append instead of replace */
-outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A6) lab
-reg medincome civlaborpop emp_civlabor vac occ principal totalwalk pubtrans
-/* *and outreg2 again but i append instead of replace */
-outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A8) lab
-reg medincome civlaborpop emp_civlabor vac occ principal totalwalk pubtrans drvalone
-/* *and outreg2 again but i append instead of replace */
+
+reg medincome civlaborpop emp_civlabor belpov
+reg civlaborpop principal timework_less_5min
+
+reg mP0_29 occ totalwalk pubtrans drvalone drvcarpool
+estimates store Morgage 
+reg mP0n_29 occ totalwalk
+estimates store WithoutMorgage 
+reg Rent_29 occ totalwalk
+estimates store Rent 
+*display regression table
+esttab Morgage WithoutMorgage Rent, mtitle stat(N r2 F) order(_cons) label 
+
+reg households pubtrans
+reg pubtrans medincome civlaborpop belpov
+/*
+Research questions include the following:
+
+1- Is smart growth plan effective in Camden? Is there a noticebale improvement?
+2- Has smart growth helped with affordable housing and economic status?
+3- Has there been any walkability/compact design happening in these years?
+
+Indicators for the answers: 
+
+1- Comparing 2007 and 2017 data in terms of
++ more population in urban areas that implies non sprawl development
+       measured by principal cities, households and civil labor force   
++ more affordable housing/ home diversity for people
+       meaured by studying the household numbers, poverty, income and employment status 
+       and level of cost based on income 
+	   also less vacanncy rate and more of occupancy 
++ more use of public transportation/ work at home because of tech advances 
+       measured by the number of households, use of transportation and income 
++ compact development meaning that there is closer distantace between workplace and housing
+  and more brownfield development 
+       measured by 0.25mile distance or less that 5 mins time
+	   measured by less vacancy and more occupancy 
++ how people are relying on cars, use public transportation and walk 
+       measured by total trans based on civil labor and households and the diversity of 
+	   the means comparing the two years 
+
+2- 
++ Affordable housing means income housing that cost less that %30 of income 
++ Economic status means if there are more jobs and employment, less poverty and less spenditure on transit 
+
+3- 
++ less amount of time for commuting from home to work:  
+* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
+ and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
 
 
-reg emp_civlabor occ timework_less_5min_ totalwalk
+//civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome 
 
-reg households belpov vac
+//timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ 
+//timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
 
-reg drvalone drvcarpool totalwalk pubtrans timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ ///
-timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
+//totaltrans drvalone drvcarpool totalwalk pubtrans workhome 
+ 
+//totunit occ vac percocc percvac ownervacrate rentvacrate 
 
-reg  occ totaltrans totalwalk
+//morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_
+
+ 
+//nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ 
+//nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ 
+
+//ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
+
+//principal notprincipal 
 
 
 **For GIS 
