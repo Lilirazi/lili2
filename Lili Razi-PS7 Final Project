@@ -705,8 +705,11 @@ gr combine g4.gph g5.gph, row(1) ycommon title(Occupancy and Vacancy, size(Mediu
 egen mP0_29=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29)
 egen mP0n_29=rowtotal(nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_)
 egen Rent_29=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_)
+label GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - Less than 15 percent
+label SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI
 
 gr dot mP0_29 mP0n_29 Rent_29 if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) title(Monthly Cost of Income for Housing, size(Medium)) legend(order(1 "Housing w. Morgage" 2 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
+
 **************PROBLEM: in legend all three varaiables are shown in same color 
 *********************
 *********************
@@ -795,7 +798,6 @@ gr bar ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome
 1 "Less Than %20" 2 "%20-24" 3 "%25-29" 4 "%30-34" 5 "More Than %35 Of Income") size(vsmall)rows(2))saving(g3.gph, replace)
 * This bar graph shows there is not that much difference for renters between 2010 and 2017 
 
-
 gr combine g1.gph g2.gph, row(1) ycommon
 gr combine g1.gph g2.gph g3.gph, row(1) ycommon title(Monthly Renter Costs As A Percentage Of Household Income, size(medium))
 ***********This is interesting! 
@@ -856,15 +858,10 @@ loc c drvalone occ principal belpov
 reg medincome            emp_civlabor `c'
 reg medincome households emp_civlabor `c'
 /*
-drivingalone changes is not associated with changes in the income. but other indicators like households, employment 
-occupancy, working in principal cities are correlated with median income. When household numbers are included in the
-regression analysis occupancy gets omitted.  
-for every additional dollar in median income you can expect households to decrease by an average of46.93. 
-There should be some explanations!
-for every additional dollar in median income you can expect civil labor employment to increase by an average of27.079.
-for every additional dollar in median income you can expect number of workers in principal cities to decrease by an average of 13.59
+for every additional household the midan income decreases by 60 dollar
+for every additional unit in principal cities the median income decreases by 13.59 dollar
 which is weird!!!.
-for every additional dollar in median income you can expect percent below poverty to increase by an average of 62.47.
+for every additional number of people below poverty the median income increases by 62.47 dollar
 WHY!!!
 */
 
@@ -881,19 +878,11 @@ reg medincome civlaborpop emp_civlabor
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A2) lab  
 
 reg civlaborpop principal timework_less_5min
-
-reg mP0_29 occ drvalone drvcarpool totalwalk
-estimates store Morgage 
-reg mP0n_29 occ drvalone drvcarpool totalwalk
-estimates store WithoutMorgage 
-reg Rent_29 occ drvalone drvcarpool totalwalk
-estimates store Rent 
-*display regression table
-esttab Morgage WithoutMorgage Rent
-*****************************this is not working! 
+* for every additional person living than 5 min walk to their workplace the number of civil labor poplation increases by
+*7.43  
 
 reg pubtrans medincome civlaborpop belpov
-*  only median income is influencial on public transportation 
+*  for every additional dollar in median income the number of people using public trans decreases by 0.0001 
 
 *QGIS---------------------------------------------------------------------------
 use camden_sg_reshcensus
