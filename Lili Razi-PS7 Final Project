@@ -69,7 +69,7 @@ __________________________________________________________________
 limitation: 
  Green space variable was hard to find in data sources and was hard to analyze in census track.
  It is recommened to be analyzed at neighborhood level. 
- Also looking at mixed use development was not doable since there was no data around that in websites. 
+ Also looking at mixed use development was not doable since there was no accessible data. 
  
 ----------------------------------------------------------------------------------------
 */
@@ -314,7 +314,7 @@ destring *2010, replace
 
 save housetenure_2010_camden, replace 
 
-/////housing tenure camden census 2017/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////housing tenure camden census 2017///////////////////////////////////////////////////////////////////////////////////////////
 *retrived from: https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_16_5YR_DP04&prodType=table
 clear
 import delimited "https://docs.google.com/uc?id=1jgBo8T4FCQFOqEPNUHzBwzW8hDTWoMuE&export=download=download", varnames(1)
@@ -573,28 +573,6 @@ save camden_sg_reshcensus, replace
 clear 
 use camden_sg_reshcensus
 
-**my Variables: 
-//civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome 
-
-//timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ 
-//timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
-
-//totaltrans drvalone drvcarpool totalwalk pubtrans workhome 
- 
-//totunit occ vac percocc percvac ownervacrate rentvacrate 
-
-//morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_
-
- 
-//nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ 
-//nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ 
-
-//ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
-
-//principal notprincipal 
-/*
-
-*/
 *tabstat------------------------------------------------------------------------
 
 tabstat civlaborpop principal households, by(year) stat(mean sd min max) nototal long col(stat)f(%9.2f)
@@ -614,7 +592,7 @@ tabstat totaltrans drvalone drvcarpool totalwalk pubtrans workhome, by(year) sta
 */
 tabstat civlaborpop emp_civlabor unemp_civlabor belpov medincome, by(year) stat(mean sd min max) nototal long format
 ** this table shows there is more labor participation, employment and in result unemployment and poverty rate for both year decreased. 
-* Circling back to question1 and 2 there is better economic prosperity that  helps with housing  
+* Circling back to question1 and 2 there is better economic prosperity that helps with housing  
 
 tabstat timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min ///
 timework_35_39min timework_40_44min timework_45_59min timework_60_89min ,by(year) stat(mean sd min max) nototal long format
@@ -630,7 +608,8 @@ timework_35_39min timework_40_44min timework_45_59min timework_60_89min ,by(year
 
 tabstat morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ ///
 morg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
-** owner expenditure of income shows those who spent less than %20of their income on housing with morgage increased in 2017 but other percentages decreased 
+** owner expenditure of income shows those who spent less than %20of their income on housing with morgage increased in 2017 but other percentages of housing without 
+* morgage and renters spenditure on housing decreased 
 
 tabstat nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ ///
 nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ ,by(year) stat(mean sd min max) nototal long format
@@ -655,17 +634,16 @@ legend(order(1 "Civil Labor Unemployment" 2 "Fited Values"))
 
 ****** This is circular and interesting
 scatter totalwalk medincome [w=ptrentincome_35_more_], msymbol(circle_hollow) msize(vsmall) msymbol(circle_hollow) mlwidth(thin) by(year) 
-* this means for people who spent more than %30 of income on rent and based on their income how much do they walk to their work place 
-* When the income is higher than 100,000 there is less tendency to walk but there is a higher tendency to walk even with higher income than 100,000 in 2017 
+* this means for people who spent more than %30 of their income on rent how much do they walk to their work place 
+* When the income is higher than 100,000 there is less tendency to walk but there is a higher tendency to walk even with income higher than 100,000 in 2017 
 
 foreach v in timework_less_5min timework_5_9min timework_10_14min timework_15_19min timework_20_24min timework_25_34min timework_35_39min timework_40_44min timework_45_59min timework_60_89min {
 tw (scatter `v' pubtrans, msize(vsmall))(lfit `v' pubtrans), ytitle(Time To Get To Work) xtitle(Use Of Public Transportation) title(Workplace And Time To Get To Work)
 }
-/* This shows there is a positive colleration between these using public transportation. There is a high demand for public transportation for 
+/* This shows there is a positive colleration between time to work and using public transportation. There is a high demand for public transportation for 
 15-20, 20-25 and 35-40 mins which all begin above 200 numbers, the least demand is for less than 5 mins which obviously people walk to work and 
-also 45-60 mins which starts at 60. for people who are more than 1 hour away there the trend is positive and less than 200 number 
+also 45-60 mins which starts at 60. for people who are more than 1 hour away the trend between time to work and public trans is positive and less than 200 number 
 */
-
 
 foreach means in totaltrans drvalone drvcarpool totalwalk pubtrans {
 foreach mins in timework_less_5min  {
@@ -681,7 +659,6 @@ local data: dir . files "*.gph"
 gr combine `data'
 * this graph shows that the using car is more pervalent in less than 5 mins than walking or cycling
 
-
 ** Assessing the spenditure of %30 of income on housing 
 tw(scatter morg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit morg_ptowncostinc_35_more_ vac, msize(vsmall)), xtitle(Vaccancy) by(year) legend(order(1 "%35> of Income Spent on Housing with Morgage" 2 "Fited Values")) 
 ** housing with morgage _ strong correlation, less spent in 2017 
@@ -691,14 +668,14 @@ tw(scatter nomorg_ptowncostinc_35_more_ vac, msize(vsmall))(lfit nomorg_ptowncos
 
 tw(scatter ptrentincome_35_more_ vac, msize(vsmall))(lfit ptrentincome_35_more_ vac, msize(vsmall)), xtitle(Vaccancy) by(year) legend(order(1 "%35> of Income Spent on Rent " 2 "Fited Values")) 
 /* direct correlation and slightly more in 2017 
- circling back to question2, these graphs show that compact development and housing occupancy relationship  
- When the housing cost is more than %35 of income there are more vaccancy and less people are able to afford housing.
+ circling back to question2, these graphs show that compact development and housing occupancy relationship.  
+ When housing cost is more than %35 of income there are more vaccancy and less people are able to afford housing costs.
  Housing with morgage caused more vacancy, however, this was not a case for houses w/o in 2010 but in 2017 there was a colleration. 
- for renters there is a direct correlations with vacancy when the income spenditure is more than %35 
+ when the income spenditure is more than %35 for renters there is a direct correlations with vacancy 
  all that said means diversifying housing choices is still important for Camen County  
 */
 
-//////I wish to see if income impacts the walkability and public transportation usage over census tract///// 
+*I wish to see if income impacts the walkability and public transportation usage over census tract///// 
 twoway (scatter medincome totalwalk principal, mlab(censustract)), by(year)
 ** it seems there is no correlation between income and walking from work to home.
 
@@ -710,7 +687,7 @@ tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlab
 
 *gr dot-------------------------------------------------------------------------
 
-****** This is dot graph over census tracts and interesting!!! 
+****** This is dot graph over census tracts and it is interesting!!! 
 sort censustract year
 
 * Because there are 127 census tract and it is hard to see the changes of all I am using the first 60 tracts 
@@ -745,9 +722,8 @@ legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g7.gp
 
 gr combine g6.gph g7.gph, row(1) ycommon title(Housing Monthly Costs, size(Medium))
 * this dot graph shows in most census tracts the monthly cost of owners w/o are more than rent and the difference between rent and owner cost is really high 
-* especially in 2010 but in 2017 the differences has become less and that means more adjustment regarding prices have been implementent 
+* especially in 2010 but in 2017 the differences has become less and that means more price adjustment have been implemented
 ** circiling back to question2 better housing price regulation has been implemented in 2017. 
-
 
 
 *********** Those who spend less than %20 of their income on housing are grouped in one variable 
@@ -775,11 +751,6 @@ gr combine g8.gph g9.gph, row(1) ycommon title(Housing Monthly Costs, size(Mediu
 * 2017 dot graph shows that those with morgage exceed those without morgage who spend less that %20 and in general 
 * circling back to question 2  the gap is lessen and the housing prices perhaps are more regulated 
 
-
-*histogram----------------------------------------------------------------------
-
-histogram medincome, percent 
-* this shows people who have income around 6000 are most common 
 
 *graph bar----------------------------------------------------------------------
 
@@ -828,10 +799,12 @@ gr bar ptrentincome_less_20 ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome
 gr combine g1.gph g2.gph, row(1) ycommon
 gr combine g1.gph g2.gph g3.gph, row(1) ycommon title(Monthly Renter Costs As A Percentage Of Household Income, size(medium))
 ***********This is interesting! 
+*comparing the three graphs it shows that for those spending more than %35 of income for housing; renters have the first place 
+* Renters pay more than owners for housing in general. 
 
 gr bar mP0_29 mP0n_29 Rent_29, over(year)stack ytitle(Monthly Costs <%30 Of Household Income) ytitle(, margin(top)) title(, size(Tiny)) legend(order(1 ///
 "Owner w. Morgage" 2 "Owner w/o Morgage" 3 "Renter" ) size(vsmall)rows(2)) outergap(60)
-* The graph shows the amount for renters has got better but not much change for house owners 
+* comparing 2010 and 2017, The graph shows the amount for renters has got better in 2017 but not much change for house owners 
 
 
 *gr hbar------------------------------------------------------------------------
@@ -847,7 +820,8 @@ graph hbar percocc percvac pbelpov, over(year) legend(order(1 "Percent of Occupa
 graph hbar drvalone drvcarpool totalwalk pubtrans workhome in 1/60, legend(order(1 "Driving alone" 2 ///
 "Car Pooling" 3 "Walk" 4 "Public Transportation" 5 "Work at Home")size(small)rows(2)) ///
 over(censustract, label(labsize (tiny))) stack
-
+* the changes for census tract is even harder to follow except teh fact that 
+* in most census tracts driving alone is pervalent up to 1000 number 
 
 *gr box ------------------------------------------------------------------------
 
@@ -875,96 +849,53 @@ foreach var in drvalone occ principal morg_ptowncostinc_less_20_ nomorg_ptowncos
 reg `var' medincome
 }
 
+* I wish to see the impact of median income on smart growth in the ways and which it impacts 
+* civil labor employment, number of households, driving alone, occupancy and living in principal cities  
+loc c drvalone occ principal belpov
 
-loc c drvalone occ principal morg_ptowncostinc_less_20_ nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ ptrentincome_less_15_ ptrentincome_15_19_
-
-reg medincome                     emp_civlabor `c'
-reg medincome          households emp_civlabor `c'
-reg medincome drvalone households emp_civlabor `c'
-
-
+reg medincome            emp_civlabor `c'
+reg medincome households emp_civlabor `c'
+/*
+drivingalone changes is not associated with changes in the income. but other indicators like households, employment 
+occupancy, working in principal cities are correlated with median income. When household numbers are included in the
+regression analysis occupancy gets omitted.  
+for every additional dollar in median income you can expect households to decrease by an average of46.93. 
+There should be some explanations!
+for every additional dollar in median income you can expect civil labor employment to increase by an average of27.079.
+for every additional dollar in median income you can expect number of workers in principal cities to decrease by an average of 13.59
+which is weird!!!.
+for every additional dollar in median income you can expect percent below poverty to increase by an average of 62.47.
+WHY!!!
+*/
 
 net install outreg2, from(http://fmwww.bc.edu/RePEc/bocode/o)
 
 use merge1, clear ///
 
-
+reg medincome civlaborpop
+/* *and then export to excel, note eform option that will exponentiate betas; ct will give it column title A1 */
+outreg2 using reg1.xls, onecol bdec(2) st(coef) excel replace ct(A1) lab
+/* *then i run some other specification */
 reg medincome civlaborpop emp_civlabor
 /* *and outreg2 again but i append instead of replace */
 outreg2 using reg1.xls, onecol bdec(2) st(coef) excel append ct(A2) lab  
 
-reg medincome civlaborpop emp_civlabor belpov
 reg civlaborpop principal timework_less_5min
 
-reg mP0_29 occ totalwalk pubtrans drvalone drvcarpool
+reg mP0_29 occ drvalone drvcarpool totalwalk
 estimates store Morgage 
-reg mP0n_29 occ totalwalk
+reg mP0n_29 occ drvalone drvcarpool totalwalk
 estimates store WithoutMorgage 
-reg Rent_29 occ totalwalk
+reg Rent_29 occ drvalone drvcarpool totalwalk
 estimates store Rent 
 *display regression table
-esttab Morgage WithoutMorgage Rent, mtitle stat(N r2 F) order(_cons) label 
+esttab Morgage WithoutMorgage Rent
+*****************************this is not working! 
 
-reg households pubtrans
 reg pubtrans medincome civlaborpop belpov
-/*
-Research questions include the following:
+*  only median income is influencial on public transportation 
 
-1- Is smart growth plan effective in Camden? Is there a noticebale improvement?
-2- Has smart growth helped with affordable housing and economic status?
-3- Has there been any walkability/compact design happening in these years?
-
-Indicators for the answers: 
-
-1- Comparing 2007 and 2017 data in terms of
-+ more population in urban areas that implies non sprawl development
-       measured by principal cities, households and civil labor force   
-+ more affordable housing/ home diversity for people
-       meaured by studying the household numbers, poverty, income and employment status 
-       and level of cost based on income 
-	   also less vacanncy rate and more of occupancy 
-+ more use of public transportation/ work at home because of tech advances 
-       measured by the number of households, use of transportation and income 
-+ compact development meaning that there is closer distantace between workplace and housing
-  and more brownfield development 
-       measured by 0.25mile distance or less that 5 mins time
-	   measured by less vacancy and more occupancy 
-+ how people are relying on cars, use public transportation and walk 
-       measured by total trans based on civil labor and households and the diversity of 
-	   the means comparing the two years 
-
-2- 
-+ Affordable housing means income housing that cost less that %30 of income 
-+ Economic status means if there are more jobs and employment, less poverty and less spenditure on transit 
-
-3- 
-+ less amount of time for commuting from home to work:  
-* Walk Score's algorithm awards maximum points to amenities within 5 minutes' walk (.25 mi) * walk a quarter-mile to places around,
- and a decay function assigns points for amenities up to 30 minutes away.  https://www.walkscore.com/methodology.shtml
-
-
-//civlaborpop emp_civlabor unemp_civlabor belpov pbelpov households medincome 
-
-//timework_less_5min_ timework_5_9min_ timework_10_14min_ timework_15_19min_ timework_20_24min_ timework_25_34min_ 
-//timework_35_39min_ timework_40_44min_ timework_45_59min_ timework_60_89min_ timework_90_moremin_
-
-//totaltrans drvalone drvcarpool totalwalk pubtrans workhome 
- 
-//totunit occ vac percocc percvac ownervacrate rentvacrate 
-
-//morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29_ morg_ptowncostinc_30_34_ morg_ptowncostinc_35_more_
-
- 
-//nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ 
-//nomorg_ptowncostinc_25_29_ nomorg_ptowncostinc_30_34_ nomorg_ptowncostinc_35_more_ 
-
-//ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
-
-//principal notprincipal 
-
-
-**For GIS 
-/*
+*QGIS---------------------------------------------------------------------------
 use camden_sg_reshcensus
 
 egen mP0_29=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29)
