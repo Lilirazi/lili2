@@ -705,14 +705,9 @@ gr combine g4.gph g5.gph, row(1) ycommon title(Occupancy and Vacancy, size(Mediu
 egen mP0_29=rowtotal(morg_ptowncostinc_less_20_ morg_ptowncostinc_20_24_ morg_ptowncostinc_25_29)
 egen mP0n_29=rowtotal(nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_ nomorg_ptowncostinc_20_24_ nomorg_ptowncostinc_25_29_)
 egen Rent_29=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_)
-label GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI) - Occupied units paying rent (excluding units where GRAPI cannot be computed) - Less than 15 percent
-label SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI
-
-gr dot mP0_29 mP0n_29 Rent_29 if year==2017 in 1/60, over(censustract, label(labsize(tiny)) ) title(Monthly Cost of Income for Housing, size(Medium)) legend(order(1 "Housing w. Morgage" 2 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2))
-
-**************PROBLEM: in legend all three varaiables are shown in same color 
-*********************
-*********************
+label var mP0_29 "Occupied owner w.morgage units paying <%29 income" 
+label var mP0n_29 "Occupied owner w/o morgage units paying <%29 income" 
+label var Rent_29 "Occupied renting units paying rent <%29 income" 
 
 * It it hard to see the changes for vac that's why we divide it by 10 
 gen vac10= vac/10
@@ -733,6 +728,8 @@ gr combine g6.gph g7.gph, row(1) ycommon title(Housing Monthly Costs, size(Mediu
 *********** Therefore it is easier to compare affordable housing 
 egen nomorg_ptowncostinc_less_20=rowtotal( nomorg_ptowncostinc_less_10_ nomorg_ptowncostinc_10_14_ nomorg_ptowncostinc_15_19_)
 egen ptrentincome_less_20=rowtotal(ptrentincome_less_15_ ptrentincome_15_19_)
+label var nomorg_ptowncostinc_less_20 "Occupied owner w.o morgage units paying <%20 income" 
+label var ptrentincome_less_20 "Occupied renting units paying <%20 income" 
 
 * I am comparing the two graphs blow_ first I save them then see them in gr combine 
 * I am using legend only in this one and I'm pushing it into the graph 
@@ -764,7 +761,8 @@ graph bar drvalone drvcarpool totalwalk pubtrans workhome, over(year) stack  out
  title(Means to get tow work)
 * In both 2010 and 2017 driving to work is predominant 
 
-
+* for each loc to see the graph use the loc and the line of code for the graph to see the output 
+* meaning select from loc to the graph line you want to see
 loc pop civlaborpop households medincome 
 loc rent ptrentincome_less_15_ ptrentincome_15_19_ ptrentincome_20_24_ ptrentincome_25_29_ ptrentincome_30_34_ ptrentincome_35_more_ 
 loc twork drvalone drvcarpool totalwalk pubtrans timework_less_5min timework_5_9min timework_10_14min
@@ -910,3 +908,4 @@ save camden_sg_gis, replace
 export delimited using camden_sg_gis, replace
 */
  
+*this is for legend label colors (1, mcolor(black))
