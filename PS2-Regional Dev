@@ -1,0 +1,51 @@
+
+clear
+/* 
+regional economic development 
+Dr. Adam 
+spring 2020
+eds and meds development in philly and camden in 2000 and 2017 
+*/
+
+cd "E:\PhD\4. Spring semester 2020\2. regional economic development\census\stata" 
+
+/////2000-population////////////////////////////////////////////////////////////////////
+//https://drive.google.com/file/d/1tPJbVKEus7wvxKwK9Rgmp9QeD62cKexG/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1tPJbVKEus7wvxKwK9Rgmp9QeD62cKexG&export=download", varnames(1)
+
+
+
+/////2017-population////////////////////////////////////////////////////////////////////
+//https://drive.google.com/file/d/1tjn7pL3gaMbRrQ9Y8gfgCEr__TpB3Lzc/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1tjn7pL3gaMbRrQ9Y8gfgCEr__TpB3Lzc&export=download", varnames(1)
+
+
+
+/////2000-mobility////////////////////////////////////////////////////////////////////
+//https://drive.google.com/file/d/1kpWykh1rMmZT5mKz5cIfaCihCpjrZgNh/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1kpWykh1rMmZT5mKz5cIfaCihCpjrZgNh&export=download", varnames(1)
+
+
+
+/////2017-mobility////////////////////////////////////////////////////////////////////
+//https://drive.google.com/file/d/1r7QEX3zLk-1BaHuJHjyXQ0VF8DIFNByu/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1r7QEX3zLk-1BaHuJHjyXQ0VF8DIFNByu&export=download", varnames(1)
+
+
+
+/////2000-employment////////////////////////////////////////////////////////////////////
+//https://drive.google.com/file/d/1PKAso40kguTCDUu5hk14ibcvQKysA7N6/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1PKAso40kguTCDUu5hk14ibcvQKysA7N6&export=download", varnames(1)
+
+
+
+/////2017-employment////////////////////////////////////////////////////////////////////
+//https://drive.google.com/file/d/1BWp2ATIso9z4zq6Wy55yAFEyV4QrVP3a/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1BWp2ATIso9z4zq6Wy55yAFEyV4QrVP3a&export=download", varnames(1)
+
+
+
+
+
+
+
