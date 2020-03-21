@@ -9,10 +9,30 @@ eds and meds development in philly and camden in 2000 and 2017
 
 cd "E:\PhD\4. Spring semester 2020\2. regional economic development\census\stata" 
 
+
+
+edit
+
+rename hd01_vd03 civlaborpop2010
+label variable civlaborpop2010 "2010 Estimate; In labor force: - Civilian labor force"
+rename hd01_vd04 emp_civlabor2010
+label variable emp_civlabor2010 "2010 Estimate; In labor force: - Civilian labor force: - Employed"
+rename hd01_vd05 unemp_civlabor2010
+label variable unemp_civlabor2010 "2010 Estimate; In labor force: - Civilian labor force: - Unemployed"
+
+keep geoid geoid2 geodisplaylabel civlaborpop2010 emp_civlabor2010 unemp_civlabor2010
+
+drop in 1
+
+destring civlaborpop2010 emp_civlabor2010 unemp_civlabor2010, replace
+
+// These numbers are hard to produce results and for comparison so I'm generating percantage for employed and 
+// Unemployed civil labor force 
+
 /////2000-population////////////////////////////////////////////////////////////////////
 //https://drive.google.com/file/d/1tPJbVKEus7wvxKwK9Rgmp9QeD62cKexG/view?usp=sharing
 import delimited "https://docs.google.com/uc?id=1tPJbVKEus7wvxKwK9Rgmp9QeD62cKexG&export=download", varnames(1)
-
+edit 
 
 
 /////2017-population////////////////////////////////////////////////////////////////////
