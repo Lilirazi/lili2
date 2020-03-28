@@ -4,7 +4,7 @@ clear
 regional economic development 
 Dr. Adam 
 spring 2020
-eds and meds development in camden and USA in 2000 and 2017 
+eds and meds development in camden, philly and USA in 2000 and 2017 
 */
 
 cd "E:\PhD\4. Spring semester 2020\2. regional economic development\census\stata" 
@@ -73,14 +73,14 @@ drop in 1
 * Note: I am trying to find affordable housing - First I need to add all the housing percentage below %30 
 * Ower cost less than %30 
 destring hc01_vc88 hc01_vc89 hc01_vc90 hc01_vc91, replace
-gen ownafford2000 = hc01_vc88 + hc01_vc89 + hc01_vc90 + hc01_vc91
-label var ownafford2000 "owner monthly cost as a percentage of household income-less %30"
+gen ownaf2000 = hc01_vc88 + hc01_vc89 + hc01_vc90 + hc01_vc91
+label var ownaf2000 "owner monthly cost as a percentage of household income-less %30"
 
 destring hc01_vc107 hc01_vc108 hc01_vc109 hc01_vc110, replace 
-gen renterafford2000 = hc01_vc107 + hc01_vc108 + hc01_vc109 + hc01_vc110
-label var renterafford2000 "owner monthly cost as a percentage of household income-less %30"
+gen rentaf2000 = hc01_vc107 + hc01_vc108 + hc01_vc109 + hc01_vc110
+label var rentaf2000 "owner monthly cost as a percentage of household income-less %30"
 
-keep geoid geoid2 geodisplaylabel renterafford2000 ownafford2000
+keep geoid geoid2 geodisplaylabel rentaf2000 ownaf2000
 
 save afford2000, replace
 
@@ -96,16 +96,16 @@ destring hc02_est_vc134, replace //occupancy occupided units
 destring hc02_est_vc136, replace //percent of owner affordable housing 
 
 * I need to multiply these above to get a number 
-gen ownafford2017 = hc02_est_vc134 * hc02_est_vc136
+gen ownaf2017 = hc02_est_vc134 * hc02_est_vc136
 
-label var ownafford2017 "owner monthly cost as a percentage of household income-less %30"
+label var ownaf2017 "owner monthly cost as a percentage of household income-less %30"
 
 destring hc02_moe_vc144, replace // renter occupied units 
 destring hc01_est_vc147, replace  //percent of renter affordable units
-gen rentafford2017 = hc02_moe_vc144 * hc01_est_vc147
-label var rentafford2017 "owner monthly cost as a percentage of household income-less %30"
+gen rentaf2017 = hc02_moe_vc144 * hc01_est_vc147
+label var rentaf2017 "owner monthly cost as a percentage of household income-less %30"
 
-keep geoid geoid2 geodisplaylabel rentafford2017 ownafford2017
+keep geoid geoid2 geodisplaylabel rentaf2017 ownaf2017
 
 save afford2017, replace
 
@@ -141,8 +141,38 @@ drop in 3
 
 encode geoid, gen(ctc)
 
-reshape long emp creative service edsmeds medinc ownafford renterafford,i(ctc)j(year)
+reshape long pop emp creative service edsmeds medinc ownaf rentaf,i(ctc)j(year)
 
 sort year
 
 destring geoid, replace
+
+
+
+ 
+/*
+///mobility2000:////////////////////////////////////////////////////////////////////////// 
+*https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_P025&prodType=tableindustries
+*https://drive.google.com/file/d/1RB4Mb9OxGBwNT1QMkcTbk4Urm82mQEoU/view?usp=sharing
+clear
+import delimited "https://docs.google.com/uc?id=1RB4Mb9OxGBwNT1QMkcTbk4Urm82mQEoU&export=download", varnames(1)
+
+
+///mobility2017:////////////////////////////////////////////////////////////////////////// 
+https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0102&prodType=table
+https://drive.google.com/file/d/1kHv0lOdqxvadgcvrJrSIIu6QYATkpzBk/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1kHv0lOdqxvadgcvrJrSIIu6QYATkpzBk&export=download", varnames(1)
+*/ 
+
+
+
+
+
+
+
+
+
+
+
+
+
