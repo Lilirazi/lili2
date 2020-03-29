@@ -187,43 +187,28 @@ export delimited using edsmedsyears, replace
 ///changes in camden///////////////////////////////////////////////////////////
 
 clear 
+
 use edsmedsyears
 *graph bar ownaf rentaf, bargap(2) outergap(200) legend(order(1 "Owner <%30 Monthly Cost" 2 "Renter <%30 Monthly Cost")) by(year) stack
 
-gr hbar emp creative service edsmeds, over(year, label(labsize(medium)) ) 
-
-
- title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(vsmall)) legend(size(tiny)) ///
-legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g6.gph, replace)
-
-
-gr dot mP0n_29 Rent_29, over(year, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(vsmall)) legend(size(tiny)) ///
-legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g7.gph, replace)
-
-gr combine g6.gph g7.gph, row(1) ycommon title(Housing Monthly Costs, size(Medium))
+gr hbar emp creative service edsmeds, legend(order(1 "Labor Force Employment" 2 "Core Creative Class" 3 ///
+"Service Occupations" 4 "Eds and Meds Employment")size(small)rows(2)) over(year, label(labsize(medium))) 
 
 graph box creative service edsmeds, over(year) legend (size(small)rows(2)) 
 graph box ownaf rentaf, over(year) legend (size(small)rows(2))
 ** this graph shows vacancy has risen considering the low level of poverty 
 // legend (order(1 /// "Vaccancy" 2 "Below Poverty" 3 "Unemployed Civil Labors")
 
-
- 
 graph matrix emp creative service edsmeds ownaf rentaf, half
 ** this is a total presentation of graphs in the scattered plot 
 
-pwcorr emp creative service edsmeds ownaf rentaf, star(.05)
+pwcorr pop emp edsmeds creative service ownaf rentaf medinc, star(.05)
 
+twoway connected ownaf rentaf service creative rentaf edsmeds, sort lpattern(longdash dot solid)
 
+twoway connected service creative edsmeds, sort lpattern(longdash dot solid) legend(size(tiny)) 
 
-
-
-
-graph hbar drvalone drvcarpool totalwalk pubtrans workhome in 1/60, legend(order(1 "Driving alone" 2 ///
-"Car Pooling" 3 "Walk" 4 "Public Transportation" 5 "Work at Home")size(small)rows(2)) ///
-over(censustract, label(labsize (tiny))) stack
-
-tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation) by(year)
+twoway connected emp service creative rentaf, sort lpattern(longdash dot solid) by(year)
 
 /*
 ///mobility2000:////////////////////////////////////////////////////////////////////////// 
@@ -244,7 +229,6 @@ import delimited "https://docs.google.com/uc?id=1kHv0lOdqxvadgcvrJrSIIu6QYATkpzB
 https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_DP2&prodType=table
 https://drive.google.com/file/d/1klnPX6nmMOX8ZMFNaH6BU7agLKiiCEAA/view?usp=sharing
 import delimited "https://docs.google.com/uc?id=1klnPX6nmMOX8ZMFNaH6BU7agLKiiCEAA&export=download", varnames(1)
-
 
 
 */ 
