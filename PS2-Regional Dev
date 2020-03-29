@@ -19,15 +19,10 @@ import delimited "https://docs.google.com/uc?id=1AgqjDvouRQ9jA0yrF3lAgzKC_jDrSyk
 
 rename hc01_vc03 pop2000
 rename hc01_vc06 emp2000
-label  var emp2000 "Population 16 years and over-In labor forceCivilian-labor force-Employed"
 rename hc01_vc41 creative2000
-label var creative2000 "Management, business, science, and arts occupations"
 rename hc01_vc42 service2000
-label var service2000 "Service occupations"
 rename hc01_vc59 edsmeds2000
-label var edsmeds2000 "Educational services, and health care and social assistance"
 rename hc01_vc85 medinc2000
-label var medinc2000 "Total households - Median household income dollars"
 
 keep geoid geoid2 geodisplaylabel pop2000 emp2000 creative2000 service2000 edsmeds2000 medinc2000
 
@@ -36,6 +31,24 @@ drop in 1
 save edsmeds2000, replace
 
 
+/////employment-2010//////////////////////////////////////////////////////////////////////////
+*https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_DP03&prodType=table 
+*https://drive.google.com/file/d/1wuHpBRWIthBSuSxZhNA5cAFN6M_evU0y/view?usp=sharing
+clear 
+import delimited "https://docs.google.com/uc?id=1wuHpBRWIthBSuSxZhNA5cAFN6M_evU0y&export=download", varnames(1)
+
+rename hc01_vc04 pop2010
+rename hc01_vc05 emp2010
+rename hc01_vc41 creative2010
+rename hc01_vc42 service2010
+rename hc01_vc59 edsmeds2010
+rename hc01_vc85 medinc2010
+
+keep geoid geoid2 geodisplaylabel pop2010 emp2010 creative2010 service2010 edsmeds2010 medinc2010
+
+drop in 1 
+
+save edsmeds2010, replace 
 
 /////employment-2017////////////////////////////////////////////////////////////////////////// 
 *https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_DP03&prodType=table
@@ -44,16 +57,11 @@ clear
 import delimited "https://docs.google.com/uc?id=1fxBrOBXbqNy2Q99EgON7PMgPymMvo2ls&export=download", varnames(1)
 
 rename hc01_vc03 pop2017
-rename hc01_vc04 emp2017
-label  var emp2017 "Population 16 years and over-In labor forceCivilian-labor force-Employed"
+rename hc01_vc06 emp2017
 rename hc01_vc41 creative2017
-label var creative2017 "Management, business, science, and arts occupations"
 rename hc01_vc42 service2017
-label var service2017 "Service occupations"
 rename hc01_vc59 edsmeds2017
-label var edsmeds2017 "Educational services, and health care and social assistance"
 rename hc01_vc85 medinc2017
-label var medinc2017 "Total households - Median household income dollars"
 
 keep geoid geoid2 geodisplaylabel pop2017 emp2017 creative2017 service2017 edsmeds2017 medinc2017
 
@@ -62,8 +70,7 @@ drop in 1
 save edsmeds2017, replace 
 
 
-
-///tenure2000:////////////////////////////////////////////////////////////////////////// *https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_DP4&prodType=table
+///tenure2000////////////////////////////////////////////////////////////////////////// *https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_DP4&prodType=table
 *https://drive.google.com/file/d/1YrYEmz5I1dtpWRp1tyr5LAK_m7zEAU2X/view?usp=sharing
 clear
 import delimited "https://docs.google.com/uc?id=1YrYEmz5I1dtpWRp1tyr5LAK_m7zEAU2X&export=download", varnames(1)
@@ -74,19 +81,38 @@ drop in 1
 * Ower cost less than %30 
 destring hc01_vc88 hc01_vc89 hc01_vc90 hc01_vc91, replace
 gen ownaf2000 = hc01_vc88 + hc01_vc89 + hc01_vc90 + hc01_vc91
-label var ownaf2000 "owner monthly cost as a percentage of household income-less %30"
 
 destring hc01_vc107 hc01_vc108 hc01_vc109 hc01_vc110, replace 
 gen rentaf2000 = hc01_vc107 + hc01_vc108 + hc01_vc109 + hc01_vc110
-label var rentaf2000 "owner monthly cost as a percentage of household income-less %30"
 
 keep geoid geoid2 geodisplaylabel rentaf2000 ownaf2000
 
 save afford2000, replace
 
 
+///tenure2010////////////////////////////////////////////////////////////////////////// 
+*https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0102&prodType=table
+*https://drive.google.com/file/d/1KiumymSHP8KvKH3XWTjraT9eqFc0h6kl/view?usp=sharing
+clear
+import delimited "https://docs.google.com/uc?id=1KiumymSHP8KvKH3XWTjraT9eqFc0h6kl&export=download", varnames(1)
+drop in 1 
+destring hc02_moe_vc148, replace //occupancy occupided units
+destring hc02_est_vc150, replace //percent of owner affordable housing 
 
-///tenure2017:////////////////////////////////////////////////////////////////////////// 
+* I need to multiply these above to get a number 
+gen ownaf2010 = hc02_moe_vc148 * hc02_est_vc150
+
+
+destring hc01_est_vc158, replace // renter occupied units 
+destring hc01_est_vc160, replace  //percent of renter affordable units
+gen rentaf2010 = hc01_est_vc158 * hc01_est_vc160
+
+keep geoid geoid2 geodisplaylabel rentaf2010 ownaf2010
+
+save afford2010, replace
+
+
+///tenure2017////////////////////////////////////////////////////////////////////////// 
 *https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0102&prodType=table
 *https://drive.google.com/file/d/1eGkibAPQuOmBI07fcjT1q3CAiZW8lAxL/view?usp=sharing
 clear 
@@ -98,18 +124,14 @@ destring hc02_est_vc136, replace //percent of owner affordable housing
 * I need to multiply these above to get a number 
 gen ownaf2017 = hc02_est_vc134 * hc02_est_vc136
 
-label var ownaf2017 "owner monthly cost as a percentage of household income-less %30"
 
 destring hc02_moe_vc144, replace // renter occupied units 
 destring hc01_est_vc147, replace  //percent of renter affordable units
 gen rentaf2017 = hc02_moe_vc144 * hc01_est_vc147
-label var rentaf2017 "owner monthly cost as a percentage of household income-less %30"
 
 keep geoid geoid2 geodisplaylabel rentaf2017 ownaf2017
 
 save afford2017, replace
-
-
 
 
 ////merge 2010 and 2017//////////////////////////////////////////////////////////////////
@@ -118,7 +140,7 @@ clear
 
 use afford2017
 
-foreach file in afford2000 edsmeds2017 edsmeds2000 {
+foreach file in afford2000 afford2010 edsmeds2017 edsmeds2000 edsmeds2010 {
 
 merge 1:1 geoid using `file'
 
@@ -126,7 +148,8 @@ drop _merge
 
 }
 
-destring *2017, replace 
+destring *2017, replace
+destring *2010, replace  
 destring *2000, replace 
 
 save edsmeds, replace
@@ -143,13 +166,30 @@ encode geoid, gen(ctc)
 
 reshape long pop emp creative service edsmeds medinc ownaf rentaf,i(ctc)j(year)
 
+label var emp "Population 16 years and over-In labor forceCivilian-labor force-Employed"
+label var creative "Management, business, science, and arts occupations"
+label var service "Service occupations"
+label var edsmeds "Educational services, and health care and social assistance"
+label var medinc "Total households - Median household income dollars"
+label var ownaf "owner monthly cost as a percentage of household income-less %30"
+label var rentaf "owner monthly cost as a percentage of household income-less %30"
+
 sort year
 
 destring geoid, replace
 
+save edsmedsyears, replace
+
+*Below row is for qgis so that I can add it to may layers 
+export delimited using edsmedsyears, replace
+
+///changes in camden///////////////////////////////////////////////////////////
+
+graph bar edsmeds creative, bargap(2) outergap(60) legend(order(1 "Eds and Meds Employment" 2 "Creative Class Employment")) ///
+ by(year) stack
 
 
- 
+
 /*
 ///mobility2000:////////////////////////////////////////////////////////////////////////// 
 *https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_P025&prodType=tableindustries
@@ -162,11 +202,17 @@ import delimited "https://docs.google.com/uc?id=1RB4Mb9OxGBwNT1QMkcTbk4Urm82mQEo
 https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S0102&prodType=table
 https://drive.google.com/file/d/1kHv0lOdqxvadgcvrJrSIIu6QYATkpzBk/view?usp=sharing
 import delimited "https://docs.google.com/uc?id=1kHv0lOdqxvadgcvrJrSIIu6QYATkpzBk&export=download", varnames(1)
+
+
+
+* college and mobility 2000
+https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_DP2&prodType=table
+https://drive.google.com/file/d/1klnPX6nmMOX8ZMFNaH6BU7agLKiiCEAA/view?usp=sharing
+import delimited "https://docs.google.com/uc?id=1klnPX6nmMOX8ZMFNaH6BU7agLKiiCEAA&export=download", varnames(1)
+
+
+
 */ 
-
-
-
-
 
 
 
