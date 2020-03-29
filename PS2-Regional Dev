@@ -204,11 +204,16 @@ graph matrix emp creative service edsmeds ownaf rentaf, half
 
 pwcorr pop emp edsmeds creative service ownaf rentaf medinc, star(.05)
 
-twoway connected ownaf rentaf service creative rentaf edsmeds, sort lpattern(longdash dot solid)
+twoway connected edsmeds service creative year, sort lpattern(longdash dot solid) legend(size(small)) 
 
 twoway connected service creative edsmeds, sort lpattern(longdash dot solid) legend(size(tiny)) 
 
-twoway connected emp service creative rentaf, sort lpattern(longdash dot solid) by(year)
+twoway connected emp service creative rentaf, sort lpattern(longdash dot solid)
+
+
+
+
+
 
 /*
 ///mobility2000:////////////////////////////////////////////////////////////////////////// 
@@ -229,6 +234,7 @@ import delimited "https://docs.google.com/uc?id=1kHv0lOdqxvadgcvrJrSIIu6QYATkpzB
 https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_DP2&prodType=table
 https://drive.google.com/file/d/1klnPX6nmMOX8ZMFNaH6BU7agLKiiCEAA/view?usp=sharing
 import delimited "https://docs.google.com/uc?id=1klnPX6nmMOX8ZMFNaH6BU7agLKiiCEAA&export=download", varnames(1)
+
 
 
 */ 
