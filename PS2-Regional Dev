@@ -11,14 +11,14 @@ cd "E:\PhD\4. Spring semester 2020\2. regional economic development\census\stata
 
 *Note: all the stats are Civilian employed population 16 years and over
 
-/////employment-2010////////////////////////////////////////////////////////////////////
+/////employment-2000////////////////////////////////////////////////////////////////////
 *https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=DEC_00_SF3_DP3&prodType=table
 *https://drive.google.com/file/d/1AgqjDvouRQ9jA0yrF3lAgzKC_jDrSykO/view?usp=sharing
 
 import delimited "https://docs.google.com/uc?id=1AgqjDvouRQ9jA0yrF3lAgzKC_jDrSykO&export=download", varnames(1) 
 
-rename hc01_vc03 pop2000
-rename hc01_vc06 emp2000
+rename hc01_vc02 pop2000
+rename hc01_vc05 emp2000
 rename hc01_vc41 creative2000
 rename hc01_vc42 service2000
 rename hc01_vc59 edsmeds2000
@@ -38,7 +38,7 @@ clear
 import delimited "https://docs.google.com/uc?id=1wuHpBRWIthBSuSxZhNA5cAFN6M_evU0y&export=download", varnames(1)
 
 rename hc01_vc04 pop2010
-rename hc01_vc05 emp2010
+rename hc01_vc07 emp2010
 rename hc01_vc41 creative2010
 rename hc01_vc42 service2010
 rename hc01_vc59 edsmeds2010
@@ -96,11 +96,11 @@ save afford2000, replace
 clear
 import delimited "https://docs.google.com/uc?id=1KiumymSHP8KvKH3XWTjraT9eqFc0h6kl&export=download", varnames(1)
 drop in 1 
-destring hc02_moe_vc148, replace //occupancy occupided units
-destring hc02_est_vc150, replace //percent of owner affordable housing 
+destring hc02_est_vc148, replace //occupancy occupided units
+destring hc01_est_vc150, replace //percent of owner affordable housing 
 
 * I need to multiply these above to get a number 
-gen ownaf2010 = hc02_moe_vc148 * hc02_est_vc150
+gen ownaf2010 = hc02_est_vc148 * hc01_est_vc150
 
 
 destring hc01_est_vc158, replace // renter occupied units 
@@ -118,20 +118,21 @@ save afford2010, replace
 clear 
 import delimited "https://docs.google.com/uc?id=1eGkibAPQuOmBI07fcjT1q3CAiZW8lAxL&export=download", varnames(1)
 drop in 1 
-destring hc02_est_vc134, replace //occupancy occupided units
-destring hc02_est_vc136, replace //percent of owner affordable housing 
+destring hc01_est_vc134, replace //occupancy occupided units
+destring hc01_est_vc136, replace //percent of owner affordable housing 
 
 * I need to multiply these above to get a number 
-gen ownaf2017 = hc02_est_vc134 * hc02_est_vc136
+gen ownaf2017 = hc01_est_vc134 * hc01_est_vc136
 
 
-destring hc02_moe_vc144, replace // renter occupied units 
-destring hc01_est_vc147, replace  //percent of renter affordable units
-gen rentaf2017 = hc02_moe_vc144 * hc01_est_vc147
+destring hc01_est_vc144, replace // renter occupied units 
+destring hc01_est_vc146, replace  //percent of renter affordable units
+gen rentaf2017 = hc01_est_vc144 * hc01_est_vc146
 
 keep geoid geoid2 geodisplaylabel rentaf2017 ownaf2017
 
 save afford2017, replace
+
 
 
 ////merge 2010 and 2017//////////////////////////////////////////////////////////////////
@@ -171,8 +172,8 @@ label var creative "Management, business, science, and arts occupations"
 label var service "Service occupations"
 label var edsmeds "Educational services, and health care and social assistance"
 label var medinc "Total households - Median household income dollars"
-label var ownaf "owner monthly cost as a percentage of household income-less %30"
-label var rentaf "owner monthly cost as a percentage of household income-less %30"
+label var ownaf "Owner monthly cost as a percentage of household income-less %30"
+label var rentaf "Renter monthly cost as a percentage of household income-less %30"
 
 sort year
 
@@ -185,10 +186,44 @@ export delimited using edsmedsyears, replace
 
 ///changes in camden///////////////////////////////////////////////////////////
 
-graph bar edsmeds creative, bargap(2) outergap(60) legend(order(1 "Eds and Meds Employment" 2 "Creative Class Employment")) ///
- by(year) stack
+clear 
+use edsmedsyears
+*graph bar ownaf rentaf, bargap(2) outergap(200) legend(order(1 "Owner <%30 Monthly Cost" 2 "Renter <%30 Monthly Cost")) by(year) stack
+
+gr hbar emp creative service edsmeds, over(year, label(labsize(medium)) ) 
 
 
+ title(Monthly Renter Costs As A Percentage Of Household Income 2010, size(vsmall)) legend(size(tiny)) ///
+legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g6.gph, replace)
+
+
+gr dot mP0n_29 Rent_29, over(year, label(labsize(tiny)) ) title(Monthly Renter Costs As A Percentage Of Household Income 2017, size(vsmall)) legend(size(tiny)) ///
+legend(order(1 "Housing w/o Morgage" 2 "Rent" ) size(small)rows(2)) saving(g7.gph, replace)
+
+gr combine g6.gph g7.gph, row(1) ycommon title(Housing Monthly Costs, size(Medium))
+
+graph box creative service edsmeds, over(year) legend (size(small)rows(2)) 
+graph box ownaf rentaf, over(year) legend (size(small)rows(2))
+** this graph shows vacancy has risen considering the low level of poverty 
+// legend (order(1 /// "Vaccancy" 2 "Below Poverty" 3 "Unemployed Civil Labors")
+
+
+ 
+graph matrix emp creative service edsmeds ownaf rentaf, half
+** this is a total presentation of graphs in the scattered plot 
+
+pwcorr emp creative service edsmeds ownaf rentaf, star(.05)
+
+
+
+
+
+
+graph hbar drvalone drvcarpool totalwalk pubtrans workhome in 1/60, legend(order(1 "Driving alone" 2 ///
+"Car Pooling" 3 "Walk" 4 "Public Transportation" 5 "Work at Home")size(small)rows(2)) ///
+over(censustract, label(labsize (tiny))) stack
+
+tw(scatter medincome pubtrans, msymbol(smcircle_hollow) mlabel(censustract) mlabsize(tiny)), ytitle(Median Income) xtitle(Use of Public Transportation) by(year)
 
 /*
 ///mobility2000:////////////////////////////////////////////////////////////////////////// 
