@@ -19,12 +19,22 @@ import delimited "https://docs.google.com/uc?id=1AgqjDvouRQ9jA0yrF3lAgzKC_jDrSyk
 
 rename hc01_vc02 pop2000
 rename hc01_vc05 emp2000
-rename hc01_vc41 creative2000
-rename hc01_vc42 service2000
-rename hc01_vc59 edsmeds2000
+rename hc01_vc06 unemp2000
+rename hc01_vc27 creative2000
+rename hc01_vc28 service2000
+rename hc01_vc43 edsmeds2000
 rename hc01_vc85 medinc2000
 
-keep geoid geoid2 geodisplaylabel pop2000 emp2000 creative2000 service2000 edsmeds2000 medinc2000
+* Percentage of the above
+rename hc02_vc05 emp_pc2000
+rename hc02_vc06 unemp_pc2000
+rename hc02_vc27 creative_pc2000
+rename hc02_vc28 service_pc2000
+rename hc02_vc43 edsmeds_pc2000
+
+
+keep geoid geoid2 geodisplaylabel pop2000 emp2000 creative2000 service2000 edsmeds2000 medinc2000 ///
+emp_pc2000 unemp_pc2000 creative_pc2000 service_pc2000 edsmeds_pc2000
 
 drop in 1 
 
@@ -39,12 +49,21 @@ import delimited "https://docs.google.com/uc?id=1wuHpBRWIthBSuSxZhNA5cAFN6M_evU0
 
 rename hc01_vc04 pop2010
 rename hc01_vc07 emp2010
+rename hc01_vc08 unemp2010
 rename hc01_vc41 creative2010
 rename hc01_vc42 service2010
 rename hc01_vc59 edsmeds2010
 rename hc01_vc85 medinc2010
 
-keep geoid geoid2 geodisplaylabel pop2010 emp2010 creative2010 service2010 edsmeds2010 medinc2010
+* Percentage of the above
+rename hc03_vc07 emp_pc2010
+rename hc03_vc08 unemp_pc2010
+rename hc03_vc41 creative_pc2010
+rename hc03_vc42 service_pc2010
+rename hc03_vc59 edsmeds_pc2010
+
+keep geoid geoid2 geodisplaylabel pop2010 emp2010 creative2010 service2010 edsmeds2010 medinc2010 ///
+emp_pc2010 unemp_pc2010 creative_pc2010 service_pc2010 edsmeds_pc2010
 
 drop in 1 
 
@@ -58,12 +77,22 @@ import delimited "https://docs.google.com/uc?id=1fxBrOBXbqNy2Q99EgON7PMgPymMvo2l
 
 rename hc01_vc03 pop2017
 rename hc01_vc06 emp2017
+rename hc01_vc07 unemp2017
 rename hc01_vc41 creative2017
 rename hc01_vc42 service2017
 rename hc01_vc59 edsmeds2017
 rename hc01_vc85 medinc2017
 
-keep geoid geoid2 geodisplaylabel pop2017 emp2017 creative2017 service2017 edsmeds2017 medinc2017
+* Percentage of the above
+rename hc03_vc06 emp_pc2017
+rename hc03_vc07 unemp_pc2017
+rename hc03_vc41 creative_pc2017
+rename hc03_vc42 service_pc2017
+rename hc03_vc59 edsmeds_pc2017
+rename hc03_vc85 medinc_pc2017
+
+keep geoid geoid2 geodisplaylabel pop2017 emp2017 creative2017 service2017 edsmeds2017 medinc2017 ///
+emp_pc2017 unemp_pc2017 creative_pc2017 service_pc2017 edsmeds_pc2017 medinc_pc2017
 
 drop in 1 
 
@@ -85,7 +114,17 @@ gen ownaf2000 = hc01_vc88 + hc01_vc89 + hc01_vc90 + hc01_vc91
 destring hc01_vc107 hc01_vc108 hc01_vc109 hc01_vc110, replace 
 gen rentaf2000 = hc01_vc107 + hc01_vc108 + hc01_vc109 + hc01_vc110
 
-keep geoid geoid2 geodisplaylabel rentaf2000 ownaf2000
+
+***percentage
+* Ower cost less than %30 
+destring hc02_vc88 hc02_vc89 hc02_vc90 hc02_vc91, replace
+gen ownaf_pc2000 = hc02_vc88 + hc02_vc89 + hc02_vc90 + hc02_vc91
+
+destring hc02_vc107 hc02_vc108 hc02_vc109 hc02_vc110, replace 
+gen rentaf_pc2000 = hc02_vc107 + hc02_vc108 + hc02_vc109 + hc02_vc110
+
+
+keep geoid geoid2 geodisplaylabel rentaf2000 ownaf2000 ownaf_pc2000 rentaf_pc2000
 
 save afford2000, replace
 
@@ -97,7 +136,7 @@ clear
 import delimited "https://docs.google.com/uc?id=1KiumymSHP8KvKH3XWTjraT9eqFc0h6kl&export=download", varnames(1)
 drop in 1 
 destring hc02_est_vc148, replace //occupancy occupided units
-destring hc01_est_vc150, replace //percent of owner affordable housing 
+destring hc01_est_vc150, replace //percent of owner affordable housing
 
 * I need to multiply these above to get a number 
 gen ownaf2010 = hc02_est_vc148 * hc01_est_vc150
@@ -107,7 +146,11 @@ destring hc01_est_vc158, replace // renter occupied units
 destring hc01_est_vc160, replace  //percent of renter affordable units
 gen rentaf2010 = hc01_est_vc158 * hc01_est_vc160
 
-keep geoid geoid2 geodisplaylabel rentaf2010 ownaf2010
+*percentage
+rename hc01_est_vc150 ownaf_pc2010
+rename hc01_est_vc160 rentaf_pc2010
+
+keep geoid geoid2 geodisplaylabel rentaf2010 ownaf2010 ownaf_pc2010 rentaf_pc2010
 
 save afford2010, replace
 
@@ -129,7 +172,10 @@ destring hc01_est_vc144, replace // renter occupied units
 destring hc01_est_vc146, replace  //percent of renter affordable units
 gen rentaf2017 = hc01_est_vc144 * hc01_est_vc146
 
-keep geoid geoid2 geodisplaylabel rentaf2017 ownaf2017
+rename hc01_est_vc136 ownaf_pc2017
+rename hc01_est_vc146 rentaf_pc2017
+
+keep geoid geoid2 geodisplaylabel rentaf2017 ownaf2017 ownaf_pc2017 rentaf_pc2017
 
 save afford2017, replace
 
@@ -165,9 +211,11 @@ drop in 3
 
 encode geoid, gen(ctc)
 
-reshape long pop emp creative service edsmeds medinc ownaf rentaf,i(ctc)j(year)
+reshape long pop emp unemp creative service edsmeds medinc ownaf rentaf emp_pc unemp_pc creative_pc ///
+service_pc edsmeds_pc medinc_pc ownaf_pc rentaf_pc,i(ctc)j(year)
 
 label var emp "Population 16 years and over-In labor forceCivilian-labor force-Employed"
+label var unemp "Population 16 years and over-In labor forceCivilian-labor force-Unemployed"
 label var creative "Management, business, science, and arts occupations"
 label var service "Service occupations"
 label var edsmeds "Educational services, and health care and social assistance"
@@ -175,9 +223,25 @@ label var medinc "Total households - Median household income dollars"
 label var ownaf "Owner monthly cost as a percentage of household income-less %30"
 label var rentaf "Renter monthly cost as a percentage of household income-less %30"
 
+label var emp_pc "Percent_Population 16 years and over-In labor forceCivilian-labor force-Employed"
+label var unemp_pc "Percent_Population 16 years and over-In labor forceCivilian-labor force-Unemployed"
+label var creative_pc "Percent_Management, business, science, and arts occupations"
+label var service_pc "Percent_Service occupations"
+label var edsmeds_pc "Percent_Educational services, and health care and social assistance"
+label var medinc_pc "Percent_Total households - Median household income dollars"
+label var ownaf_pc "Percent_Owner monthly cost as a percentage of household income-less %30"
+label var rentaf_pc "Percent_Renter monthly cost as a percentage of household income-less %30"
+
+
 sort year
 
 destring geoid, replace
+
+
+//gen lq2000=emp_civlabor2010/civlaborpop2010
+//replace pcemp_civlabor2010=round(pcemp_civlabor2010, 0.01)
+
+
 
 save edsmedsyears, replace
 
@@ -191,8 +255,9 @@ clear
 use edsmedsyears
 *graph bar ownaf rentaf, bargap(2) outergap(200) legend(order(1 "Owner <%30 Monthly Cost" 2 "Renter <%30 Monthly Cost")) by(year) stack
 
-gr hbar emp creative service edsmeds, legend(order(1 "Labor Force Employment" 2 "Core Creative Class" 3 ///
-"Service Occupations" 4 "Eds and Meds Employment")size(small)rows(2)) over(year, label(labsize(medium))) 
+gr hbar emp_pc creative_pc service_pc edsmeds_pc, legend(order(1 "Overall Employment" 2 "Core Creative Class Employment" 3 ///
+"Service Industry Employment" 4 "Eds and Meds Employment")size(small)rows(2)) over(year, label(labsize(medium)))
+
 
 graph box creative service edsmeds, over(year) legend (size(small)rows(2)) 
 graph box ownaf rentaf, over(year) legend (size(small)rows(2))
@@ -209,11 +274,6 @@ twoway connected edsmeds service creative year, sort lpattern(longdash dot solid
 twoway connected service creative edsmeds, sort lpattern(longdash dot solid) legend(size(tiny)) 
 
 twoway connected emp service creative rentaf, sort lpattern(longdash dot solid)
-
-
-
-
-
 
 /*
 ///mobility2000:////////////////////////////////////////////////////////////////////////// 
