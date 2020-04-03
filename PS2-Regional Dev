@@ -33,7 +33,7 @@ rename hc02_vc28 service_pc2000
 rename hc02_vc43 edsmeds_pc2000
 
 
-keep geoid geoid2 geodisplaylabel pop2000 emp2000 creative2000 service2000 edsmeds2000 medinc2000 ///
+keep geoid geoid2 geodisplaylabel pop2000 emp2000 unemp2000 creative2000 service2000 edsmeds2000 medinc2000 ///
 emp_pc2000 unemp_pc2000 creative_pc2000 service_pc2000 edsmeds_pc2000
 
 drop in 1 
@@ -62,7 +62,7 @@ rename hc03_vc41 creative_pc2010
 rename hc03_vc42 service_pc2010
 rename hc03_vc59 edsmeds_pc2010
 
-keep geoid geoid2 geodisplaylabel pop2010 emp2010 creative2010 service2010 edsmeds2010 medinc2010 ///
+keep geoid geoid2 geodisplaylabel pop2010 emp2010 unemp2010 creative2010 service2010 edsmeds2010 medinc2010 ///
 emp_pc2010 unemp_pc2010 creative_pc2010 service_pc2010 edsmeds_pc2010
 
 drop in 1 
@@ -91,7 +91,7 @@ rename hc03_vc42 service_pc2017
 rename hc03_vc59 edsmeds_pc2017
 rename hc03_vc85 medinc_pc2017
 
-keep geoid geoid2 geodisplaylabel pop2017 emp2017 creative2017 service2017 edsmeds2017 medinc2017 ///
+keep geoid geoid2 geodisplaylabel pop2017 emp2017 unemp2017 creative2017 service2017 edsmeds2017 medinc2017 ///
 emp_pc2017 unemp_pc2017 creative_pc2017 service_pc2017 edsmeds_pc2017 medinc_pc2017
 
 drop in 1 
@@ -214,6 +214,15 @@ encode geoid, gen(ctc)
 reshape long pop emp unemp creative service edsmeds medinc ownaf rentaf emp_pc unemp_pc creative_pc ///
 service_pc edsmeds_pc medinc_pc ownaf_pc rentaf_pc,i(ctc)j(year)
 
+
+//foreach v in varlist pop emp unemp creative service edsmeds medinc ownaf rentaf{
+
+//replace=round(`v', 0.01) 
+
+//}
+
+//replace=round(rentaf, 0.01)
+
 label var emp "Population 16 years and over-In labor forceCivilian-labor force-Employed"
 label var unemp "Population 16 years and over-In labor forceCivilian-labor force-Unemployed"
 label var creative "Management, business, science, and arts occupations"
@@ -258,9 +267,44 @@ use edsmedsyears
 gr hbar emp_pc creative_pc service_pc edsmeds_pc, legend(order(1 "Overall Employment" 2 "Core Creative Class Employment" 3 ///
 "Service Industry Employment" 4 "Eds and Meds Employment")size(small)rows(2)) over(year, label(labsize(medium)))
 
-
 graph box creative service edsmeds, over(year) legend (size(small)rows(2)) 
-graph box ownaf rentaf, over(year) legend (size(small)rows(2))
+
+
+gr hbar rentaf_pc ownaf_pc, legend(order(1 "Renter Affordability" 2 "Owner affordability")size(small)rows(2)) over(year, label(labsize(medium)))
+
+gr hbar medinc , legend(order(1 "Median Income")size(small)rows(2)) over(year, label(labsize(medium)))
+
+tabstat  emp edsmeds, by(year) stat(mean sd min max) nototal long col(stat)f(%9.2f)
+
+
+
+ twoway (line emp edsmeds), by(year)
+ twoway (line emp creative), by(year)
+ twoway (line emp service), by(year)
+
+ twoway (line rentaf_pc edsmeds_pc), by(year)
+ twoway (line ownaf_pc edsmeds_pc), by(year)
+
+
+
+
+twoway scatter emp medinc || fpfit emp medinc ||, by(year, total row(1))
+
+
+tw scatter emp 
+
+
+tw(scatter edsmeds medinc, msize(vsmall))(lfit edsmeds medinc, msize(vsmall)), xtitle(edsmed) by(year) legend(order(1 "%35> of Income Spent on Housing with Morgage" 2 "Fited Values")) 
+** housing with morgage _ strong correlation, less spent in 2017 
+
+
+
+
+tw(scatter medinc emp, msymbol(smcircle_hollow) mlabel(pop) mlabsize(tiny)), ytitle(Population) xtitle(Employment) by(year)
+
+
+
+graph box medinc ownaf rentaf, over(year) legend (size(small)rows(2))
 ** this graph shows vacancy has risen considering the low level of poverty 
 // legend (order(1 /// "Vaccancy" 2 "Below Poverty" 3 "Unemployed Civil Labors")
 
