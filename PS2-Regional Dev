@@ -23,7 +23,7 @@ rename hc01_vc06 unemp2000
 rename hc01_vc27 creative2000
 rename hc01_vc28 service2000
 rename hc01_vc43 edsmeds2000
-rename hc01_vc85 medinc2000
+rename hc01_vc86 medinc2000 
 
 * Percentage of the above
 rename hc02_vc05 emp_pc2000
